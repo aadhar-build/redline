@@ -172,6 +172,12 @@ export default function Demo({ children, signInHref }) {
                     <span>Outside reference</span>
                   </li>
                 </ul>
+                <ul className="key-group key-group-other">
+                  <li className="key-item key-tick">
+                    <Tick />
+                    <span>Sentence found in the contract</span>
+                  </li>
+                </ul>
               </div>
 
               <p className={`withheld ${withheldShown ? "is-shown" : ""}`}>
@@ -280,7 +286,10 @@ function FlagRow({ f, isOpen, isTicked, onToggle, onShow }) {
             {SEVERITY_LABELS[f.severity]}
           </span>
         ) : (
-          <span className="ref-label">No Severity set</span>
+          <span className="stamp stamp-outside">
+            <Glyph kind="outside" />
+            Not reviewed
+          </span>
         )}
         <span className="flag-main">
           <span className="flag-title">{f.title}</span>

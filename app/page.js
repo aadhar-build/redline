@@ -23,9 +23,8 @@ export default function Home() {
         <Demo signInHref={SIGN_IN}>
           <h1 className="headline">Every flag shows the sentence it came from.</h1>
           <p className="lede">
-            Before the Owner signs a vendor agreement, commercial lease or client agreement, Redline reads it and
-            marks what to push back on. Each point comes with the exact sentence from the contract, so you can check
-            it and defend it.
+            Redline reads a vendor agreement, commercial lease or client agreement before it&rsquo;s signed and marks
+            what to push back on.
           </p>
           <div className="action">
             <a className="cta" href={SIGN_IN}>Try it on a document</a>
@@ -44,25 +43,25 @@ export default function Home() {
             <ul className="limits-list">
               <li>
                 <h3>Tell you whether to sign</h3>
-                <p>It shows what the contract says and what to raise. The decision stays with you and the Owner.</p>
-              </li>
-              <li>
-                <h3>Give legal advice</h3>
-                <p>It reads the document in front of it. It is not a lawyer and does not replace one.</p>
+                <p>
+                  It shows what the contract says and what to raise. It isn&rsquo;t a lawyer, and the decision stays
+                  with you and the Owner.
+                </p>
               </li>
               <li>
                 <h3>Read scanned or photographed pages</h3>
                 <p>It needs text it can select. If a contract is only a picture of text, Redline turns it away and says why.</p>
               </li>
               <li>
-                <h3>Review any document at all</h3>
-                <p>It is built for vendor agreements, commercial leases and client agreements, before they are signed.</p>
+                <h3>Review other kinds of documents</h3>
+                <p>It&rsquo;s built for vendor agreements, commercial leases and client agreements, before they&rsquo;re signed.</p>
               </li>
               <li>
-                <h3>Hand out a verdict</h3>
+                <h3>Read terms it wasn&rsquo;t given</h3>
                 <p>
-                  When there is nothing to push back on, it says so and lists every Red line it checked, with anything
-                  worth knowing underneath.
+                  When a contract points to terms kept somewhere else, like a web address or an order form, Redline
+                  flags the reference. The review can&rsquo;t be a Clean result until you upload that document or mark
+                  it reviewed.
                 </p>
               </li>
             </ul>
