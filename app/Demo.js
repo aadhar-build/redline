@@ -172,7 +172,7 @@ export default function Demo({ children, signInHref }) {
                     <span>Outside reference</span>
                   </li>
                 </ul>
-                <ul className="key-group key-group-other">
+                <ul className="key-group">
                   <li className="key-item key-tick">
                     <Tick />
                     <span>Sentence found in the contract</span>

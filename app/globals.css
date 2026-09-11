@@ -234,6 +234,8 @@ html.motion .demo:not([data-played]) .key-tick .tick path, .key-tick .tick path 
   border: 1.75px solid currentColor; padding: 0.28rem 0.4rem 0.24rem;
 }
 .stamp .glyph { width: 0.75rem; height: 0.75rem; }
+/* The column is fixed; the stamp keeps the width of its words. */
+.flag-row .stamp { justify-self: start; }
 .stamp-dont { color: var(--red); }
 .stamp-negotiate { color: var(--amber); }
 .stamp-know { color: var(--blue); }
