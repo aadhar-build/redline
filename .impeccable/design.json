@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-11T23:45:00.000Z",
+  "title": "Design System: Redline",
+  "extensions": {
+    "provenance": {
+      "mode": "scan",
+      "sources": ["app/layout.js", "app/page.js", "app/Demo.js", "app/Glyph.js", "app/globals.css", ".impeccable/review/desktop.png", ".impeccable/review/mobile.png"],
+      "direction": "Audit Workpaper, candidate 1 of 7, seed 20f69d25; Risk flags pane pinned by the product owner",
+      "finishReview": "Two review rounds; eight material fixes plus two regressions, all resolved; disposition ship. The verdict passes were run by a replacement reviewer after a session restart.",
+      "pendingSurfaces": [".impeccable/surfaces/app-app-layout-js.md (app shell behind sign-in, not built)", ".impeccable/surfaces/app-page-js.md (landing page brief)"]
+    },
+    "colorMeta": {
+      "blue": { "role": "primary", "displayName": "Reference Blue", "canonical": "oklch(43.8% 0.137 260.1)", "tonalRamp": ["#00003c", "#001d5c", "#143c7e", "#335ca0", "#527dc4", "#729fe9", "#96c5ff", "#dcf0ff"] },
+      "red": { "role": "secondary", "displayName": "Red Pencil", "canonical": "oklch(50.1% 0.178 28.7)", "tonalRamp": ["#2d0000", "#4f0000", "#721d16", "#953e34", "#ba5f53", "#df8073", "#ffa697", "#ffe3dc"] },
+      "amber": { "role": "tertiary", "displayName": "Negotiate Umber", "canonical": "oklch(46.4% 0.099 73.2)", "tonalRamp": ["#210000", "#3f1800", "#5e3500", "#7f5308", "#a17333", "#c49555", "#ebba7a", "#ffebd2"] },
+      "sheet": { "role": "neutral", "displayName": "Workpaper Sheet", "canonical": "oklch(96.8% 0.006 128.5)", "tonalRamp": ["#0a0c09", "#232522", "#3f403d", "#5d5e5b", "#7c7e7a", "#9d9f9b", "#c3c5c1", "#eeefed"] },
+      "paper": { "role": "neutral", "displayName": "Report Paper", "canonical": "oklch(100% 0 0)", "tonalRamp": ["#0b0b0b", "#242424", "#404040", "#5d5d5d", "#7d7d7d", "#9e9e9e", "#c4c4c4", "#eeeeee"] },
+      "ink": { "role": "neutral", "displayName": "Graphite Ink", "canonical": "oklch(28.8% 0.005 106.7)", "tonalRamp": ["#0b0b09", "#242421", "#40403d", "#5e5e5a", "#7d7d7a", "#9f9f9b", "#c4c4c0", "#eeeeed"] },
+      "ink-2": { "role": "neutral", "displayName": "Graphite Soft", "canonical": "oklch(44.8% 0.013 123.7)", "tonalRamp": ["#0a0c06", "#23251e", "#3e4139", "#5c5f57", "#7b7f76", "#9da097", "#c2c6bc", "#eeefeb"] },
+      "rule": { "role": "neutral", "displayName": "Sage Rule", "canonical": "oklch(80.8% 0.024 137.3)", "tonalRamp": ["#070d05", "#1f271b", "#3a4336", "#576154", "#778173", "#98a294", "#bdc8b9", "#ebf0ea"] },
+      "rule-strong": { "role": "neutral", "displayName": "Frame Rule", "canonical": "oklch(28.8% 0.005 106.7)", "tonalRamp": ["#0b0b09", "#242421", "#40403d", "#5e5e5a", "#7d7d7a", "#9f9f9b", "#c4c4c0", "#eeeeed"] },
+      "ruling": { "role": "neutral", "displayName": "Ruling Line", "canonical": "rgba(31, 78, 156, 0.09)", "tonalRamp": ["#00003c", "#001d5c", "#143c7e", "#335ca0", "#527dc4", "#729fe9", "#96c5ff", "#dcf0ff"] },
+      "blue-wash": { "role": "neutral", "displayName": "Reference Wash", "canonical": "rgba(31, 78, 156, 0.1)", "tonalRamp": ["#00003c", "#001d5c", "#143c7e", "#335ca0", "#527dc4", "#729fe9", "#96c5ff", "#dcf0ff"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The single page headline; 2.375rem under 40rem." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles." },
+      "title": { "displayName": "Title", "purpose": "Risk flag titles." },
+      "body": { "displayName": "Body", "purpose": "Redline's own explanation and UI text." },
+      "document": { "displayName": "Document", "purpose": "Contract clauses as uploaded, max 68ch." },
+      "quote": { "displayName": "Quote", "purpose": "Source sentence inside an open Risk flag; Counter-offer at 0.9375rem." },
+      "button": { "displayName": "Button", "purpose": "Primary and quiet buttons." },
+      "label": { "displayName": "Label", "purpose": "Uppercase field labels in the header block and sign-off." },
+      "label-stamp": { "displayName": "Label Stamp", "purpose": "Uppercase Severity stamps, box captions and basis labels." },
+      "numeral": { "displayName": "Numeral", "purpose": "Tabular Risk flag numbers." }
+    },
+    "shadows": [
+      { "name": "pane-lift", "value": "0 1px 1px rgba(43, 43, 40, 0.06), 0 12px 32px -12px rgba(43, 43, 40, 0.18)", "purpose": "The Risk flags pane only." },
+      { "name": "lit-sentence", "value": "inset 0 -0.12em 0 var(--blue)", "purpose": "Underline on the contract sentence linked to the open Risk flag; a highlight, not elevation." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Every transition in the system." },
+      { "name": "hover", "value": "160ms", "purpose": "Flag row and reference chip hover." },
+      { "name": "button", "value": "180ms", "purpose": "Button fill and border shift." },
+      { "name": "lit-clause", "value": "220ms", "purpose": "Blue wash on the linked clause." },
+      { "name": "reveal", "value": "260ms", "purpose": "Withheld notice fade-in." },
+      { "name": "source-reveal", "value": "320ms", "purpose": "Source line fades in when its sentence is found." },
+      { "name": "tick-draw", "value": "360ms", "purpose": "Pencil tick drawn via stroke-dashoffset once the Source sentence is found." }
+    ],
+    "breakpoints": [
+      { "name": "phone", "value": "40rem" },
+      { "name": "signoff", "value": "48rem" },
+      { "name": "grid", "value": "56rem" },
+      { "name": "hero", "value": "60rem" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one action, in graphite; hover shifts to Reference Blue.",
+      "html": "<a class='ds-cta' href='#'>Try it on a document</a>",
+      "css": ".ds-cta { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; background: var(--ink, #2b2b28); color: var(--sheet, #f3f5f1); text-decoration: none; font: 600 1.0625rem / 1 var(--font-ui-stack, Archivo, system-ui, sans-serif); padding: 0.95rem 1.35rem; border: 1.5px solid var(--ink, #2b2b28); border-radius: 3px; transition: background-color 180ms cubic-bezier(0.16, 1, 0.3, 1), border-color 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-cta:hover { background: var(--blue, #1f4e9c); border-color: var(--blue, #1f4e9c); } .ds-cta:active { transform: translateY(1px); } .ds-cta:focus-visible { outline: 3px solid var(--blue, #1f4e9c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Outlined graphite button for section asides; fills graphite on hover.",
+      "html": "<a class='ds-cta-quiet' href='#'>Try it on a document</a>",
+      "css": ".ds-cta-quiet { display: inline-flex; align-items: center; justify-content: center; background: transparent; color: var(--ink, #2b2b28); text-decoration: none; font: 600 1.0625rem / 1 var(--font-ui-stack, Archivo, system-ui, sans-serif); padding: 0.95rem 1.35rem; border: 1.5px solid var(--ink, #2b2b28); border-radius: 3px; transition: background-color 180ms cubic-bezier(0.16, 1, 0.3, 1), color 180ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-cta-quiet:hover { background: var(--ink, #2b2b28); color: var(--sheet, #f3f5f1); } .ds-cta-quiet:active { transform: translateY(1px); } .ds-cta-quiet:focus-visible { outline: 3px solid var(--blue, #1f4e9c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Top Bar Navigation",
+      "kind": "nav",
+      "description": "Serif wordmark with graphite links above a 2px graphite rule.",
+      "html": "<header class='ds-topbar'><a class='ds-wordmark' href='#'>Redline</a><ul class='ds-nav'><li><a href='#'>How it reads a contract</a></li><li><a href='#'>What it won’t do</a></li><li><a href='#'>Sign in</a></li></ul></header>",
+      "css": ".ds-topbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 1rem; min-height: 3.75rem; padding: 0.5rem 1.5rem; background: var(--sheet, #f3f5f1); border-bottom: 2px solid var(--rule-strong, #2b2b28); } .ds-wordmark { font: 600 1.5rem / 1 var(--font-text-stack, 'Source Serif 4', Georgia, serif); letter-spacing: -0.01em; color: var(--ink, #2b2b28); text-decoration: none; } .ds-nav { display: flex; gap: 1.5rem; margin: 0; padding: 0; list-style: none; flex-wrap: wrap; } .ds-nav a { color: var(--ink, #2b2b28); text-decoration: none; font: 400 0.9375rem / 1.55 var(--font-ui-stack, Archivo, system-ui, sans-serif); } .ds-nav a:hover { text-decoration: underline; text-underline-offset: 0.18em; } .ds-nav a:focus-visible, .ds-wordmark:focus-visible { outline: 3px solid var(--blue, #1f4e9c); outline-offset: 3px; border-radius: 2px; }"
+    },
+    {
+      "name": "Workpaper Header Block",
+      "kind": "card",
+      "refersTo": "header-block",
+      "description": "Field strip that opens a review surface: narrow uppercase labels over values, blue tabular reference.",
+      "html": "<dl class='ds-header-block'><div><dt>Document</dt><dd>Merchant services agreement</dd></div><div><dt>Counterparty</dt><dd>Brightline Payments</dd></div><div><dt>Reference</dt><dd class='ds-ref'>C-1</dd></div><div><dt>Prepared by</dt><dd>Redline</dd></div><div><dt>Reviewed by</dt><dd>You</dd></div></dl>",
+      "css": ".ds-header-block { display: grid; grid-template-columns: 1.5fr 1.5fr 0.8fr 1fr 1fr; margin: 0; border: 1.5px solid var(--rule-strong, #2b2b28); background: var(--sheet, #f3f5f1); font: 400 0.9375rem / 1.55 var(--font-ui-stack, Archivo, system-ui, sans-serif); color: var(--ink, #2b2b28); } .ds-header-block > div { padding: 0.5rem 0.75rem; border-right: 1px solid var(--rule, #b9c4b5); min-width: 0; } .ds-header-block > div:last-child { border-right: 0; } .ds-header-block dt { font: 600 0.75rem / 1.3 var(--font-label-stack, 'Archivo Narrow', 'Arial Narrow', sans-serif); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-2, #53564e); } .ds-header-block dd { margin: 0; font-weight: 500; } .ds-header-block .ds-ref { color: var(--blue, #1f4e9c); font-weight: 600; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Severity Stamps",
+      "kind": "chip",
+      "refersTo": "stamp-dont",
+      "description": "Square action stamps drawn in each Severity's ink, each led by its own glyph shape.",
+      "html": "<span class='ds-stamp ds-stamp-dont'><svg viewBox='0 0 20 20' aria-hidden='true'><rect x='3' y='3' width='14' height='14' fill='currentColor'/></svg>Don't sign as written</span> <span class='ds-stamp ds-stamp-negotiate'><svg viewBox='0 0 20 20' aria-hidden='true'><circle cx='10' cy='10' r='6.5' fill='none' stroke='currentColor' stroke-width='2.5'/><path d='M10 3.5a6.5 6.5 0 0 1 0 13z' fill='currentColor'/></svg>Negotiate</span> <span class='ds-stamp ds-stamp-know'><svg viewBox='0 0 20 20' aria-hidden='true'><path d='M10 2.5 17.5 10 10 17.5 2.5 10z' fill='none' stroke='currentColor' stroke-width='2' stroke-linejoin='round'/></svg>Know this</span>",
+      "css": ".ds-stamp { display: inline-flex; align-items: center; gap: 0.3rem; white-space: nowrap; font: 700 0.6875rem / 1 var(--font-label-stack, 'Archivo Narrow', 'Arial Narrow', sans-serif); letter-spacing: 0.08em; text-transform: uppercase; border: 1.75px solid currentColor; padding: 0.28rem 0.4rem 0.24rem; } .ds-stamp svg { width: 0.75rem; height: 0.75rem; flex: none; } .ds-stamp-dont { color: var(--red, #b3261e); } .ds-stamp-negotiate { color: var(--amber, #7a4f00); } .ds-stamp-know { color: var(--blue, #1f4e9c); }"
+    },
+    {
+      "name": "Severity Key",
+      "kind": "custom",
+      "refersTo": "severity-key",
+      "description": "Fixed glyph legend on a sheet band; glyphs carry the ink, labels stay graphite.",
+      "html": "<div class='ds-key'><ul class='ds-key-group'><li class='ds-key-item ds-sev-dont'><svg viewBox='0 0 20 20' aria-hidden='true'><rect x='3' y='3' width='14' height='14' fill='currentColor'/></svg><span>Don't sign as written</span></li><li class='ds-key-item ds-sev-negotiate'><svg viewBox='0 0 20 20' aria-hidden='true'><circle cx='10' cy='10' r='6.5' fill='none' stroke='currentColor' stroke-width='2.5'/><path d='M10 3.5a6.5 6.5 0 0 1 0 13z' fill='currentColor'/></svg><span>Negotiate</span></li><li class='ds-key-item ds-sev-know'><svg viewBox='0 0 20 20' aria-hidden='true'><path d='M10 2.5 17.5 10 10 17.5 2.5 10z' fill='none' stroke='currentColor' stroke-width='2' stroke-linejoin='round'/></svg><span>Know this</span></li></ul><ul class='ds-key-group ds-key-other'><li class='ds-key-item ds-sev-outside'><svg viewBox='0 0 20 20' aria-hidden='true'><rect x='3' y='3' width='14' height='14' fill='none' stroke='currentColor' stroke-width='2' stroke-dasharray='3 2.2'/><path d='M8.2 8.1a1.9 1.9 0 1 1 2.6 1.8c-.6.3-.8.7-.8 1.3v.4' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round'/><circle cx='10' cy='13.9' r='1' fill='currentColor'/></svg><span>Outside reference</span></li></ul></div>",
+      "css": ".ds-key { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1.25rem; padding: 0.6rem 1rem; background: var(--sheet, #f3f5f1); border-bottom: 1px solid var(--rule, #b9c4b5); } .ds-key-group { display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; margin: 0; padding: 0; list-style: none; } .ds-key-other { padding-left: 1.25rem; border-left: 1px solid var(--rule, #b9c4b5); } .ds-key-item { display: inline-flex; align-items: center; gap: 0.4rem; font: 600 0.8125rem / 1.2 var(--font-label-stack, 'Archivo Narrow', 'Arial Narrow', sans-serif); letter-spacing: 0.04em; color: var(--ink, #2b2b28); } .ds-key-item svg { width: 1rem; height: 1rem; flex: none; } .ds-sev-dont svg { color: var(--red, #b3261e); } .ds-sev-negotiate svg { color: var(--amber, #7a4f00); } .ds-sev-know svg { color: var(--blue, #1f4e9c); } .ds-sev-outside svg { color: var(--ink, #2b2b28); }"
+    },
+    {
+      "name": "Risk Flag Row (open)",
+      "kind": "custom",
+      "refersTo": "flag-row",
+      "description": "Numbered, stamped, ticked Risk flag with its Source sentence box and Counter-offer.",
+      "html": "<div class='ds-flag'><button type='button' class='ds-flag-row' aria-expanded='true'><span class='ds-flag-no'>1</span><span class='ds-stamp-sm'><svg viewBox='0 0 20 20' aria-hidden='true'><rect x='3' y='3' width='14' height='14' fill='currentColor'/></svg>Don't sign as written</span><span class='ds-flag-title'>Personal guarantee</span><span class='ds-flag-ref'><svg class='ds-tick' viewBox='0 0 24 20' width='22' height='18' aria-hidden='true'><path d='M2.5 11.5c2.2 1.2 3.8 3 5.2 5.4C11 10 15.6 5.1 21.5 2.6' fill='none' stroke='currentColor' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>C-1.1</span></button><div class='ds-flag-panel'><p class='ds-says'>Whoever signs becomes personally liable for the business's payments.</p><p class='ds-basis'><span class='ds-basis-label'>Red line match</span>Matches a Default Red line: personal guarantee.</p><figure class='ds-box'><figcaption>Source sentence, clause 9.1</figcaption><blockquote>The undersigned personally guarantees all of Customer's payment obligations under this Agreement.</blockquote></figure><figure class='ds-box ds-box-counter'><figcaption>Counter-offer</figcaption><p>Delete clause 9.1. Customer's payment obligations under this Agreement belong to Customer only.</p></figure><button type='button' class='ds-show-link'>Show clause 9.1 in the contract</button></div></div>",
+      "css": ".ds-flag { background: var(--paper, #fff); color: var(--ink, #2b2b28); font: 400 1rem / 1.55 var(--font-ui-stack, Archivo, system-ui, sans-serif); } .ds-flag-row { width: 100%; display: grid; grid-template-columns: 1.5rem auto minmax(0, 1fr) auto; align-items: center; gap: 0.6rem; text-align: left; background: var(--sheet, #f3f5f1); border: 0; padding: 0.6rem 0.5rem; border-radius: 2px; cursor: pointer; font: inherit; color: inherit; transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-flag-row:hover { background: var(--sheet, #f3f5f1); } .ds-flag-row:focus-visible { outline: 3px solid var(--blue, #1f4e9c); outline-offset: 3px; } .ds-flag-no { font: 700 1.125rem / 1 var(--font-label-stack, 'Archivo Narrow', sans-serif); color: var(--blue, #1f4e9c); font-variant-numeric: tabular-nums; } .ds-stamp-sm { display: inline-flex; align-items: center; gap: 0.3rem; white-space: nowrap; font: 700 0.6875rem / 1 var(--font-label-stack, 'Archivo Narrow', sans-serif); letter-spacing: 0.08em; text-transform: uppercase; border: 1.75px solid currentColor; padding: 0.28rem 0.4rem 0.24rem; color: var(--red, #b3261e); } .ds-stamp-sm svg { width: 0.75rem; height: 0.75rem; } .ds-flag-title { font-weight: 600; font-size: 0.9375rem; line-height: 1.35; } .ds-flag-ref { display: inline-flex; align-items: center; gap: 0.2rem; font: 600 0.8125rem / 1 var(--font-ui-stack, Archivo, sans-serif); color: var(--blue, #1f4e9c); font-variant-numeric: tabular-nums; } .ds-tick { color: var(--ink, #2b2b28); overflow: visible; } .ds-flag-panel { padding: 0.25rem 0.75rem 1rem 2.6rem; display: grid; gap: 0.75rem; } .ds-flag-panel p, .ds-flag-panel figure, .ds-flag-panel blockquote { margin: 0; } .ds-says { font-size: 0.9375rem; } .ds-basis { font-size: 0.875rem; color: var(--ink-2, #53564e); } .ds-basis-label { display: inline-block; margin-right: 0.45rem; font: 700 0.6875rem / 1 var(--font-label-stack, 'Archivo Narrow', sans-serif); letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid currentColor; padding: 0.2rem 0.35rem; color: var(--red, #b3261e); } .ds-box { border: 1px solid var(--rule, #b9c4b5); background: var(--sheet, #f3f5f1); } .ds-box figcaption { font: 700 0.6875rem / 1 var(--font-label-stack, 'Archivo Narrow', sans-serif); letter-spacing: 0.08em; text-transform: uppercase; color: var(--blue, #1f4e9c); padding: 0.45rem 0.65rem 0; } .ds-box-counter figcaption { color: var(--ink-2, #53564e); } .ds-box blockquote { padding: 0.3rem 0.65rem 0.6rem; font: 400 1rem / 1.5 var(--font-text-stack, 'Source Serif 4', Georgia, serif); } .ds-box-counter p { padding: 0.3rem 0.65rem 0.6rem; font: 400 0.9375rem / 1.5 var(--font-text-stack, 'Source Serif 4', Georgia, serif); } .ds-show-link { justify-self: start; background: none; border: 0; padding: 0; cursor: pointer; color: var(--blue, #1f4e9c); text-decoration: underline; text-underline-offset: 0.18em; font: 400 0.875rem / 1.55 var(--font-ui-stack, Archivo, sans-serif); } .ds-show-link:hover { text-decoration-thickness: 2px; } .ds-show-link:focus-visible { outline: 3px solid var(--blue, #1f4e9c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Reference Chip",
+      "kind": "chip",
+      "refersTo": "ref-chip",
+      "description": "Ticked blue reference code set inline after a contract sentence; opens its Risk flag.",
+      "html": "<p class='ds-clause'>The undersigned personally guarantees all of Customer's payment obligations under this Agreement. <button type='button' class='ds-ref-chip' aria-pressed='false'><svg viewBox='0 0 24 20' width='22' height='18' aria-hidden='true'><path d='M2.5 11.5c2.2 1.2 3.8 3 5.2 5.4C11 10 15.6 5.1 21.5 2.6' fill='none' stroke='currentColor' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg><span>C-1.1</span></button></p>",
+      "css": ".ds-clause { margin: 0; font: 400 1.1875rem / 1.65 var(--font-text-stack, 'Source Serif 4', Georgia, serif); color: var(--ink, #2b2b28); max-width: 68ch; } .ds-ref-chip { display: inline-flex; align-items: center; gap: 0.2rem; margin-left: 0.4rem; vertical-align: 0.05em; font: 600 0.8125rem / 1 var(--font-ui-stack, Archivo, system-ui, sans-serif); color: var(--blue, #1f4e9c); font-variant-numeric: tabular-nums; background: var(--paper, #fff); border: 1px solid var(--rule, #b9c4b5); padding: 0.25rem 0.4rem; border-radius: 2px; cursor: pointer; transition: border-color 160ms cubic-bezier(0.16, 1, 0.3, 1), background-color 160ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-ref-chip svg { color: var(--ink, #2b2b28); } .ds-ref-chip:hover, .ds-ref-chip[aria-pressed='true'] { border-color: var(--blue, #1f4e9c); background: var(--sheet, #f3f5f1); } .ds-ref-chip:focus-visible { outline: 3px solid var(--blue, #1f4e9c); outline-offset: 3px; }"
+    },
+    {
+      "name": "Sign-off Fields",
+      "kind": "card",
+      "description": "Workpaper sign-off strip with blank underlined values.",
+      "html": "<dl class='ds-signoff'><div><dt>Prepared by</dt><dd>Redline</dd></div><div><dt>Reviewed by</dt><dd class='ds-blank'></dd></div><div><dt>Date</dt><dd class='ds-blank'></dd></div></dl>",
+      "css": ".ds-signoff { display: grid; grid-template-columns: repeat(3, 12rem); margin: 0; border: 1px solid var(--rule, #b9c4b5); background: var(--paper, #fff); color: var(--ink, #2b2b28); font: 400 1rem / 1.55 var(--font-ui-stack, Archivo, system-ui, sans-serif); } .ds-signoff > div { padding: 0.5rem 0.75rem 0.65rem; border-right: 1px solid var(--rule, #b9c4b5); } .ds-signoff > div:last-child { border-right: 0; } .ds-signoff dt { font: 600 0.75rem / 1.3 var(--font-label-stack, 'Archivo Narrow', 'Arial Narrow', sans-serif); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-2, #53564e); } .ds-signoff dd { margin: 0; font-weight: 500; min-height: 1.5rem; } .ds-blank { border-bottom: 1px solid var(--ink, #2b2b28); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Audit Workpaper",
+    "overview": "Redline looks like a finished audit workpaper. A pale ruled sheet carries graphite ink, blue reference codes and red pencil. Each Risk flag is a numbered line in an inspection report. It carries an action stamp and a tick, and its reference code points both ways, to the sentence and back. The system makes one claim visually: every point can be traced to the document. Structure does that job. Header-block fields, framed paper surfaces, fixed glyph keys and cross-references carry it, and decoration adds nothing.\n\nDensity sits in the middle and reads like a document. Surfaces are square and framed with graphite strokes of set weights. Two faces carry two voices. Source Serif 4 is used for the contract's own words, the Counter-offer wording and headings. Archivo is used for Redline's explanation and the controls. Archivo Narrow, in uppercase, names fields, stamps, groups and boxes. There is one piece of authored motion: a pencil tick is drawn once a Source sentence has been found, and it never appears before that. All other motion is a short state transition, and every hold is skipped under reduced motion.\n\nThe direction rejects the legal-AI hero built from a gradient, a product screenshot and \"Book a demo\". Colour never carries meaning by itself: each Severity has its own glyph shape.",
+    "keyCharacteristics": [
+      "Pale ruled sheet (1.9rem ruling) behind framed white paper surfaces.",
+      "Graphite ink for all text; blue marks references and interaction; red is reserved for Don't sign as written.",
+      "Stroke weights form a hierarchy (2px, 1.5px, 1.75px stamp, 1px, 1px dashed).",
+      "Serif for document words, sans for Redline's voice, narrow uppercase for field labels.",
+      "Numbered Risk flags, Severity stamps, a fixed glyph key, and reference codes set in tabular numerals.",
+      "Square corners on documents; 2–3px only on pressable controls."
+    ],
+    "rules": [
+      { "name": "The Red Pencil Rule", "body": "Red means Don't sign as written, or a Red line match that leads to it. It is never used for links, hover, focus, the wordmark, buttons or decoration.", "section": "colors" },
+      { "name": "The Graphite Text Rule", "body": "Severity colour lives on the glyph and the stamp only. Group titles, key labels and Risk flag titles stay graphite.", "section": "colors" },
+      { "name": "The Shape Before Colour Rule", "body": "Every Severity pairs its ink with a distinct glyph, so no state is carried by colour alone.", "section": "colors" },
+      { "name": "The Two Voices Rule", "body": "Words that come from the document, or that are meant to be sent to the Counterparty, are set in serif. That covers clauses, Source sentences and Counter-offers. Redline's own explanation and all controls are set in Archivo.", "section": "typography" },
+      { "name": "The Field Label Rule", "body": "Narrow uppercase text names a field, a stamp, a group or a box. It never sits above a headline as a kicker.", "section": "typography" },
+      { "name": "The Tabular Reference Rule", "body": "Reference codes, Risk flag numbers, clause numbers, counts and status counters all use tabular numerals.", "section": "typography" },
+      { "name": "The Ruled Sheet Rule", "body": "The 1.9rem ruling appears only on sheet bands. Contract text and framed paper surfaces are never set on ruled lines.", "section": "layout" },
+      { "name": "The Paper On Sheet Rule", "body": "A surface is raised by framing it in paper with a graphite stroke, not by adding a shadow. Only the Risk flags pane casts one.", "section": "elevation" },
+      { "name": "The Stroke Hierarchy Rule", "body": "Stroke weight states rank: 2px divides the page, 1.5px frames a document, 1px divides within it, dashed separates siblings.", "section": "shapes" },
+      { "name": "The Found Then Ticked Rule", "body": "A tick is drawn and a source line appears only after that Risk flag's Source sentence has been found. A tick never comes first.", "section": "components" }
+    ],
+    "dos": [
+      "Do frame every document-like surface in paper or sheet with a 1.5px graphite stroke and square corners.",
+      "Do pair each Severity with its glyph: solid square for Don't sign as written, half-filled ring for Negotiate, outlined diamond for Know this, dashed square with a question mark for Outside reference.",
+      "Do put a Source sentence box inside every open Risk flag, above its Counter-offer, set in serif with a blue caption naming the clause.",
+      "Do set reference codes (C-1, C-1.1), Risk flag numbers, clause numbers and counts in tabular numerals, with codes in Reference Blue.",
+      "Do use Archivo Narrow uppercase (0.07–0.08em tracking) for field labels, stamps, group titles and box captions.",
+      "Do keep hover and state transitions between 160ms and 360ms on cubic-bezier(0.16, 1, 0.3, 1), and drop them under reduced motion.",
+      "Do use the 3px Reference Blue focus outline at 3px offset on every interactive element."
+    ],
+    "donts": [
+      "Don't use red for anything except Don't sign as written and a Red line match: no red links, buttons, hovers, focus rings or wordmark.",
+      "Don't colour text by Severity. The ink goes on the glyph and the stamp, and labels stay graphite.",
+      "Don't carry a Severity, a state or a control boundary by colour or by the sage rule alone.",
+      "Don't place a narrow uppercase label above a headline as a kicker or eyebrow.",
+      "Don't add hard offset shadows or stack card shadows. The pane lift is the only cast shadow in the system.",
+      "Don't fill surfaces or headlines with colour gradients. The only gradient is the 1px ruling pattern on sheet bands.",
+      "Don't round documents, boxes or stamps. Radius stops at 3px, on pressable controls.",
+      "Don't set contract text or framed paper on ruled lines.",
+      "Don't replace the drawn SVG glyphs and pencil tick with emoji, font glyphs or stock icon sets.",
+      "Don't set Redline's explanation in serif or the contract's words in sans.",
+      "Don't add motion that does not report a state change."
+    ]
+  }
+}
