@@ -101,3 +101,8 @@ Thumbs.db
 
 # ---- Local AI tool state ----
 .claude/settings.local.json
+
+# Local design-review artifacts (screenshots, decision-page state, browser tool output)
+.impeccable/questions/
+.impeccable/review/
+.playwright-mcp/
