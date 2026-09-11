@@ -37,6 +37,7 @@ Build these capabilities and stop there:
 - The GitHub repo (aadhar-build/redline) is public. Check the staged diff for keys and tokens before every commit.
 - Work on a feature branch and push as you go. Never push to main.
 - Ask before adding a dependency. This includes the PDF and DOCX parsers.
+- All copy a user reads in this product, meaning the landing page, UI labels, error messages and empty states, has to be run through the humanizer skill before it is committed. Copy that reads as though a model wrote it is a defect, not a matter of taste.
 
 ## Working while unattended
 - When a question comes up (a dependency, a step outside the scope, an unclear spec, the model choice), add it to QUESTIONS.md, skip that item, and continue with in-scope work that does not depend on it. Do not guess on these.
