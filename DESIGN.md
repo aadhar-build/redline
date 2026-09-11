@@ -20,6 +20,12 @@ typography:
     fontWeight: 600
     lineHeight: 1.04
     letterSpacing: "-0.02em"
+  display-compact:
+    fontFamily: "Source Serif 4, Georgia, Times New Roman, serif"
+    fontSize: "2.375rem"
+    fontWeight: 600
+    lineHeight: 1.04
+    letterSpacing: "-0.02em"
   headline:
     fontFamily: "Source Serif 4, Georgia, Times New Roman, serif"
     fontSize: "2.125rem"
@@ -34,6 +40,11 @@ typography:
   body:
     fontFamily: "Archivo, system-ui, -apple-system, Segoe UI, sans-serif"
     fontSize: "1rem"
+    fontWeight: 400
+    lineHeight: 1.55
+  caption:
+    fontFamily: "Archivo, system-ui, -apple-system, Segoe UI, sans-serif"
+    fontSize: "0.875rem"
     fontWeight: 400
     lineHeight: 1.55
   document:
@@ -235,6 +246,7 @@ A restrained workpaper palette: warm-grey graphite on a faintly green-grey sheet
 - **Headline** (600, 2.125rem, 1.12, -0.015em): section titles, max 20–24ch, balanced wrap.
 - **Title** (Archivo 600, 0.9375rem, 1.35): Risk flag titles.
 - **Body** (Archivo 400, 1rem, 1.55): running UI text and explanations, including what a clause says. The lede steps up to 1.125rem/1.6 at 46ch.
+- **Caption** (Archivo 400, 0.875rem, 1.55, usually `ink-2`): secondary UI text. That covers the note under the action, the pane status, the glyph key, the basis line, "Show clause X in the contract", the footer note, and the nav links under 40rem.
 - **Document** (Source Serif 4 400, 1.1875rem, 1.65, max 68ch; 1.0625rem/1.6 under 40rem): contract clauses as uploaded.
 - **Quote** (Source Serif 4 400, 1rem, 1.5): the Source sentence inside an open Risk flag. The Counter-offer steps down to 0.9375rem, and the truncated source line in a closed row uses 0.875rem/1.35 in `ink-2`.
 - **Button** (Archivo 600, 1.0625rem, 1): every "Try it on a document" button.

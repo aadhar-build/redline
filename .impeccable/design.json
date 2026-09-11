@@ -25,7 +25,9 @@
     },
     "typographyMeta": {
       "display": { "displayName": "Display", "purpose": "The single page headline; 2.375rem under 40rem." },
+      "display-compact": { "displayName": "Display Compact", "purpose": "The page headline under 40rem." },
       "headline": { "displayName": "Headline", "purpose": "Section titles." },
+      "caption": { "displayName": "Caption", "purpose": "Secondary UI text: action note, pane status, glyph key, basis line, show-clause link, footer, nav under 40rem." },
       "title": { "displayName": "Title", "purpose": "Risk flag titles." },
       "body": { "displayName": "Body", "purpose": "Redline's own explanation and UI text." },
       "document": { "displayName": "Document", "purpose": "Contract clauses as uploaded, max 68ch." },
