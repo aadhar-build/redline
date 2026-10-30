@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Needs approval for:** test runner and Next.js install (stack is settled but CLAUDE.md says ask before adding a dependency); Vercel project access.
+**Needs approval for:** Approved 2026-10-31 (Vitest, Supabase JS and CLI, Playwright test, Vercel project access).
 
 **Status:** ready-for-agent
 

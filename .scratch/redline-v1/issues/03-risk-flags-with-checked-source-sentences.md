@@ -2,7 +2,9 @@
 
 **What to build:** Each Risk flag shows its Source sentence, one Severity, and what the clause says stated as fact. Redline's code withholds and counts any flag whose Source sentence it cannot find in the document text.
 
-**Blocked by:** 01 (Pasted text gets a plain-English summary); C1 (CLAUDE.md contradiction 1, see .scratch/redline-v1/spec.md Further Notes) blocks only the ordering criterion
+**Blocked by:** 01 (Pasted text gets a plain-English summary)
+
+**Decisions (2026-10-31):** C1: grouped by Severity, not ranked (ADR 0003).
 
 **Needs approval for:** a schema validator for model output, only if one is wanted.
 

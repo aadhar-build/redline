@@ -2,7 +2,9 @@
 
 **What to build:** Each Don't sign as written and Negotiate flag has a Counter-offer the Reviewer can send to the Counterparty.
 
-**Blocked by:** 03 (Risk flags with checked Source sentences); C4 (CLAUDE.md contradiction 4, see .scratch/redline-v1/spec.md Further Notes)
+**Blocked by:** 03 (Risk flags with checked Source sentences)
+
+**Decisions (2026-10-31):** C4/OQ14: Counter-offer wording may only restate or tighten terms in the document, and no hedge words in it (../../spec-gaps/issues/03-truth-rule-and-hedge-words-in-counter-offer-wording.md).
 
 **Needs approval for:** None
 

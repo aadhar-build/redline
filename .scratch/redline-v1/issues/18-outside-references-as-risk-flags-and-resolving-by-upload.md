@@ -2,7 +2,9 @@
 
 **What to build:** Each Outside reference becomes a Risk flag with a Severity and a Counter-offer, "as amended from time to time" is handled as decided, and the Reviewer can resolve a reference by uploading the referenced document.
 
-**Blocked by:** 08 (Counter-offers for Don't sign as written and Negotiate flags); 13 (Outside references raised and marked as reviewed); OQ1 (PRD.md section 3, open question 1); OQ2 (PRD.md section 3, open question 2); OQ3 (PRD.md section 3, open question 3); OQ15 (PRD.md section 3, open question 15)
+**Blocked by:** 08 (Counter-offers for Don't sign as written and Negotiate flags); 13 (Outside references raised and marked as reviewed)
+
+**Decisions (2026-10-31):** OQ1: Negotiate. OQ2: attach as a schedule, terms fixed as at signing. OQ3: 'as amended from time to time' is Don't sign as written (Red line 3). OQ15: analysed together as one review.
 
 **Needs approval for:** None
 

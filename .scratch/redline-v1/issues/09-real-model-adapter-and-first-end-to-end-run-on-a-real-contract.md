@@ -2,7 +2,9 @@
 
 **What to build:** On the product owner's machine only, Review runs through server-side code calling the unmodified Claude Code CLI signed in to the product owner's own subscription.
 
-**Blocked by:** 03 (Risk flags with checked Source sentences); OQ20 (PRD.md section 3, open question 20)
+**Blocked by:** 03 (Risk flags with checked Source sentences)
+
+**Decisions (2026-10-31):** OQ20: Sonnet 5.5 (claude-sonnet-5-5). Market standard table (../../spec-gaps/issues/28-india-market-standard-table.md) is still not given to the model until approved.
 
 **Needs approval for:** None (uses the existing CLI, adds no package)
 

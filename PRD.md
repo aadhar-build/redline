@@ -61,6 +61,8 @@ The Reviewer's side of the problem, that the person checking the contract has no
 Why this segment anyway: Counter-offers only make sense where there is a live negotiation, such as "freelance clients, commercial leases, vendor contracts" (research/summary.md, section 5, item 3). The research calls small-business negotiable contracts the least weak case and adds: "The evidence justifies a narrow test of demand and price, not a build of the full product for everyone." (research/summary.md, section 5).
 
 ## 3. What the first version does
+
+> **Update 2026-10-31.** The product owner settled every open question below, added OCR for pages without a text layer (ADR 0008), set the market as English-language Indian contracts with a curated Market standard table (ADR 0009), and wrote the matching rule (ADR 0010). Where an item here conflicts with those ADRs, the ADRs win. Map: .scratch/spec-gaps/map.md.
 1. **Takes in a contract.** Accepts a text-layer PDF, a DOCX file or pasted text. The file is parsed in the browser; only the extracted text is sent and stored, and the original file never leaves the browser. A scanned or image-only PDF is rejected with a clear message saying why; Redline does not try to read it.
 2. **Summarises it in plain English.** The summary states only what the document says.
 3. **Raises Risk flags, each with its Source sentence.**
@@ -83,34 +85,34 @@ Analysis runs only on the product owner's machine. Server-side code calls the un
 The rest of the stack is settled: Next.js, Supabase for auth and database, deployed on Vercel.
 
 ### Open questions
-Each of these changes what gets built and has not been decided.
+Each of these changed what gets built. All 21 were decided by the product owner on 2026-10-31; see .scratch/spec-gaps/map.md.
 
 **Severity and Counter-offers**
-1. What Severity does an Outside reference flag get?
-2. What does the Counter-offer for an Outside reference say?
-3. Does "as amended from time to time" count as a match for Default Red line 3? ADR 0007 calls it "Default Red line 3 in another form". If it matches, it is Don't sign as written, so marking it reviewed would not produce a Clean result.
-4. Does a Know this flag get a Counter-offer? CLAUDE.md asks for one per flagged clause; CONTEXT.md defines a Know this clause as acceptable.
-5. Is an Ambiguous clause a Risk flag, and if so at what Severity? Does it block a Clean result?
-6. What is Market standard based on for each contract type: vendor agreement, commercial lease, client agreement? The research provides nothing (ADR 0003).
-7. How does Redline decide which of the three contract types a document is, and what happens when a document is none of them?
-8. Does a fee escalator written into the contract match Default Red line 3, or only a change the Counterparty makes later?
+1. What Severity does an Outside reference flag get? **Decided 2026-10-31:** Negotiate; an 'as amended' reference is Don't sign as written via Red line 3 ([ticket](.scratch/spec-gaps/issues/13-outside-reference-severity-and-counter-offer.md)).
+2. What does the Counter-offer for an Outside reference say? **Decided 2026-10-31:** attach the referenced document as a schedule and fix its terms as at signing ([ticket](.scratch/spec-gaps/issues/26-outside-reference-counter-offer.md)).
+3. Does "as amended from time to time" count as a match for Default Red line 3? ADR 0007 calls it "Default Red line 3 in another form". If it matches, it is Don't sign as written, so marking it reviewed would not produce a Clean result. **Decided 2026-10-31:** yes, it matches Red line 3: Don't sign as written ([ticket](.scratch/spec-gaps/issues/12-what-default-red-line-3-covers.md)).
+4. Does a Know this flag get a Counter-offer? CLAUDE.md asks for one per flagged clause; CONTEXT.md defines a Know this clause as acceptable. **Decided 2026-10-31:** yes, every flag gets one ([ticket](.scratch/spec-gaps/issues/04-know-this-flags-and-counter-offers.md)).
+5. Is an Ambiguous clause a Risk flag, and if so at what Severity? Does it block a Clean result? **Decided 2026-10-31:** a Risk flag at Negotiate that blocks a Clean result ([ticket](.scratch/spec-gaps/issues/15-ambiguous-clauses-and-the-clean-result.md)).
+6. What is Market standard based on for each contract type: vendor agreement, commercial lease, client agreement? The research provides nothing (ADR 0003). **Decided 2026-10-31:** a curated, dated India table, one source per row (ADR 0009) ([ticket](.scratch/spec-gaps/issues/19-market-standard-basis-and-contract-type.md)).
+7. How does Redline decide which of the three contract types a document is, and what happens when a document is none of them? **Decided 2026-10-31:** the model proposes, the Reviewer confirms; 'none of these' runs Red lines only (ADR 0009) ([ticket](.scratch/spec-gaps/issues/19-market-standard-basis-and-contract-type.md)).
+8. Does a fee escalator written into the contract match Default Red line 3, or only a change the Counterparty makes later? **Decided 2026-10-31:** a written-in escalator matches Red line 3 too ([ticket](.scratch/spec-gaps/issues/12-what-default-red-line-3-covers.md)).
 
 **Source sentences and withheld flags**
-9. What is the written matching rule for "the same sentence", given that PDF and DOCX extraction changes line breaks, hyphenation and whitespace (ADR 0001)?
-10. What is the rule for a risk that comes from several sentences together? Until it exists such risks cannot be flagged (ADR 0001). Default Red line 2 (auto-renewal in one sentence, an exit fee in another) and Default Red line 4 ("uncapped" means no cap sentence anywhere) depend on it.
-11. Where is the count of withheld flags shown: to the Reviewer, or only recorded?
-12. Can a review be a Clean result when flags were withheld? Under the current definition, a document whose only Don't sign as written flags failed the Source sentence check would get one.
-13. Do question-box answers show the Source sentences they rely on?
-14. Does the hedge-word ban apply to Counter-offer wording, where "may" is ordinary contract language?
+9. What is the written matching rule for "the same sentence", given that PDF and DOCX extraction changes line breaks, hyphenation and whitespace (ADR 0001)? **Decided 2026-10-31:** ADR 0010: boundary-aligned span, safe normalisations only, show stored text ([ticket](.scratch/spec-gaps/issues/10-the-same-sentence-matching-rule.md)).
+10. What is the rule for a risk that comes from several sentences together? Until it exists such risks cannot be flagged (ADR 0001). Default Red line 2 (auto-renewal in one sentence, an exit fee in another) and Default Red line 4 ("uncapped" means no cap sentence anywhere) depend on it. **Decided 2026-10-31:** a flag may cite several sentences, each checked; withheld if any fails ([ticket](.scratch/spec-gaps/issues/11-risks-that-come-from-several-sentences.md)).
+11. Where is the count of withheld flags shown: to the Reviewer, or only recorded? **Decided 2026-10-31:** shown to the Reviewer ([ticket](.scratch/spec-gaps/issues/16-withheld-flags-and-the-clean-result.md)).
+12. Can a review be a Clean result when flags were withheld? Under the current definition, a document whose only Don't sign as written flags failed the Source sentence check would get one. **Decided 2026-10-31:** no: any withheld flag blocks a Clean result ([ticket](.scratch/spec-gaps/issues/16-withheld-flags-and-the-clean-result.md)).
+13. Do question-box answers show the Source sentences they rely on? **Decided 2026-10-31:** yes, checked like flags; an answer whose sources fail is not shown ([ticket](.scratch/spec-gaps/issues/17-question-box-answers-and-source-sentences.md)).
+14. Does the hedge-word ban apply to Counter-offer wording, where "may" is ordinary contract language? **Decided 2026-10-31:** yes, the ban covers Counter-offer wording ([ticket](.scratch/spec-gaps/issues/03-truth-rule-and-hedge-words-in-counter-offer-wording.md)).
 
 **Inputs and Red lines**
-15. What happens to an uploaded referenced document: is it analysed on its own, together with the document that referenced it, and against the Red lines?
-16. How is a Red line the Reviewer writes in their own words matched against clauses?
-17. When the Reviewer edits their Red lines, are saved documents re-analysed, and does each saved review keep the list of Red lines it was checked against?
-18. How is a PDF with a text layer on some pages and only images on others handled? Accepting it would leave terms unread and allow a Clean result on them.
-19. Which languages are documents and output in? The strongest case in the research involved Owners with limited English (A1 F1).
-20. Which model runs the analysis? Not chosen.
-21. Which PDF and DOCX parsers? Each dependency needs the product owner's agreement.
+15. What happens to an uploaded referenced document: is it analysed on its own, together with the document that referenced it, and against the Red lines? **Decided 2026-10-31:** analysed together with the referencing document, as one review ([ticket](.scratch/spec-gaps/issues/14-what-happens-to-an-uploaded-referenced-document.md)).
+16. How is a Red line the Reviewer writes in their own words matched against clauses? **Decided 2026-10-31:** the model judges and names the Red line matched, with a checked Source sentence ([ticket](.scratch/spec-gaps/issues/20-red-lines-in-the-reviewers-own-words.md)).
+17. When the Reviewer edits their Red lines, are saved documents re-analysed, and does each saved review keep the list of Red lines it was checked against? **Decided 2026-10-31:** saved reviews keep their list; older ones are marked and offer a re-run ([ticket](.scratch/spec-gaps/issues/20-red-lines-in-the-reviewers-own-words.md)).
+18. How is a PDF with a text layer on some pages and only images on others handled? Accepting it would leave terms unread and allow a Clean result on them. **Decided 2026-10-31:** accepted: pages without real text are read by in-browser OCR (ADR 0008) ([ticket](.scratch/spec-gaps/issues/08-pdfs-with-text-on-some-pages-only.md)).
+19. Which languages are documents and output in? The strongest case in the research involved Owners with limited English (A1 F1). **Decided 2026-10-31:** English only; Indian contracts (ADR 0009) ([ticket](.scratch/spec-gaps/issues/21-document-and-output-languages.md)).
+20. Which model runs the analysis? Not chosen. **Decided 2026-10-31:** Sonnet 5.5 ([ticket](.scratch/spec-gaps/issues/05-which-model-runs-the-analysis.md)).
+21. Which PDF and DOCX parsers? Each dependency needs the product owner's agreement. **Decided 2026-10-31:** pdfjs-dist and JSZip with our own XML reader; OCR engine waits on a bake-off ([ticket](.scratch/spec-gaps/issues/07-which-pdf-and-docx-parsers.md)).
 
 ## 4. What good looks like
 **No test set of real vendor agreements, commercial leases or client agreements exists.** Every criterion below runs on fixture documents written for the purpose, with known sentences and seeded clauses (ADR 0001). CLAUDE.md adds that no capability counts as working until it has been run end to end against a real document.
@@ -208,7 +210,7 @@ ADR 0006 exists so that flags stay believable and a Clean result is credible. Bu
 | Not building | Why |
 |---|---|
 | Payments and billing | v1 exists to prove the analysis can be trusted, and billing does not make it more trustworthy (CLAUDE.md). |
-| OCR for scanned documents | A Source sentence pointing into misread text is worthless (CLAUDE.md, ADR 0001). |
+| ~~OCR for scanned documents~~ | Moved into scope by ADR 0008 (2026-10-31). |
 | Sharing a document between accounts | It does not make the analysis more trustworthy (CLAUDE.md). |
 | Missing protection flags | A missing protection has no Source sentence to show; showing gaps needs a separate decision (ADR 0001). |
 | Risks that come from several clauses together | No rule yet for showing more than one Source sentence (ADR 0001). |

@@ -2,7 +2,9 @@
 
 **What to build:** Settles where the withheld count is shown, whether a review with withheld flags can be a Clean result, and whether an Ambiguous clause is a Risk flag and blocks a Clean result.
 
-**Blocked by:** 07 (Ambiguous clauses shown with their readings); 11 (Clean result); OQ5 (PRD.md section 3, open question 5); OQ11 (PRD.md section 3, open question 11); OQ12 (PRD.md section 3, open question 12)
+**Blocked by:** 07 (Ambiguous clauses shown with their readings); 11 (Clean result)
+
+**Decisions (2026-10-31):** OQ5: Ambiguous clause is a Negotiate flag that blocks a Clean result. OQ11/OQ12: withheld count shown to the Reviewer; any withheld flag blocks a Clean result.
 
 **Needs approval for:** None
 

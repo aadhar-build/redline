@@ -2,7 +2,9 @@
 
 **What to build:** The file is parsed in the browser and only extracted text is sent; an image-only PDF is rejected with a reason.
 
-**Blocked by:** 01 (Pasted text gets a plain-English summary); OQ21 (PRD.md section 3, open question 21)
+**Blocked by:** 01 (Pasted text gets a plain-English summary); the OCR part only: OCR engine choice (../../spec-gaps/issues/24-which-ocr-engine.md)
+
+**Decisions (2026-10-31):** OQ21: pdfjs-dist and JSZip with our own document.xml reader. ADR 0008 replaces the image-only rejection: pages without a real text layer go to OCR; reject only when OCR also finds no text. Non-English documents are rejected (ADR 0009).
 
 **Needs approval for:** PDF parser, DOCX parser, browser test tooling.
 

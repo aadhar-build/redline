@@ -2,7 +2,9 @@
 
 **What to build:** Red lines the Reviewer adds in their own words are matched against clauses, and saved reviews behave as decided when Red lines change.
 
-**Blocked by:** 12 (Reviewer edits their Red lines); OQ16 (PRD.md section 3, open question 16); OQ17 (PRD.md section 3, open question 17)
+**Blocked by:** 12 (Reviewer edits their Red lines)
+
+**Decisions (2026-10-31):** OQ16/OQ17: ../../spec-gaps/issues/20-red-lines-in-the-reviewers-own-words.md.
 
 **Needs approval for:** None
 

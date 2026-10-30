@@ -2,7 +2,9 @@
 
 **What to build:** Sentences bringing in a web address, a Statement of Work or an Order Form are raised as Outside references with their checked Source sentence, and block a Clean result until the Reviewer marks them reviewed.
 
-**Blocked by:** 10 (Saved library); 11 (Clean result); C2 (CLAUDE.md contradiction 2, see .scratch/redline-v1/spec.md Further Notes)
+**Blocked by:** 10 (Saved library); 11 (Clean result)
+
+**Decisions (2026-10-31):** C2: the Outside reference flow is in scope.
 
 **Needs approval for:** None
 

@@ -2,7 +2,9 @@
 
 **What to build:** A review with no Don't sign as written or Negotiate flags says plainly it is a Clean result, lists every Red line checked, and shows Know this flags beneath.
 
-**Blocked by:** 06 (Default Red lines drive the analysis); C2 (CLAUDE.md contradiction 2, see .scratch/redline-v1/spec.md Further Notes)
+**Blocked by:** 06 (Default Red lines drive the analysis)
+
+**Decisions (2026-10-31):** C2: Clean result is in scope. Withheld flags and Ambiguous clauses block it (ADR 0006 plus spec-gaps 15 and 16).
 
 **Needs approval for:** None
 

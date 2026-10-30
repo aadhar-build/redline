@@ -2,7 +2,9 @@
 
 **What to build:** Know this flags get Counter-offers or deliberately do not, and Counter-offer wording is checked for hedge words or exempted.
 
-**Blocked by:** 08 (Counter-offers for Don't sign as written and Negotiate flags); OQ4 (PRD.md section 3, open question 4); OQ14 (PRD.md section 3, open question 14)
+**Blocked by:** 08 (Counter-offers for Don't sign as written and Negotiate flags)
+
+**Decisions (2026-10-31):** OQ4: every Know this flag gets a Counter-offer. OQ14: the hedge-word ban applies to Counter-offer wording.
 
 **Needs approval for:** None
 

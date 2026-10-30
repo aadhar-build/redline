@@ -1,12 +1,16 @@
 # Questions for the product owner
 
-Open items that block work. Each one is skipped, not guessed, until answered. The 21 open questions in PRD.md section 3 stay there; this file tracks the ones being closed for the unattended build.
+Open items that block work. Each one is skipped, not guessed, until answered. The full decision record is the wayfinder map at .scratch/spec-gaps/map.md.
 
-## Batch 1 (asked 2026-10-20, unanswered)
+## Batch 1 (asked 2026-10-20; all answered 2026-10-31)
 
-1. ~~**C1, ranking.**~~ Resolved 2026-10-20: group by level only. CLAUDE.md scope item 2 now says "grouped by severity (not ranked within a level, ADR 0003)". Ticket 03's ordering criterion is unblocked.
-2. **C2 and ticket 20, scope additions.** Which of these join the six capabilities in CLAUDE.md: Clean result (ADR 0006), Outside reference flow (ADR 0007), Copy all as text (ticket 20). Blocks tickets 11, 13, 16, 18, 20.
-3. **C4, Counter-offers.** How "state only what the document says" applies to new replacement wording. Recommended: it governs claims about the document; the proposed wording is exempt. Blocks ticket 08.
-4. **Q20, model.** Sonnet 5.5, Opus 5.5, or run both on fixtures and then choose. Not picked. Blocks ticket 09.
+1. ~~C1, ranking.~~ Group by level only (ADR 0003).
+2. ~~C2, scope additions.~~ Clean result, Outside references and Copy all all join the scope.
+3. ~~C4, Counter-offers.~~ The truth rule and the hedge-word ban both apply to the wording; it may only restate or tighten terms in the document.
+4. ~~Q20, model.~~ Sonnet 5.5.
 
-C3 (the words "user" and "owner" in CLAUDE.md versus Reviewer and Owner in CONTEXT.md) is a wording fix. It needs no decision, only an edit to CLAUDE.md once you approve changing that file.
+## Open (2026-10-31)
+
+1. **OCR engine.** Waits on the bake-off (.scratch/spec-gaps/issues/27). Needs 3–5 real Indian contract scans from you (stamp paper, phone photos to PDF), shared locally, never committed.
+2. **India Market standard table.** A draft will need your approval row by row (.scratch/spec-gaps/issues/28).
+3. **Statute citations.** How a cited statute is checked before it is shown (.scratch/spec-gaps/issues/29). No legal point is shown until this is settled.

@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Needs approval for:** Supabase client and local Supabase tooling; test runner shared with 01.
+**Needs approval for:** Approved 2026-10-31 (Vitest, Supabase JS and CLI, Playwright test, Vercel project access).
 
 **Status:** ready-for-agent
 
