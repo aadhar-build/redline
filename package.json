@@ -9,6 +9,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "vitest run",
+    "test:isolation": "vitest run tests/isolation"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "vitest": "^5.0.5"
   }
 }
