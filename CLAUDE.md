@@ -7,7 +7,7 @@
 ## Scope
 Build these capabilities and stop there:
 1. Plain-English summary of the uploaded document
-2. Clauses that could hurt the user, ranked by severity, each showing its exact source sentence
+2. Clauses that could hurt the user, grouped by severity (not ranked within a level, ADR 0003), each showing its exact source sentence
 3. A drafted counter-offer for each flagged clause
 4. A question box that answers only from the document
 5. An editable list of the user's own red lines that drives the analysis
