@@ -56,9 +56,9 @@ export const COPY = {
     "Redline isn't supposed to use the highlighted words, because they hedge or pass judgment the contract doesn't back up. Check those parts against the contract.",
   // Ticket 22, ruling C(b): numbers in Redline's own text that the contract doesn't contain.
   numberNote: "The highlighted numbers aren't in the contract. Check them against the contract before you rely on them.",
-  // Ticket 22, ruling C(a).
+  // Ticket 22, ruling C(a), worded by ticket 24 ruling 22: blanks, never "an unsigned form".
   templateNote:
-    "This looks like a blank form with gaps still to fill in. Redline describes what the form provides for, not what anyone has agreed to or signed.",
+    "This document has blanks that haven't been filled in. Redline calls it signed or dated only where the document itself says so.",
   // Ticket 22, ruling E.
   owner: {
     label: "Reviewed for:",
