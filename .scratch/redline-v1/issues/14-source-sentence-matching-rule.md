@@ -8,7 +8,7 @@
 
 **Needs approval for:** None
 
-**Status:** ready-for-agent
+**Status:** merged into `development` (2026-10-31); criterion 2 waits on a real-document run (ticket 09); heading-line loophole (QUESTIONS 11) with the Fable advisor
 
 - [x] Fixtures with line-break, hyphenation and whitespace changes behave as the rule states. (2026-10-31: fixtures/contracts/extracted-shapes-01.js, PDF- and DOCX-shaped strings, plus the twelve cases below, in tests/unit/source-check.test.js.)
 - [ ] Every displayed Source sentence is found under the rule in every run (PRD criterion 1). (Shown on fixtures through the Review seam with the fake adapter, tests/unit/risk-flags.test.js. Not ticked: no run on a real document or with the real model yet, ticket 09.)
