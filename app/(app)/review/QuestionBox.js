@@ -29,7 +29,7 @@ function MarkedText({ text, marked }) {
 }
 
 /** @param {{ documentText: string }} props The text the summary was made from, not the live paste box. */
-export default function QuestionBox({ documentText }) {
+export default function QuestionBox({ documentText, runToken = null }) {
   const [question, setQuestion] = useState("");
   const [state, setState] = useState({ kind: "empty" });
 
@@ -45,7 +45,7 @@ export default function QuestionBox({ documentText }) {
     try {
       res = await fetch("/api/ask", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", ...(runToken ? { "x-redline-run-token": runToken } : {}) },
         body: JSON.stringify({ text: documentText, question: q }),
       });
       data = await res.json();

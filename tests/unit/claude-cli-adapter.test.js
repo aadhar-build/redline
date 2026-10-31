@@ -42,14 +42,23 @@ describe("Claude Code CLI adapter", () => {
     expect(getModelAdapter({ VERCEL: "1", REDLINE_MODEL_ADAPTER: "cli" })).toBeNull();
   });
 
-  it("is selected locally only with REDLINE_MODEL_ADAPTER=cli", () => {
-    expect(getModelAdapter({ REDLINE_MODEL_ADAPTER: "cli" })?.name).toBe(CLI_ADAPTER_NAME);
+  it("is selected locally only with REDLINE_MODEL_ADAPTER=cli and REDLINE_LOOPBACK_ONLY=1", () => {
+    expect(getModelAdapter({ REDLINE_MODEL_ADAPTER: "cli", REDLINE_LOOPBACK_ONLY: "1" })?.name).toBe(CLI_ADAPTER_NAME);
+    expect(getModelAdapter({ REDLINE_MODEL_ADAPTER: "cli" })).toBeNull();
+    expect(getModelAdapter({ REDLINE_MODEL_ADAPTER: "cli", REDLINE_LOOPBACK_ONLY: "true" })).toBeNull();
     expect(getModelAdapter({})).toBeNull();
+  });
+
+  it("refuses to run without REDLINE_LOOPBACK_ONLY=1, and never starts the CLI", async () => {
+    const { spawn, calls } = fakeSpawn({ stdout: envelope({ result: "{}" }) });
+    const adapter = createCliAdapter({ env: { PATH: "/usr/bin" }, spawn });
+    await expect(adapter.complete("prompt")).rejects.toMatchObject({ code: "refused" });
+    expect(calls).toHaveLength(0);
   });
 
   it("sends the prompt on stdin with tools off, and returns only the model's reply", async () => {
     const { spawn, calls } = fakeSpawn({ stdout: envelope({ result: '{"summary": "x"}' }) });
-    const adapter = createCliAdapter({ env: { PATH: "/usr/bin", HOME: "/home/o" }, spawn });
+    const adapter = createCliAdapter({ env: { PATH: "/usr/bin", HOME: "/home/o", REDLINE_LOOPBACK_ONLY: "1" }, spawn });
     const reply = await adapter.complete("the contract prompt");
 
     expect(reply).toBe('{"summary": "x"}');
@@ -74,6 +83,7 @@ describe("Claude Code CLI adapter", () => {
       CLAUDE_CODE_OAUTH_TOKEN: "planted-oauth-token",
       SUPABASE_SECRET_KEY: "planted-supabase-key",
       REDLINE_MODEL_ADAPTER: "cli",
+      REDLINE_LOOPBACK_ONLY: "1",
     };
     await createCliAdapter({ env, spawn }).complete("p");
     expect(calls[0].options.env).toEqual({ PATH: "/usr/bin", HOME: "/home/o" });
@@ -85,6 +95,6 @@ describe("Claude Code CLI adapter", () => {
     ["the CLI output is not JSON", { stdout: "not json" }, "bad-envelope"],
   ])("throws when %s", async (_, answer, code) => {
     const { spawn } = fakeSpawn(answer);
-    await expect(createCliAdapter({ env: { PATH: "/usr/bin" }, spawn }).complete("p")).rejects.toMatchObject({ code });
+    await expect(createCliAdapter({ env: { PATH: "/usr/bin", REDLINE_LOOPBACK_ONLY: "1" }, spawn }).complete("p")).rejects.toMatchObject({ code });
   });
 });

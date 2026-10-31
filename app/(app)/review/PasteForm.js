@@ -11,7 +11,9 @@ import RiskFlags from "./RiskFlags";
 
 const MAX_LENGTH = 200_000;
 
-export default function PasteForm() {
+// runToken is set only when the local Claude Code CLI adapter runs this server; the routes require
+// it back (lib/review/local-guard.js).
+export default function PasteForm({ runToken = null }) {
   const [text, setText] = useState("");
   const [state, setState] = useState({ kind: "empty" });
 
@@ -26,7 +28,7 @@ export default function PasteForm() {
     try {
       res = await fetch("/api/review", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", ...(runToken ? { "x-redline-run-token": runToken } : {}) },
         body: JSON.stringify({ text }),
       });
       data = await res.json();
@@ -88,7 +90,7 @@ export default function PasteForm() {
                   <p className="marked-note" data-testid="marked-note">{COPY.markedNote}</p>
                 )}
                 <p className="summary-note">{COPY.summaryNote}</p>
-                <QuestionBox key={state.documentText} documentText={state.documentText} />
+                <QuestionBox key={state.documentText} documentText={state.documentText} runToken={runToken} />
               </>
             ) : (
               <p className="summary-empty">{busy ? COPY.submitBusy : COPY.emptyState}</p>

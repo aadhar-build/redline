@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CLI_ADAPTER_NAME } from "../../lib/review/adapters/index.js";
 import { FAKE_ADAPTER_NAME } from "../../lib/review/adapters/fake.js";
-import { guardModelRun, localRequestRefusal } from "../../lib/review/local-guard.js";
+import { guardModelRun, localRequestRefusal, runToken, runTokenFor } from "../../lib/review/local-guard.js";
 
 const ENV = { PORT: "3000" };
 const cli = { name: CLI_ADAPTER_NAME };
@@ -13,6 +13,7 @@ function request(headers) {
     origin: "http://localhost:3000",
     "sec-fetch-site": "same-origin",
     "content-type": "application/json",
+    "x-redline-run-token": runToken(),
   };
   const merged = { ...base, ...headers };
   for (const k of Object.keys(merged)) if (merged[k] === undefined) delete merged[k];
@@ -48,6 +49,22 @@ describe("Local-only guard for the Claude Code CLI adapter", () => {
     ["no content type", undefined],
   ])("refuses %s with 415", (_, type) => {
     expect(localRequestRefusal(request({ "content-type": type }), ENV)).toEqual({ status: 415, error: "unsupported-media-type" });
+  });
+
+  it.each([
+    ["a missing run token", undefined],
+    ["a wrong run token", "0".repeat(64)],
+    ["a run token of the wrong length", "abc"],
+  ])("refuses %s with 403", (_, token) => {
+    expect(localRequestRefusal(request({ "x-redline-run-token": token }), ENV)).toEqual({ status: 403, error: "forbidden" });
+  });
+
+  it("makes one random run token per server process and gives it to the page only for the CLI adapter", () => {
+    expect(runToken()).toMatch(/^[0-9a-f]{64}$/);
+    expect(runToken()).toBe(runToken());
+    expect(runTokenFor(cli)).toBe(runToken());
+    expect(runTokenFor({ name: FAKE_ADAPTER_NAME })).toBeNull();
+    expect(runTokenFor(null)).toBeNull();
   });
 
   it("uses the configured port", () => {
