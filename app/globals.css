@@ -520,6 +520,10 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 /* Red lines checked (ticket 06): the list a review was checked against, each with its basis. */
 .red-lines-checked { border-top: 1.5px solid var(--rule-strong); padding: 0 1rem 1rem; display: grid; gap: 0.5rem; }
 .red-lines-checked .group-title { padding-left: 0; padding-right: 0; }
+/* A Clean result: the statement, the Red lines checked, then any Know this flags beneath. */
+.clean-statement { border-bottom: 1px solid var(--rule); }
+.clean-statement .flags-message { color: var(--ink); padding-top: 0.25rem; }
+.clean-result .group { border-top: 1.5px solid var(--rule-strong); }
 .red-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
 .red-line { display: grid; gap: 0.2rem; padding: 0.5rem 0.75rem; border: 1px solid var(--rule); background: var(--sheet); }
 .red-line-name { font-weight: 600; }

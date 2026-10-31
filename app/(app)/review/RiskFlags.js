@@ -97,12 +97,21 @@ function FlagItem({ flag, kind, isOpen, onToggle }) {
 }
 
 // The Red lines this review was checked against, each with its basis, as the server listed them.
-function RedLinesChecked({ redLines }) {
-  if (redLines.length === 0) return null;
+// lede replaces the usual line under the title; empty is shown in place of an empty list.
+function RedLinesChecked({ redLines, lede = COPY.redLines.lede, empty = null }) {
+  if (redLines.length === 0) {
+    if (!empty) return null;
+    return (
+      <div className="red-lines-checked" data-testid="red-lines-checked">
+        <h3 className="group-title">{COPY.redLines.title}</h3>
+        <p className="basis" data-testid="no-red-lines">{empty}</p>
+      </div>
+    );
+  }
   return (
     <div className="red-lines-checked" data-testid="red-lines-checked">
       <h3 className="group-title">{COPY.redLines.title}</h3>
-      <p className="basis">{COPY.redLines.lede}</p>
+      <p className="basis">{lede}</p>
       <ol className="red-lines">
         {redLines.map((r) => (
           <li key={r.id} className="red-line" data-testid="red-line-checked" data-red-line={r.id}>
@@ -121,6 +130,52 @@ function RedLinesChecked({ redLines }) {
   );
 }
 
+// One Severity group, in document order.
+function Group({ severity, kind, flags, closed, toggle, lede = null, empty = COPY.flags.emptyGroup }) {
+  const items = flags.filter((f) => f.severity === severity);
+  return (
+    <div className={`group sev-${kind}`} data-testid={`group-${severity}`}>
+      <h3 className="group-title">
+        <Glyph kind={kind} />
+        {SEVERITY_LABELS[kind]} <span className="count">{items.length}</span>
+      </h3>
+      {lede && items.length > 0 ? <p className="group-empty">{lede}</p> : null}
+      {items.length > 0 ? (
+        <ul className="flags">
+          {items.map((f) => (
+            <FlagItem key={f.number} flag={f} kind={kind} isOpen={!closed.has(f.number)} onToggle={() => toggle(f.number)} />
+          ))}
+        </ul>
+      ) : (
+        <p className="group-empty">{empty}</p>
+      )}
+    </div>
+  );
+}
+
+// A Clean result, as the server decided it: the plain statement, every Red line checked, then any Know
+// this flags beneath (ADR 0006). The browser never works out whether a review is a Clean result.
+function CleanResult({ review, flags, closed, toggle }) {
+  return (
+    <div className="clean-result" data-testid="clean-result">
+      <div className="clean-statement">
+        <h3 className="group-title">{COPY.clean.title}</h3>
+        <p className="flags-message" data-testid="clean-statement">{COPY.clean.statement}</p>
+      </div>
+      <RedLinesChecked redLines={review.redLinesChecked ?? []} lede={COPY.clean.checkedLede} empty={COPY.clean.noRedLines} />
+      <Group
+        severity="know-this"
+        kind="know"
+        flags={flags}
+        closed={closed}
+        toggle={toggle}
+        lede={COPY.clean.knowThisLede}
+        empty={COPY.clean.noKnowThis}
+      />
+    </div>
+  );
+}
+
 // above: shown under the pane heading, before the flags (the Owner line, ticket 22).
 export default function RiskFlags({ review, above = null }) {
   const flags = review.riskFlags ?? [];
@@ -134,6 +189,8 @@ export default function RiskFlags({ review, above = null }) {
     });
 
   const unreadable = review.riskFlagsStatus !== "checked";
+  // Strictly true: anything else, including a missing value, is not a Clean result.
+  const clean = !unreadable && review.cleanResult === true;
   const marks = flags.flatMap((f) => [f.title, f.says, f.judgment].flatMap((p) => p?.marked ?? []));
   const anyMarked = marks.some((m) => !isNumberMark(m));
   const anyNumber = marks.some(isNumberMark);
@@ -171,41 +228,24 @@ export default function RiskFlags({ review, above = null }) {
 
           <Withheld count={review.withheldCount ?? 0} withheld={review.withheld ?? []} />
 
-          {flags.length === 0 && review.withheldCount === 0 ? (
+          {!clean && review.cleanResultHeld === true ? (
+            <p className="flags-message" data-testid="clean-result-held">{COPY.clean.held}</p>
+          ) : null}
+
+          {clean ? (
+            <CleanResult review={review} flags={flags} closed={closed} toggle={toggle} />
+          ) : flags.length === 0 && review.withheldCount === 0 ? (
             <p className="flags-message" data-testid="no-flags">{COPY.flags.none}</p>
           ) : (
-            GROUPS.map(({ severity, kind }) => {
-              const items = flags.filter((f) => f.severity === severity);
-              return (
-                <div className={`group sev-${kind}`} key={severity} data-testid={`group-${severity}`}>
-                  <h3 className="group-title">
-                    <Glyph kind={kind} />
-                    {SEVERITY_LABELS[kind]} <span className="count">{items.length}</span>
-                  </h3>
-                  {items.length > 0 ? (
-                    <ul className="flags">
-                      {items.map((f) => (
-                        <FlagItem
-                          key={f.number}
-                          flag={f}
-                          kind={kind}
-                          isOpen={!closed.has(f.number)}
-                          onToggle={() => toggle(f.number)}
-                        />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="group-empty">{COPY.flags.emptyGroup}</p>
-                  )}
-                </div>
-              );
-            })
+            GROUPS.map(({ severity, kind }) => (
+              <Group key={severity} severity={severity} kind={kind} flags={flags} closed={closed} toggle={toggle} />
+            ))
           )}
 
           {anyMarked && <p className="marked-note flags-note" data-testid="flags-marked-note">{COPY.markedNote}</p>}
           {anyNumber && <p className="marked-note flags-note" data-testid="flags-number-note">{COPY.numberNote}</p>}
 
-          <RedLinesChecked redLines={review.redLinesChecked ?? []} />
+          {clean ? null : <RedLinesChecked redLines={review.redLinesChecked ?? []} />}
         </>
       )}
     </section>

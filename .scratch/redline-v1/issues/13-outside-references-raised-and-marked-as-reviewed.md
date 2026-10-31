@@ -14,3 +14,11 @@
 - [ ] Marked as reviewed is saved and shown as the Reviewer's statement, not something Redline checked.
 - [ ] A network check shows no request to any referenced address.
 - [ ] All copy the Reviewer reads in this ticket has been run through the humanizer skill before commit (CLAUDE.md).
+
+## Comments
+
+- From ticket 11 (2026-10-31, settled by the Fable advisor): the Clean result is held back by `CLEAN_RESULT_READY = false` in lib/review/clean-result-gate.js until this ticket and ticket 07 both land; remove the gate together with 07. This ticket must:
+  - populate `outsideReferences` in Review's output (cleanResultOf counts an entry as resolved only when `resolved === true`; anything else blocks);
+  - persist the list in `toStoredReview` and read it back in `reopenReview`, removing the hardcoded `outsideReferences: []` there;
+  - persist "marked as reviewed" as the Reviewer's statement, not something Redline checked.
+- Lift the gate only when a no-flags fixture with a Statement of Work, web address or "as amended from time to time" reference is not a Clean result until every reference is marked reviewed, and (with ticket 07) a no-flags fixture with one Ambiguous clause is not a Clean result.
