@@ -1,0 +1,17 @@
+CLIENT SERVICES AGREEMENT
+
+This Agreement is made on November 4, 2026 between Northwind Retail Group, Inc., a Texas corporation ("Client"), and Pixel and Pine Studio LLC, a design studio in Austin, Texas ("Agency"). Both businesses and every name in this document are made up for testing Redline.
+
+1. Services. Agency will design and update Client's product catalogue each month.
+
+2. Fees. Client will pay Agency $6,000 per month within forty-five days of each invoice.
+
+3. Changes. Client can change the scope of the services, the fees or any other term of this Agreement by sending Agency written notice, and the change takes effect fifteen days after the notice.
+
+4. Term. This Agreement runs for twenty-four months from December 1, 2026 and renews automatically for further twelve-month terms unless Agency gives written notice at least ninety days before the end of a term. If Agency ends this Agreement before the end of a term, Agency will pay Client a termination fee of $10,000.
+
+5. Personal guarantee. Dana Whitfield, the sole member of Agency, personally guarantees the performance of every obligation of Agency under this Agreement.
+
+6. Indemnity. Agency will indemnify Client against all losses, damages and costs arising from the services or from any claim connected with them. Agency's obligation under this clause includes lost profits and indirect losses.
+
+7. Governing law. This Agreement is governed by the laws of the State of Texas.

@@ -3,6 +3,19 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { normalise } from "../../lib/review/normalise.js";
 import { _normaliseWithMap, checkSource, checkSources } from "../../lib/review/source-check.js";
+import {
+  DOCX_SHAPED_01,
+  DOCX_SHAPED_01_FOUND,
+  DOCX_SHAPED_01_WITHHELD,
+  PDF_SHAPED_01,
+  PDF_SHAPED_01_FOUND,
+  PDF_SHAPED_01_WITHHELD,
+} from "../../fixtures/contracts/extracted-shapes-01.js";
+import {
+  PASTED_LEASE_01,
+  PASTED_LEASE_01_ALTERED,
+  PASTED_LEASE_01_FOUND,
+} from "../../fixtures/contracts/pasted-lease-01.js";
 
 const root = path.resolve(__dirname, "../..");
 const vendor = fs.readFileSync(path.join(root, "fixtures/contracts/vendor-agreement-01.txt"), "utf8");
@@ -132,5 +145,234 @@ describe("checkSources", () => {
     expect(checkSources(vendor, [good, "An invented sentence."]).found).toBe(false);
     expect(checkSources(vendor, []).found).toBe(false);
     expect(checkSources(vendor, undefined).found).toBe(false);
+  });
+});
+
+describe("Source sentence check: sentence boundaries (ADR 0010 addendum, ticket 14)", () => {
+  const notice = "Either party may terminate this Agreement on 30 days' notice.";
+  const cases = [
+    ["1, a single line break after a numbered heading", `12.3 Termination\n${notice}`, notice, true],
+    ["2, a single line break after a capitals heading", `TERMINATION AND RENEWAL\n${notice}`, notice, true],
+    [
+      "3, a wrapped line that ends mid-sentence",
+      "The Consultant shall not, without the prior written consent of the\nCompany, engage any subcontractor.",
+      "Company, engage any subcontractor.",
+      false,
+    ],
+    [
+      "4, a sub-item cut from its lead-in",
+      "The Consultant shall:\n(a) deliver the reports; and\n(b) keep the Company's information confidential.",
+      "(b) keep the Company's information confidential.",
+      false,
+    ],
+    [
+      "5, a qualifier cut off by a line break",
+      "Payments are due within 30 days unless the Company\ndisputes the invoice in writing.",
+      "disputes the invoice in writing.",
+      false,
+    ],
+    [
+      "6, a title-case line passes as a heading (accepted cost)",
+      "Sharma Infrastructure Private\nLimited shall pay the fee.",
+      "Limited shall pay the fee.",
+      true,
+    ],
+    [
+      "7, Pvt. and Ltd.",
+      "ABC Pvt. Ltd. shall indemnify the Company against all claims.",
+      "shall indemnify the Company against all claims.",
+      false,
+    ],
+    ["8, etc.", "The Consultant shall deliver reports, invoices, etc. within 7 days.", "within 7 days.", false],
+    [
+      "9, an initial before a number",
+      "This Agreement is governed by S. 27 of the Indian Contract Act, 1872.",
+      "27 of the Indian Contract Act, 1872.",
+      false,
+    ],
+    [
+      "10, after the second of two initials",
+      "Notices shall be sent to A. K. Sharma at the registered office.",
+      "Sharma at the registered office.",
+      false,
+    ],
+    [
+      "10, after the first of two initials",
+      "Notices shall be sent to A. K. Sharma at the registered office.",
+      "K. Sharma at the registered office.",
+      false,
+    ],
+    [
+      "11, a capital letter that ends a sentence",
+      "The fee is set out in Schedule A. The Company shall pay within 30 days.",
+      "The Company shall pay within 30 days.",
+      true,
+    ],
+    ["12, after a decimal point", "The Consultant shall be paid Rs. 1,50,000.00 on signing.", "00 on signing.", false],
+    [
+      "12, the whole sentence",
+      "The Consultant shall be paid Rs. 1,50,000.00 on signing.",
+      "The Consultant shall be paid Rs. 1,50,000.00 on signing.",
+      true,
+    ],
+  ];
+
+  for (const [name, doc, quote, expected] of cases) {
+    it(`case ${name}: ${expected ? "found" : "not found"}`, () => {
+      expect(found(doc, quote)).toBe(expected);
+    });
+  }
+
+  describe("heading lines must start on a boundary and be followed by a capital (QUESTIONS 11)", () => {
+    const headingCases = [
+      [
+        "1, a title-case line inside a wrapped sentence cannot end a quote",
+        "The Supplier shall be liable to\nKestrel Analytics Private\nLimited unless the claim is fraudulent.",
+        "The Supplier shall be liable to Kestrel Analytics Private",
+        false,
+      ],
+      [
+        "1, the full sentence",
+        "The Supplier shall be liable to\nKestrel Analytics Private\nLimited unless the claim is fraudulent.",
+        "The Supplier shall be liable to Kestrel Analytics Private Limited unless the claim is fraudulent.",
+        true,
+      ],
+      [
+        "2, a page footer inside a sentence",
+        "The Supplier shall notify the Customer within\nPage 2 of 6\nthree months before the claim.",
+        "three months before the claim.",
+        false,
+      ],
+      [
+        "3, a page footer between sentences",
+        "The Supplier shall indemnify the Customer.\nPage 2 of 6\nThe Customer shall pay within 30 days.",
+        "The Customer shall pay within 30 days.",
+        true,
+      ],
+      [
+        "4, a heading after a number line",
+        "Services were performed.\n\n12.\nLimitation of Liability\nThe Supplier's liability is capped at the fees paid.",
+        "The Supplier's liability is capped at the fees paid.",
+        true,
+      ],
+      [
+        "5, a lowercase line after a heading",
+        "Fees are payable monthly.\n\nTermination\nfor convenience requires 30 days' notice.",
+        "for convenience requires 30 days' notice.",
+        false,
+      ],
+      [
+        "5, the heading and the line together",
+        "Fees are payable monthly.\n\nTermination\nfor convenience requires 30 days' notice.",
+        "Termination for convenience requires 30 days' notice.",
+        true,
+      ],
+      [
+        "6, a title-case line after a blank line (accepted cost)",
+        "Fees are payable monthly.\n\nKestrel Analytics Private\nLimited may terminate without notice.",
+        "Limited may terminate without notice.",
+        true,
+      ],
+    ];
+    for (const [name, doc, quote, expected] of headingCases) {
+      it(`case ${name}: ${expected ? "found" : "not found"}`, () => {
+        expect(found(doc, quote)).toBe(expected);
+      });
+    }
+  });
+
+  it("does not read an ordinary lowercase word as a numbering token in a heading", () => {
+    const doc = "Notice To Mumbai Civil Court did\nnot reach the Company.";
+    expect(found(doc, "not reach the Company.")).toBe(false);
+  });
+
+  it("accepts bracketed lowercase numbering in a heading line", () => {
+    const doc = "(iv) Confidential Information\nThe Consultant shall keep it secret.";
+    expect(found(doc, "The Consultant shall keep it secret.")).toBe(true);
+  });
+
+  it("does not read a line with a colon or a semicolon as a heading", () => {
+    expect(found("Fees:\nThe Company shall pay.", "The Company shall pay.")).toBe(false);
+    expect(found("Fees; Taxes\nThe Company shall pay.", "The Company shall pay.")).toBe(false);
+  });
+
+  it("does not read a line of more than eight words as a heading", () => {
+    const doc = "One Two Three Four Five Six Seven Eight Nine\nThe Company shall pay.";
+    expect(found(doc, "The Company shall pay.")).toBe(false);
+  });
+
+  it("does not treat a terminator as a boundary when a lowercase letter follows", () => {
+    expect(found("The fee is Rs. 500 p.m. payable monthly. End.", "payable monthly.")).toBe(false);
+    expect(found("Is it due? yes, on the first day. End.", "yes, on the first day.")).toBe(false);
+  });
+
+  it("treats the new abbreviations as never ending a sentence", () => {
+    for (const abbreviation of ["Inc.", "LLP.", "Govt.", "Dept.", "Rd.", "Ref.", "Encl.", "Annex.", "Exh."]) {
+      expect(found(`The notice goes to ${abbreviation} The Company shall pay.`, "The Company shall pay.")).toBe(false);
+    }
+  });
+
+  it("does not count format characters alone as the whitespace after a full stop", () => {
+    expect(found("The fee is due.​The Company shall pay.", "The Company shall pay.")).toBe(false);
+    expect(found("The fee is due.​ The Company shall pay.", "The Company shall pay.")).toBe(true);
+  });
+
+  it("treats a Windows line ending like any other line break", () => {
+    expect(found(`12.3 Termination\r\n${notice}`, notice)).toBe(true);
+    expect(found("Customer will\r\nnot pay any fee.", "not pay any fee.")).toBe(false);
+  });
+});
+
+describe("Source sentence check: extraction-shaped fixtures (research 09, section 7)", () => {
+  const sets = [
+    ["PDF", PDF_SHAPED_01, PDF_SHAPED_01_FOUND, PDF_SHAPED_01_WITHHELD],
+    ["DOCX", DOCX_SHAPED_01, DOCX_SHAPED_01_FOUND, DOCX_SHAPED_01_WITHHELD],
+    ["pasted", PASTED_LEASE_01, Object.fromEntries(PASTED_LEASE_01_FOUND.map((q) => [q, q])), PASTED_LEASE_01_ALTERED],
+  ];
+
+  for (const [kind, doc, foundSet, withheldSet] of sets) {
+    for (const [name, quote] of Object.entries(foundSet)) {
+      it(`${kind}: finds ${name}, and returns the stored span`, () => {
+        const result = checkSource(doc, quote);
+        expect(result.found).toBe(true);
+        expect(doc.normalize("NFC").slice(result.start, result.end)).toBe(result.text);
+        expect(normalise(result.text)).toBe(normalise(quote));
+      });
+    }
+    for (const [name, quote] of Object.entries(withheldSet)) {
+      it(`${kind}: does not find ${name}`, () => {
+        expect(checkSource(doc, quote).found).toBe(false);
+      });
+    }
+  }
+});
+
+describe("boundary walk on hostile input", () => {
+  it("stays fast and fails closed on a very long run of heading lines", () => {
+    const headings = Array.from({ length: 50000 }, (_, i) => `Clause ${i + 1}`).join("\n");
+    const text = `Intro text here.\n${headings}\nThe Supplier shall pay the fee.`;
+    const started = Date.now();
+    const result = checkSource(text, "The Supplier shall pay the fee.");
+    expect(Date.now() - started).toBeLessThan(2000);
+    // The heading chain is longer than the walk follows, so the quote is withheld.
+    expect(result.found).toBe(false);
+  });
+
+  it("still accepts a short heading chain", () => {
+    const text = "Intro text here.\n\n12.\nLimitation of Liability\nThe Supplier's liability is capped at the fees paid.";
+    expect(checkSource(text, "The Supplier's liability is capped at the fees paid.").found).toBe(true);
+  });
+
+  it("checkSources withholds instead of throwing", () => {
+    expect(checkSources({ toString() { throw new Error("boom"); } }, ["x."]).found).toBe(false);
+  });
+});
+
+describe("astral format characters in a gap", () => {
+  it("treats U+E0001 between sentences like any other format character", () => {
+    const tag = String.fromCodePoint(0xe0001);
+    const text = `The Supplier shall pay the fee. ${tag} The Customer shall sign.`;
+    expect(checkSource(text, "The Customer shall sign.").found).toBe(true);
+    expect(checkSource(text, "The Supplier shall pay the fee.").found).toBe(true);
   });
 });

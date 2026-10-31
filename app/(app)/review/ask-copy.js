@@ -30,5 +30,6 @@ export const ASK_COPY = {
     busy: "Redline is still working on another request. Ask again when it's done.",
     failed: "Redline couldn't answer that. Try again.",
     network: "Couldn't reach Redline. Check your connection and try again.",
+    "not-found": "Redline can't find this contract in your library. Sign in again and reopen it.",
   },
 };

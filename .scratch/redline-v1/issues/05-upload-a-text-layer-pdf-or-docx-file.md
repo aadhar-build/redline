@@ -8,10 +8,10 @@
 
 **Needs approval for:** PDF parser, DOCX parser, browser test tooling.
 
-**Status:** ready-for-agent
+**Status:** merged into `development` (2026-10-31), except OCR (ADR 0008), which plugs into the `needs-ocr` extraction result once the engine is wired; no real Word-authored DOCX tested yet
 
-- [ ] Extraction seam test in the browser extracts text from a text-layer PDF and a DOCX file.
-- [ ] An image-only PDF is rejected with its reason; no request is sent, no analysis runs, nothing is stored (PRD criterion 13).
-- [ ] A network check while uploading a PDF and a DOCX shows only extracted text in requests, no file bytes (PRD criterion 14).
-- [ ] Fixtures include no PDFs with text on only some pages; those are ticket 19.
-- [ ] All copy the Reviewer reads in this ticket has been run through the humanizer skill before commit (CLAUDE.md).
+- [x] Extraction seam test in the browser extracts text from a text-layer PDF and a DOCX file. Evidence: tests/e2e/upload.spec.mjs ("a text-layer PDF/DOCX is read in the browser...", plus DOCX numbering, accepted tracked changes, w:br, text boxes, style-based numbering). Also run locally in the built app (Chromium, production build) on all 8 real public text-layer PDFs in ~/redline-samples/text (not committed): all 8 read, no page flagged as scanned, no request sent on upload. No Word-authored real DOCX was available; DOCX is verified on built fixtures and one macOS textutil-made DOCX only. No real document has been taken through to a summary yet: that needs the real model adapter (ticket 09).
+- [x] An image-only PDF is rejected with its reason; no request is sent, no analysis runs, nothing is stored (PRD criterion 13). Under ADR 0008 this is a stop, not a final rejection, until OCR lands: the message names the scanned pages. Evidence: upload.spec.mjs image-only and hidden-OCR-layer tests assert the message and zero non-GET requests; nothing is stored because no storage exists yet (ticket 10). Real scans S01-S05 (incl. three with hidden OCR layers, one 304 pages) were all stopped with their pages named.
+- [x] A network check while uploading a PDF and a DOCX shows only extracted text in requests, no file bytes (PRD criterion 14). Evidence: upload.spec.mjs records every request: no other origin, the only request with a body is POST /api/review with JSON {text} equal to the extracted text, and no %PDF-, PK header, raw or base64 file bytes.
+- [x] Fixtures include no PDFs with text on only some pages; those are ticket 19. Page detection is per page, so ticket 19 only needs fixtures and the OCR step.
+- [x] All copy the Reviewer reads in this ticket has been run through the humanizer skill before commit (CLAUDE.md). The strings are in app/(app)/review/copy.js.

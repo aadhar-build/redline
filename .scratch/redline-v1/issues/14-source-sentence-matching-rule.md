@@ -8,11 +8,11 @@
 
 **Needs approval for:** None
 
-**Status:** ready-for-agent
+**Status:** merged into `development` (2026-10-31); criterion 2 waits on a real-document run (ticket 09); heading-line loophole closed (QUESTIONS 11)
 
-- [ ] Fixtures with line-break, hyphenation and whitespace changes behave as the rule states.
-- [ ] Every displayed Source sentence is found under the rule in every run (PRD criterion 1).
-- [ ] Altered and invented Source sentences are still withheld (PRD criterion 2).
+- [x] Fixtures with line-break, hyphenation and whitespace changes behave as the rule states. (2026-10-31: fixtures/contracts/extracted-shapes-01.js, PDF- and DOCX-shaped strings, plus the twelve cases below, in tests/unit/source-check.test.js.)
+- [ ] Every displayed Source sentence is found under the rule in every run (PRD criterion 1). (Shown on fixtures through the Review seam with the fake adapter, tests/unit/risk-flags.test.js. Not ticked: no run on a real document or with the real model yet, ticket 09.)
+- [x] Altered and invented Source sentences are still withheld (PRD criterion 2). (2026-10-31: every altered and invented quote in the PDF, DOCX and pasted fixtures is withheld and counted through the Review seam.)
 
 ## Comments
 

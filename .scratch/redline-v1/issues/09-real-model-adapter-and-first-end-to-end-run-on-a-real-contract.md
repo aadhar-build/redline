@@ -8,7 +8,7 @@
 
 **Needs approval for:** None (uses the existing CLI, adds no package)
 
-**Status:** built on feature/09-cli-adapter; real runs recorded below; two trust problems open (QUESTIONS.md 11, 12)
+**Status:** built on feature/09-cli-adapter; real runs recorded below; two trust problems open (QUESTIONS.md 13, 14)
 
 - [x] Existing Review seam tests keep working when only the adapter is swapped (spec story 69).
 - [x] The adapter is unavailable outside the local machine, and ticket 01's deployed-build check still shows no path to Claude (PRD criterion 16).
@@ -44,7 +44,7 @@
   - The prompt also never says which party is the Owner. The model inferred it: licensee (T02), bounden (T03), allottee (T05), consultant (T06) and lessee (T07).
 - Criterion 6: what ran end to end on real documents through this adapter:
   - **The summary** ran end to end. It had one unsupported claim, listed below.
-  - **Risk flags** ran end to end. The Source sentence check is not yet trustworthy where pages join (QUESTIONS.md 11), and it withholds many correct quotes (QUESTIONS.md 12).
+  - **Risk flags** ran end to end. The Source sentence check is not yet trustworthy where pages join (QUESTIONS.md 13), and it withholds many correct quotes (QUESTIONS.md 14).
   - **The question box** has not been run through this adapter.
 - 2026-10-31, real runs. The text-layer PDFs come from the owner's samples folder.
   - Text was extracted as feature/05-upload's lib/extraction/pdf.js does: pdfjs-dist 6.4.299 with the same page-text join and needs-OCR check, pages joined with a blank line. No page needed OCR.
@@ -66,7 +66,7 @@
     - 4 were broken by a page header or footer: 3 running headers before the clause (T02) and 1 "Page 16 of 37" inside the sentence (T05).
     - 3 are sub-items cut from their ";" or ":" lead-in. ADR 0010 withholds these on purpose.
     - 3 others have no sentence boundary in the source text before them: a recital after a line ending ":", an address block, and a previous sentence with no full stop.
-    - Ticket 14's boundary rule (feature/14-matching-rule) shows exactly the same flags on these replies. It rescues none.
+    - Ticket 14's boundary rule shows exactly the same flags on these replies and rescues none. This was checked on feature/14-matching-rule, and again after merging development into this branch.
   - Shown fragments: 3 Source sentences are cut mid-sentence at a page join, because the blank line that joins pages counts as a span end. T05: "...the Allottee(s) fail(s) to" and "...breach of any of the aforesaid". T01: "...or the Definitive Documents or". Both development's check and ticket 14's accept them.
   - Claims the document does not support, from reading each summary and each shown flag against the text. T01 was checked for counts and fragments only and not read line by line.
     - T02 summary: "The document is signed by both parties and two witnesses." It is a blank template with empty signature blocks.

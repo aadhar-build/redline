@@ -1,0 +1,19 @@
+MERCHANT PROCESSING AGREEMENT
+
+This Agreement is made on November 2, 2026 between Harbor Point Payments, Inc., a Delaware corporation ("Processor"), and Bluebird Bakery LLC, a bakery in Columbus, Ohio ("Merchant"). Both businesses and every name in this document are made up for testing Redline. The term and the exit fee follow the standard agreement the FTC described in its 2022 case against First American Payment Systems.
+
+1. Services. Processor will process card payments for Merchant's shop and supply one card terminal.
+
+2. Term. This Agreement runs for an initial term of three years from the date Merchant signs it. At the end of each term, this Agreement renews automatically for a further one-year term unless Merchant gives written notice at least ninety days before the renewal date.
+
+3. Early termination. If Merchant ends this Agreement before the end of a term for any reason, Merchant will pay Processor an early termination fee of $495.
+
+4. Fees. Merchant will pay Processor 2.9% of each card sale plus 30 cents per transaction. Processor can change any fee, or add a new fee, at any time by sending Merchant an email.
+
+5. Personal guarantee. Henry Alvarez, who owns Merchant, personally guarantees every obligation of Merchant under this Agreement.
+
+6. Indemnity. Merchant will indemnify Processor against all losses, chargebacks and costs arising from Merchant's card transactions. This indemnity covers direct and indirect losses and continues after this Agreement ends.
+
+7. Late payment. Merchant will pay a late fee of $25 for any amount not paid within ten days of its due date.
+
+8. Governing law. This Agreement is governed by the laws of the State of Ohio.
