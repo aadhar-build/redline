@@ -8,7 +8,7 @@
 
 **Needs approval for:** a schema validator for model output, only if one is wanted.
 
-**Status:** ready-for-agent
+**Status:** merged into `development` (2026-10-31)
 
 - [x] With the fake adapter returning altered or invented Source sentences, every one is withheld, none shown, and the withheld count equals the number withheld (PRD criterion 2).
 - [x] Every displayed Source sentence is found in the document text; the interim check accepts identical text only and errs toward withholding; the tolerant rule comes in ticket 14, so criterion 1 is only partly covered here (PRD criterion 1).
