@@ -1,4 +1,5 @@
 import { getModelAdapter } from "../../../lib/review/adapters/index.js";
+import { DEFAULT_RED_LINES } from "../../../lib/review/red-lines.js";
 import { review, ReviewInputError } from "../../../lib/review/review.js";
 
 // Server-side only. The browser posts extracted text here; it never sees or calls the model adapter.
@@ -19,7 +20,8 @@ export async function POST(request) {
   }
 
   try {
-    const result = await review({ documentText: body?.text, redLines: [], adapter });
+    // Until the Reviewer can edit and save Red lines (ticket 12), every review runs against the defaults.
+    const result = await review({ documentText: body?.text, redLines: DEFAULT_RED_LINES, adapter });
     return json({ review: result }, 200);
   } catch (err) {
     if (err instanceof ReviewInputError) return json({ error: err.code }, 400);

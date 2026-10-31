@@ -1,0 +1,17 @@
+CARD MACHINE SERVICE AGREEMENT
+
+This Agreement is made on 2 November 2026 between Sanchay Payment Solutions Private Limited, a company registered in Mumbai ("Provider"), and Meera Sweets LLP, a limited liability partnership with a sweet shop in Nashik ("Merchant"). Both businesses and every name in this document are made up for testing Redline. The term and the exit fee follow the standard agreement the FTC described in its 2022 case against First American Payment Systems, with the $495 fee given in rupees.
+
+1. Services. Provider will supply one card machine and settle card payments into Merchant's bank account.
+
+2. Term. The minimum term of this Agreement is three years from the date the card machine is installed. After the minimum term, this Agreement renews automatically for successive periods of one year unless Merchant gives written notice at least sixty days before a renewal date.
+
+3. Exit fee. If Merchant ends this Agreement before the end of the minimum term or of any renewal period, Merchant will pay Provider an exit fee of Rs. 42,000.
+
+4. Charges. Merchant will pay a fee of 1.8% of each card sale and a machine rental of Rs. 450 a month, both as amended from time to time by Provider.
+
+5. Guarantee. Meera Kulkarni, a partner of Merchant, personally guarantees the payment of every amount Merchant owes under this Agreement.
+
+6. Indemnity. Merchant will indemnify Provider against all claims, penalties and losses arising from any card transaction at Merchant's shop. Merchant's liability under this clause is not limited to the charges paid under this Agreement.
+
+7. Governing law. This Agreement is governed by the laws of India, and the courts at Mumbai have exclusive jurisdiction.
