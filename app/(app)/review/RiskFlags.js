@@ -41,6 +41,17 @@ function Withheld({ count, withheld }) {
   );
 }
 
+// Ticket 24 ruling 23(c): judgments left out because they claimed what is usual. Hidden when none.
+function JudgmentsDropped({ count }) {
+  if (!Number.isInteger(count) || count <= 0) return null;
+  return (
+    <p className="withheld is-shown" data-testid="judgments-dropped">
+      <Glyph kind="withheld" />
+      <span>{COPY.flags.judgmentsDropped(count)}</span>
+    </p>
+  );
+}
+
 function FlagItem({ flag, kind, isOpen, onToggle }) {
   const panelId = `flag-panel-${flag.number}`;
   const total = flag.sourceSentences.length;
@@ -266,6 +277,7 @@ export default function RiskFlags({ review, above = null, documentId = null, onR
           <p className="severity-note" data-testid="severity-note">{COPY.flags.severityNote}</p>
 
           <Withheld count={review.withheldCount ?? 0} withheld={review.withheld ?? []} />
+          <JudgmentsDropped count={review.judgmentsDropped ?? 0} />
 
           {clean ? (
             <CleanResult review={review} flags={flags} closed={closed} toggle={toggle} outside={outside} />

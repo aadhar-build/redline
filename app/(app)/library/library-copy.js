@@ -52,6 +52,17 @@ export const LIBRARY_COPY = {
       "save-failed": "Redline reviewed the contract again but couldn't save the new review. Try again.",
       "not-found": "Redline can't find that contract in your library any more.",
     },
+    // Ticket 24 ruling 24: earlier reviews of the same document, read-only.
+    history: {
+      title: "Reviews of this contract",
+      columns: { reviewed: "Reviewed", flags: "Risk flags", notes: "Notes" },
+      latest: "Latest",
+      open: "Showing",
+    },
+    earlier: {
+      note: (when) => `This is an earlier review, saved ${when}. You can read it here, but you can't change it or review it again.`,
+      openLatest: "Open the latest review",
+    },
     notFoundTitle: "Not in your library",
     notFound: "Redline can't find that contract in your library.",
   },
