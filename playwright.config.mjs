@@ -17,7 +17,7 @@ export default defineConfig({
   reporter: "list",
   use: { ...devices["Desktop Chrome"], trace: "retain-on-failure" },
   projects: [
-    { name: "fake-adapter", testMatch: /summary\.spec\.mjs/, use: { baseURL: DEV_URL ?? `http://localhost:${FAKE_PORT}` } },
+    { name: "fake-adapter", testMatch: /(summary|ask)\.spec\.mjs/, use: { baseURL: DEV_URL ?? `http://localhost:${FAKE_PORT}` } },
     { name: "no-adapter", testMatch: /unavailable\.spec\.mjs/, use: { baseURL: `http://localhost:${NONE_PORT}` } },
   ],
   webServer: DEV_URL ? undefined : [
