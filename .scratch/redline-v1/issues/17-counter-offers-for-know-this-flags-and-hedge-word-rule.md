@@ -8,7 +8,7 @@
 
 **Needs approval for:** None
 
-**Status:** built with ticket 08 on feature/08-counter-offers
+**Status:** merged into `development` (2026-10-31); person-read on a real run still open
 
 - [x] Every displayed flag has a Counter-offer except any exception OQ4 sets (PRD criterion 12). OQ4 sets none. Evidence: tests/unit/counter-offers.test.js ("including Know this flags"); tests/e2e/counter-offers.spec.mjs checks every shown flag. The Know this box is quieter (data-quiet="true": no fill, grey text) but always open.
 - [x] The hedge-word check covers Counter-offers if OQ14 says so (PRD criterion 8). It does. A banned word is highlighted, as in the summary, and never withheld. Only "fine" next to an amount and "May" the month are exempt. Text copied from the document is not excused (QUESTIONS.md 26). Evidence: unit tests for "may" marked, a verbatim document sentence still marked, verdict words, both exemptions; e2e highlights "may" and "14" in the counter-offers-01 fixture.

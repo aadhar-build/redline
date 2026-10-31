@@ -8,7 +8,7 @@
 
 **Needs approval for:** None
 
-**Status:** built with ticket 17 on feature/08-counter-offers
+**Status:** merged into `development` (2026-10-31); person-read on a real run still open
 
 - [x] Every displayed Don't sign as written and Negotiate flag has a Counter-offer (PRD criterion 12, in part). Evidence: tests/unit/counter-offers.test.js ("every flag has a Counter-offer", all eight scripted fixtures); tests/e2e/counter-offers.spec.mjs (every shown flag has a visible Counter-offer box after its Source sentences, with a copy button). A flag that comes back without one still shows, with "Redline has no Counter-offer for this flag." (QUESTIONS.md 25).
 - [ ] A person reads Counter-offers for claims about the document it does not support (PRD criterion 17). Not done: no real run of Counter-offers yet. Code cannot catch a new term. The prompt states the restate-or-tighten rule. The counter-offers-01 fixture scripts a new term (insurance), and the tests assert it shows unmarked, so a person has to read for it.
