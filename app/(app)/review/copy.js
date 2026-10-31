@@ -93,11 +93,11 @@ export const COPY = {
         total === 1 ? "It came back without a Source sentence." : `${n} came back without a Source sentence.`,
       unreadable: (n, total) =>
         total === 1 ? "It came back in a form Redline couldn't read." : `${n} came back in a form Redline couldn't read.`,
-      // spec-gaps 24: a cited OCR sentence with an amount OCR misread (lib/review/unreadable-amount.js).
+      // spec-gaps 24, research 31: a cited OCR sentence with a misread amount or clause number (lib/review/unreadable-amount.js).
       "unreadable-amount": (n, total) =>
         total === 1
-          ? "It quoted a sentence from a scanned page where Redline couldn't make out an amount."
-          : `${n} quoted sentences from scanned pages where Redline couldn't make out an amount.`,
+          ? "It quoted a sentence from a scanned page where Redline couldn't make out an amount or a clause number."
+          : `${n} quoted sentences from scanned pages where Redline couldn't make out an amount or a clause number.`,
       "unsupported-number": (n, total) =>
         total === 1 ? "It gave a number the contract doesn't contain." : `${n} gave a number the contract doesn't contain.`,
       // Ticket 13: an Outside reference Redline found but couldn't cut into whole sentences.

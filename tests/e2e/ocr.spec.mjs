@@ -2,7 +2,7 @@
 // lines on a canvas, slightly tilted like a photocopy, and returns a JPEG, which becomes a full-page
 // image in a PDF with no text layer. No real scan or its text is committed.
 //
-// Checks: the real engine (ppu-paddle-ocr, PP-OCRv5 English mobile, ONNX Runtime WASM) reads the page
+// Checks: the real engine (ppu-paddle-ocr, PP-OCRv6 small, ONNX Runtime WASM) reads the page
 // in this browser; a mixed PDF keeps its typed page's text and OCRs the other; progress is shown and
 // the Reviewer can stop it; every request stays on Redline's own origin, the models and runtime come
 // from /ocr/, and only the extracted text, its source and the OCR ranges are posted.
@@ -83,9 +83,9 @@ function expectOwnOrigin(requests, baseURL) {
   expect(requests.filter((q) => new URL(q.url).origin !== origin).map((q) => q.url)).toEqual([]);
   const paths = requests.map((q) => new URL(q.url).pathname);
   // The OCR runtime and models load from Redline itself; the JSEP/WebGPU build is never fetched.
-  expect(paths).toContain("/ocr/models/pp-ocrv5-en-mobile/det.ort");
-  expect(paths).toContain("/ocr/models/pp-ocrv5-en-mobile/rec.ort");
-  expect(paths).toContain("/ocr/models/pp-ocrv5-en-mobile/dict.txt");
+  expect(paths).toContain("/ocr/models/pp-ocrv6-small/det.ort");
+  expect(paths).toContain("/ocr/models/pp-ocrv6-small/rec.ort");
+  expect(paths).toContain("/ocr/models/pp-ocrv6-small/dict.txt");
   expect(paths.filter((p) => p.endsWith(".wasm") && p.includes("ort-wasm"))).toEqual([
     expect.stringMatching(/^\/ocr\/ort\/[\d.]+\/ort-wasm-simd-threaded\.wasm$/),
   ]);

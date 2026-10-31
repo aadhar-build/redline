@@ -96,3 +96,28 @@ Everything is in `/Users/aadharagarwal/.claude/jobs/f7cf0bfb/tmp/ocr-bakeoff2/`:
 - `scripts/dropped.mjs` computes dropped lines and held-out CER, and `scripts/postcheck.mjs` runs the post-check.
 
 Models were deleted after scoring, except v5 mobile and v6 tiny/small.
+
+## Follow-up, 2026-10-31: shipped, and the tiny-rec ₹ spike
+
+**Shipped (ticket 23, branch feature/23b-ocr-v6).** PP-OCRv6 small replaced PP-OCRv5 English mobile, with the post-check folded into the unreadable-amount rule (lib/review/unreadable-amount.js). Its rules differ from `scripts/postcheck.mjs` in three places:
+- The `Z`/`2`/`7` look-alike rule and `0oo` were already covered by the existing rule.
+- The heading rule only fires at the start of a line, because "as set out in this Clause. The" is ordinary prose.
+- A hit withholds the citing flag under the existing reason. It never repairs the text.
+
+On the real scans the post-check found 3 missing ₹ on S04. v6 small printed the other 2 of S04's 5. S01, S03 and S05 had no hits (ticket 23).
+
+**Spike: re-read flagged ₹ spots with the v6 tiny recognizer. Measured, not shipped.** This was simulated offline from the two round-2 runs that share the v6 small detector (`p-v6s-v6s` and `p-v6s-v6t`), so both runs saw the same box crops. Only boxes on lines with a post-check "missing ₹" hit were considered. Tiny's text was accepted only when it printed ₹, small's box did not, and the digits were identical. Scored with the unchanged `score.mjs` on the 8 pages:
+
+| | Numeric /97 | Amounts /11 | ₹ emitted /5 | Lakh/crore /20 | Sections /44 | CER order-free |
+|---|---|---|---|---|---|---|
+| v6 small | 88 | 7 | 1 | 20 | 37 | 0.64% |
+| v6 small + tiny on flagged spots | 89 | 9 | 3 | 20 | 37 | 0.63% |
+
+Of the 3 boxes that were flagged, 2 were accepted and 1 was rejected. Nothing got worse.
+
+It was not shipped for three reasons:
+- **It is a simulation, not an in-browser run.** To ship it, the worker would have to crop each flagged box from the straightened page and run a second recognizer on it. ppu exposes no recognize-a-crop call for that, and the change would add 4.5 MB of models. That did not fit the spike budget.
+- **It moves the trust line.** A ₹ that tiny prints makes the sentence pass the post-check, so a flag that is withheld today would be shown, on the strength of a second model's reading.
+- **The sample is small.** There are 5 ₹ glyphs, all in one typeface on one document, and the post-check rules are in-sample.
+
+The product owner should decide whether that trade is wanted before anyone builds it. Spike files: `ocr-runs-v6/spike/` in the job's scratch dir.
