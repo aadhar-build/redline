@@ -115,6 +115,13 @@ describe("Source sentence check: what fails (research 09, section 7)", () => {
 describe("checkSources", () => {
   const good = "Customer will pay Vendor Rs. 18,000 per month, plus GST.";
 
+  it("does not treat a full stop after a common contract abbreviation as a boundary", () => {
+    const doc = "Start. Interest runs at 18% p.a. Interest is payable w.e.f. 1 April 2027 under Cl. 4 and Sch. 2. End.";
+    for (const quote of ["Interest is payable w.e.f.", "1 April 2027 under Cl. 4 and Sch. 2.", "4 and Sch. 2.", "2."]) {
+      expect(found(doc, quote)).toBe(false);
+    }
+  });
+
   it("returns the stored spans when every quote passes", () => {
     const result = checkSources(vendor, [good]);
     expect(result.found).toBe(true);

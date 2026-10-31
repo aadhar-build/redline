@@ -443,6 +443,6 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 }
 .answer-text { font-size: 1rem; max-width: 68ch; }
 .answer-none { font-size: 0.9375rem; color: var(--ink); border-left: 3px solid var(--ink); padding: 0.2rem 0 0.2rem 0.65rem; }
-.source figcaption { display: flex; align-items: center; gap: 0.35rem; }
+.answer .source figcaption { display: flex; align-items: center; gap: 0.35rem; }
 .source-tick { width: 1rem; height: 0.85rem; color: var(--blue); }
 .source-quote { white-space: pre-line; }
