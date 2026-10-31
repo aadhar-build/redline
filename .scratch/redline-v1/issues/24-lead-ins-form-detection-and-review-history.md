@@ -68,7 +68,7 @@
     - Lost: all to the operative-word guard on a plain heading. These are "No change in Control…" under "9. NO CHANGE IN CONTROL" (T01, twice) and "24.1 …" under "24. WAIVER NOT A LIMITATION TO ENFORCE" (T05). See QUESTIONS.md 26.
   - **Still withheld in the new runs:**
     - T01: list items or sub-clauses that end in ";" or follow one (correct under the ruling), one quote the model altered, and the guard loss above.
-    - T03: clause 1 after "agreed as follows:-". That line ends ":-", not ":", so B doesn't apply. Also a "WHEREAS…" after a lead-in ending "tender:".
+    - T03: clause 1 after "agreed as follows:-". That line ends ":-", not ":", so B doesn't apply (QUESTIONS.md 27). Also a "WHEREAS…" after a lead-in ending "tender:".
     - T05: 2 altered quotes; a sentence after an address block ending "Allottee [•]"; and "1.2 The Total Price…", where the model's quote ended mid-sentence.
     - T06: a lettered item after a line ending ";".
   - **Blanks note:**
