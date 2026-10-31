@@ -88,19 +88,20 @@ test("marking a reference reviewed is saved and shown as the Reviewer's statemen
   await expect(saved.first()).toHaveAttribute("data-reviewed", "yes");
   await expect(saved.nth(1)).toHaveAttribute("data-reviewed", "no");
 
-  // Mark the rest: still no Clean result shown while the gate holds (ticket 07), and the held note says why.
+  // Mark the rest: now a Clean result, with the note that the marks are the Reviewer's own statement.
   for (const i of [1, 2, 3]) {
     await saved.nth(i).getByTestId("outside-mark").click();
     await expect(saved.nth(i)).toHaveAttribute("data-reviewed", "yes");
   }
-  await expect(page.getByTestId("clean-result")).toHaveCount(0);
-  await expect(page.getByTestId("clean-result-held")).toHaveText(COPY.clean.held);
+  await expect(page.getByTestId("clean-result")).toBeVisible();
+  await expect(page.getByTestId("clean-outside-note")).toHaveText(COPY.clean.outsideReviewed);
 
   // Take one back.
   await saved.first().getByTestId("outside-mark").click();
   await expect(saved.first()).toHaveAttribute("data-reviewed", "no");
-  await expect(page.getByTestId("clean-result-held")).toHaveCount(0);
+  await expect(page.getByTestId("clean-result")).toHaveCount(0);
   await page.reload();
+  await expect(page.getByTestId("clean-result")).toHaveCount(0);
   await expect(page.getByTestId("outside-reference").first()).toHaveAttribute("data-reviewed", "no");
 
   await page.screenshot({ path: test.info().outputPath("outside-references-saved.png"), fullPage: true });

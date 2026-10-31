@@ -1,0 +1,41 @@
+{
+  "_note": "Scripted Risk flags for ambiguous-clauses-01 (ticket 07, PRD criterion 11). Clauses 3 and 4 are each written to support two readings and come back as Ambiguous clauses; clause 4's comes back at Know this, which Review must correct to Negotiate. Clause 5 is an ordinary Know this flag. Every Source sentence is in the document, and no text picks a reading.",
+  "riskFlags": [
+    {
+      "severity": "negotiate",
+      "title": "When the delivery period starts",
+      "says": "Supplier delivers within ten days of the order or payment. The clause does not say which of the two starts the ten days.",
+      "judgment": null,
+      "sourceSentences": ["3. Delivery. Supplier will deliver the goods within ten days of the order or payment."],
+      "redLine": null,
+      "readings": [
+        "The ten days run from the order or from payment, whichever comes first.",
+        "The ten days run from the order or from payment, whichever comes later."
+      ],
+      "counterOffer": "Supplier will deliver the goods within ten days of the date Buyer places the order."
+    },
+    {
+      "severity": "know-this",
+      "title": "Which costs the Rs. 5,000 threshold covers",
+      "says": "Buyer reimburses Supplier's travel and accommodation costs over Rs. 5,000. The clause does not say whether the Rs. 5,000 applies to both kinds of cost or to accommodation only.",
+      "judgment": null,
+      "sourceSentences": ["4. Expenses. Buyer will reimburse Supplier's travel and accommodation costs over Rs. 5,000."],
+      "redLine": null,
+      "readings": [
+        "Buyer reimburses only the part of Supplier's travel and accommodation costs, taken together, that is over Rs. 5,000.",
+        "Buyer reimburses all of Supplier's travel costs, and only the part of its accommodation costs that is over Rs. 5,000."
+      ],
+      "counterOffer": "Buyer will reimburse only the part of Supplier's travel and accommodation costs, taken together, that is over Rs. 5,000."
+    },
+    {
+      "severity": "know-this",
+      "title": "Price reduction for late delivery",
+      "says": "For each week the goods are late, Supplier reduces the price by Rs. 2,000.",
+      "judgment": "No limit on the total reduction appears in the document.",
+      "sourceSentences": ["5. Late delivery. For each week the goods are late, Supplier will reduce the price by Rs. 2,000."],
+      "redLine": null,
+      "readings": null,
+      "counterOffer": "For each week or part of a week the goods are late, Supplier will reduce the price by Rs. 2,000."
+    }
+  ]
+}

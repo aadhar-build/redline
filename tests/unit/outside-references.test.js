@@ -206,8 +206,7 @@ describe("a no-flags review with Outside references and the Clean result (the ga
   it("is not a Clean result until every Statement of Work, web address and Order Form reference is marked reviewed", async () => {
     const r = await noFlags(doc1);
     expect(cleanResultOf(r)).toBe(false);
-    // The gate still holds (ticket 07), so nothing reads as a Clean result yet.
-    expect(r.cleanResult).toBeNull();
+    expect(r.cleanResult).toBe(false);
     expect(r.cleanResultHeld).toBe(false);
 
     const row = asRow(r);
@@ -221,14 +220,15 @@ describe("a no-flags review with Outside references and the Clean result (the ga
 
     const all = markAndReopen(doc1, row, [SOW, WEB, ORDER, SCHEDULE_B]);
     expect(cleanResultOf(all.reopened)).toBe(true);
-    // Held back by the gate until ticket 07, and says so.
-    expect(all.reopened.cleanResult).toBeNull();
-    expect(all.reopened.cleanResultHeld).toBe(true);
+    // The gate is lifted (tickets 13 and 07): a Clean result once every reference is marked.
+    expect(all.reopened.cleanResult).toBe(true);
+    expect(all.reopened.cleanResultHeld).toBe(false);
     for (const o of all.reopened.outsideReferences) expect(o.reviewed).toEqual({ at: "2026-10-31T10:00:00.000Z" });
 
     // Taking a mark back blocks again.
     const undone = markAndReopen(doc1, all.stored, [WEB], false);
     expect(cleanResultOf(undone.reopened)).toBe(false);
+    expect(undone.reopened.cleanResult).toBe(false);
   });
 
   it("is never a Clean result while an as amended reference stands, even with every reference marked reviewed", async () => {
@@ -240,6 +240,7 @@ describe("a no-flags review with Outside references and the Clean result (the ga
     expect(amended.resolved).toBe(false);
     expect(amended.severity).toBe("dont-sign-as-written");
     expect(cleanResultOf(reopened)).toBe(false);
+    expect(reopened.cleanResult).toBe(false);
     expect(reopened.cleanResultHeld).toBe(false);
   });
 

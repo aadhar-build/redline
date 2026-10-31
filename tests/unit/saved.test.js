@@ -70,8 +70,9 @@ describe("reopening a saved review", () => {
       expect(reopened.withheldCount).toBe(result.withheldCount);
       expect(reopened.withheld).toEqual(result.withheld);
       expect(reopened.riskFlagsStatus).toBe("checked");
-      // Held back by the gate (clean-result-gate.js); these fixtures would not be one anyway.
-      expect(reopened.cleanResult).toBeNull();
+      // These fixtures are not a Clean result, made or reopened.
+      expect(reopened.cleanResult).toBe(false);
+      expect(result.cleanResult).toBe(false);
       expect(reopened.cleanResultHeld).toBe(false);
     }
   });

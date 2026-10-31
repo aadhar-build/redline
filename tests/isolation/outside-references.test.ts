@@ -86,8 +86,8 @@ describe("Outside references on a saved review", () => {
       last = await markOutsideReference({ db: a.client, documentId, sourceSentence: sentenceOf(r), reviewed: true });
     }
     expect(cleanResultOf(last.review)).toBe(true);
-    expect(last.review.cleanResult).toBeNull();
-    expect(last.review.cleanResultHeld).toBe(true);
+    expect(last.review.cleanResult).toBe(true);
+    expect(last.review.cleanResultHeld).toBe(false);
 
     // Taking a mark back is saved too.
     const undone = await markOutsideReference({ db: a.client, documentId, sourceSentence: first, reviewed: false });

@@ -38,13 +38,12 @@ async function run(riskFlags, redLines = DEFAULT_RED_LINES) {
 
 const asRow = (r) => JSON.parse(JSON.stringify(toStoredReview(r)));
 
-// What the rule decides for a review, and that the gate holds it back: while Outside references and
-// Ambiguous clauses cannot be found (tickets 13 and 07), cleanResult is always null, and
-// cleanResultHeld is true exactly when the rule would have given a Clean result.
+// What the rule decides for a review, and that the review shows exactly that: the gate is lifted
+// (tickets 13 and 07 landed), so cleanResult is the rule's decision and nothing is held back.
 function expectDecided(r, decided) {
   expect(cleanResultOf(r)).toBe(decided);
-  expect(r.cleanResult).toBeNull();
-  expect(r.cleanResultHeld).toBe(decided === true);
+  expect(r.cleanResult).toBe(decided);
+  expect(r.cleanResultHeld).toBe(false);
 }
 
 describe("Clean result content (PRD criterion 7)", () => {
@@ -115,11 +114,15 @@ describe("what blocks a Clean result", () => {
 });
 
 describe("the gate on the Clean result", () => {
-  it("is shut until tickets 13 and 07 land", () => {
-    expect(CLEAN_RESULT_READY).toBe(false);
-    expect(gateCleanResult(true)).toEqual({ cleanResult: null, cleanResultHeld: true });
-    expect(gateCleanResult(false)).toEqual({ cleanResult: null, cleanResultHeld: false });
-    expect(gateCleanResult(null)).toEqual({ cleanResult: null, cleanResultHeld: false });
+  it("is lifted now that tickets 13 and 07 have landed", () => {
+    expect(CLEAN_RESULT_READY).toBe(true);
+    for (const v of [true, false, null]) expect(gateCleanResult(v)).toEqual({ cleanResult: v, cleanResultHeld: false });
+  });
+
+  it("would hold a Clean result back if shut again", () => {
+    expect(gateCleanResult(true, false)).toEqual({ cleanResult: null, cleanResultHeld: true });
+    expect(gateCleanResult(false, false)).toEqual({ cleanResult: null, cleanResultHeld: false });
+    expect(gateCleanResult(null, false)).toEqual({ cleanResult: null, cleanResultHeld: false });
   });
 
   it("passes the rule's decision through once lifted", () => {
