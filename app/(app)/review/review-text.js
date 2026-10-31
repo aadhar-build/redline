@@ -19,6 +19,7 @@ const GROUPS = [
 ];
 const KIND = { "dont-sign-as-written": "dont", negotiate: "negotiate", "know-this": "know" };
 const isNumberMark = (m) => m.kind === "number";
+const isNewTermMark = (m) => m.kind === "new-term";
 
 // Same span rules as MarkedText: overlapping or out-of-range spans are skipped, not bracketed.
 export function bracketMarks(text, marked = []) {
@@ -50,7 +51,9 @@ function sources(sentences) {
 
 function counterOffer(c) {
   if (!c) return [COPY.counterOffer.missing];
-  return [COPY.counterOffer.caption, bracketMarks(c.text, c.marked ?? [])];
+  const lines = [COPY.counterOffer.caption, bracketMarks(c.text, c.marked ?? [])];
+  if (c.newTermNote) lines.push(`${COPY.counterOffer.needsNewTerm.lead}${bracketMarks(c.newTermNote.text, c.newTermNote.marked ?? [])}${COPY.counterOffer.needsNewTerm.tail}`);
+  return lines;
 }
 
 function flagBlock(flag, kind) {
@@ -187,7 +190,8 @@ export function reviewAsText(review, { ownerUnknownShown = false } = {}) {
   if (flagMarks.some((m) => !isNumberMark(m))) notes.push(COPY.markedNote);
   if (flagMarks.some(isNumberMark)) notes.push(COPY.numberNote);
   if (flags.some((f) => f.counterOffer)) notes.push(COPY.counterOffer.note);
-  if (counterMarks.some((m) => !isNumberMark(m))) notes.push(COPY.counterOffer.markedNote);
+  if (counterMarks.some((m) => !isNumberMark(m) && !isNewTermMark(m))) notes.push(COPY.counterOffer.markedNote);
+  if (counterMarks.some(isNewTermMark)) notes.push(COPY.counterOffer.newTermNote);
   if (counterMarks.some(isNumberMark)) notes.push(COPY.counterOffer.numberNote);
   if (notes.length > 0) blocks.push(notes.join("\n"));
 

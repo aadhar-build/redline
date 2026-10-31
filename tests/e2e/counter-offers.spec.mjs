@@ -77,9 +77,13 @@ test("breaches in Counter-offer wording are marked and the flags still show", as
   await expect(may.locator("mark[data-mark=word]")).toHaveText(["may"]);
   const number = flagTitled(page, "Seven days to pay").getByTestId("counter-offer-text");
   await expect(number.locator("mark[data-mark=number]")).toHaveText(["14"]);
-  // The exemptions hold, and a new term cannot be caught in code.
-  await expect(flagTitled(page, "Daily late fee").getByTestId("counter-offer-text").locator("mark")).toHaveCount(0);
-  await expect(flagTitled(page, "No liability for damaged stock").getByTestId("counter-offer-text").locator("mark")).toHaveCount(0);
+  // The exemptions hold.
+  const late = flagTitled(page, "Daily late fee").getByTestId("counter-offer-text");
+  await expect(late.locator("mark[data-mark=word], mark[data-mark=number]")).toHaveCount(0);
+  // Ticket 08b: the words of a new term the contract doesn't use are marked.
+  const insurance = flagTitled(page, "No liability for damaged stock").getByTestId("counter-offer-text");
+  await expect(insurance.locator("mark[data-mark=new-term]")).toHaveText(["carry insurance", "covers"]);
+  await expect(page.getByTestId("counter-offer-new-term-note")).toHaveText(COPY.counterOffer.newTermNote);
 
   const missing = flagTitled(page, "Monthly visits from May 2027");
   await expect(missing.getByTestId("counter-offer")).toHaveCount(0);

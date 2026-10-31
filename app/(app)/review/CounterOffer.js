@@ -37,6 +37,13 @@ export default function CounterOffer({ counterOffer, number, quiet = false }) {
       <p data-testid="counter-offer-text">
         <MarkedText text={counterOffer.text} marked={counterOffer.marked ?? []} />
       </p>
+      {counterOffer.newTermNote ? (
+        <p className="basis counter-new-term" data-testid="counter-offer-needs-new-term">
+          {COPY.counterOffer.needsNewTerm.lead}
+          <MarkedText text={counterOffer.newTermNote.text} marked={counterOffer.newTermNote.marked ?? []} />
+          {COPY.counterOffer.needsNewTerm.tail}
+        </p>
+      ) : null}
       {/* Announces the copy to screen readers; the button's own label stays the same. */}
       <span className="sr-only" aria-live="polite" data-testid="counter-offer-copy-status">
         {state === "copied" ? COPY.counterOffer.copied : ""}

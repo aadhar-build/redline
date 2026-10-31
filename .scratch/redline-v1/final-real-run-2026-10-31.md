@@ -107,6 +107,7 @@ The run used outside-references-01 with outside-references-01.schedule-b.txt.
    - Reproduce: run T02 through Review with the default Red lines and read the Counter-offers on the deposit, handover and consent flags.
    - Seen: they add obligations that are nowhere in the document.
    - Also: T05's registration-charges Counter-offer points to "the amount stated in this Agreement" when no amount is stated.
+   - Fix (ticket 08b, branch `feature/08b-counter-offer-new-terms`): tighter prompt with a needsNewTerm note shown as Redline's judgment, plus a code backstop that marks words and phrases the document doesn't use. Re-run of T01, T02, T05, T06, T07: adders went from 12 of 37 to 3 of 35. The backstop marked 8 of the 12 before and 1 of the 3 after. Details in ticket 08.
 2. **The e-stamp web address is raised as an Outside reference.**
    - Reproduce: upload ~/redline-samples/scans/S04 while signed in, wait for OCR, then press Review.
    - Seen: one Negotiate Outside reference whose group is the stamp-paper provider's web address.

@@ -38,7 +38,8 @@ test("Copy all as text copies the displayed review in screen order and announces
     expect(next).toBeGreaterThan(at);
     at = next;
   }
-  for (const t of await page.getByTestId("counter-offer-text").allInnerTexts()) expect(copied).toContain(t);
+  // Marked words are bracketed in the copy (ticket 08b marks words the contract doesn't use).
+  for (const t of await page.getByTestId("counter-offer-text").allInnerTexts()) expect(copied.replace(/[[\]]/g, "")).toContain(t);
   await expect(page.getByTestId("withheld-count")).toBeVisible();
   expect(copied).toContain(await page.getByTestId("withheld-count").innerText());
   // Nothing hidden: withheld flags stay out, and every quoted line is on screen.

@@ -16,6 +16,18 @@ const run = (name, redLines = DEFAULT_RED_LINES) =>
   review({ documentText: read(`fixtures/contracts/${name}.txt`), redLines, adapter: createLocalFakeAdapter({ root }) });
 
 describe("reviewAsText", () => {
+  it("brackets a Counter-offer's new-term marks, adds their note, and copies the needsNewTerm note as Redline's judgment (ticket 08b)", async () => {
+    const r = await run("counter-offers-01");
+    const f = r.riskFlags.find((x) => x.counterOffer?.marked.some((m) => m.kind === "new-term"));
+    expect(f).toBeTruthy();
+    const withNote = { ...r, riskFlags: r.riskFlags.map((x) => (x === f ? { ...x, counterOffer: { ...x.counterOffer, newTermNote: { text: "cure period", marked: [] } } } : x)) };
+    const text = reviewAsText(withNote);
+    expect(text).toContain(bracketMarks(f.counterOffer.text, f.counterOffer.marked));
+    expect(text).toContain(COPY.counterOffer.newTermNote);
+    expect(text).toContain(`${COPY.counterOffer.needsNewTerm.lead}cure period${COPY.counterOffer.needsNewTerm.tail}`);
+    expect(COPY.counterOffer.needsNewTerm.lead.startsWith(COPY.flags.judgmentLabel)).toBe(true);
+  });
+
   it("summary: caption, summary text, the note, in screen order", async () => {
     const r = await run("vendor-agreement-01");
     const text = reviewAsText(r);

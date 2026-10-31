@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { Glyph, Tick, SEVERITY_LABELS } from "../../Glyph";
 import { COPY } from "./copy";
-import MarkedText, { isNumberMark } from "./MarkedText";
+import MarkedText, { isNewTermMark, isNumberMark } from "./MarkedText";
 import OutsideReferences from "./OutsideReferences";
 import CounterOffer from "./CounterOffer";
 
@@ -304,8 +304,11 @@ export default function RiskFlags({ review, above = null, documentId = null, onR
           {anyMarked && <p className="marked-note flags-note" data-testid="flags-marked-note">{COPY.markedNote}</p>}
           {anyNumber && <p className="marked-note flags-note" data-testid="flags-number-note">{COPY.numberNote}</p>}
           {anyCounterOffer && <p className="marked-note flags-note" data-testid="counter-offer-note">{COPY.counterOffer.note}</p>}
-          {counterMarks.some((m) => !isNumberMark(m)) && (
+          {counterMarks.some((m) => !isNumberMark(m) && !isNewTermMark(m)) && (
             <p className="marked-note flags-note" data-testid="counter-offer-marked-note">{COPY.counterOffer.markedNote}</p>
+          )}
+          {counterMarks.some(isNewTermMark) && (
+            <p className="marked-note flags-note" data-testid="counter-offer-new-term-note">{COPY.counterOffer.newTermNote}</p>
           )}
           {counterMarks.some(isNumberMark) && (
             <p className="marked-note flags-note" data-testid="counter-offer-number-note">{COPY.counterOffer.numberNote}</p>

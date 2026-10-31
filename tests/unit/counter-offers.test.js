@@ -14,6 +14,9 @@ const vendorText = read("fixtures/contracts/vendor-agreement-01.txt");
 const breachText = read("fixtures/contracts/counter-offers-01.txt");
 
 const markedWords = (part) => part.marked.map((m) => part.text.slice(m.start, m.end));
+// Hedge-word and number marks only, leaving out ticket 08b's new-term marks.
+const ruleMarks = (part) => part.marked.filter((m) => m.kind !== "new-term");
+const newTerms = (part) => part.marked.filter((m) => m.kind === "new-term").map((m) => m.phrase);
 
 function adapterFor(reply, prompts = []) {
   return createFakeAdapter({
@@ -60,7 +63,12 @@ describe("the prompt", () => {
     expect(prompt).toContain("Add no term, party, right, duty, amount or period that the document does not contain.");
     expect(prompt).toContain('Write "Customer is entitled to terminate", not "Customer may terminate"');
     expect(prompt).toContain("Never use these words in your own text, Counter-offers included: may,");
-    expect(prompt).toContain('"counterOffer": "..."}]}');
+    expect(prompt).toContain('"counterOffer": "...", "needsNewTerm": false, "newTermNote": null}]}');
+    // Ticket 08b: what a Counter-offer is allowed to do, what it never adds, and the needsNewTerm way out.
+    expect(prompt).toContain("A Counter-offer is allowed to: delete words from the clause, narrow a right");
+    expect(prompt).toContain('a cure period, a consent standard such as "not unreasonably withheld", a refund, return or repayment obligation');
+    expect(prompt).toContain('a cross-reference such as "the amount stated in this Agreement"');
+    expect(prompt).toContain('set "needsNewTerm" to true and give "newTermNote"');
   });
 
   it("names the Owner the Counter-offer protects: the fixed party, or the party the model gives", async () => {
@@ -88,8 +96,8 @@ describe("every flag has a Counter-offer", () => {
       expect(result.riskFlags.length).toBeGreaterThan(0);
       for (const f of result.riskFlags) {
         expect(f.counterOffer?.text?.length).toBeGreaterThan(0);
-        // The scripted Counter-offers for these fixtures are clean: nothing is marked.
-        expect(f.counterOffer.marked).toEqual([]);
+        // The scripted Counter-offers for these fixtures have no hedge words or new numbers.
+        expect(ruleMarks(f.counterOffer)).toEqual([]);
       }
     });
   }
@@ -126,7 +134,7 @@ describe("the scripted breaches", () => {
     const co = get("Daily late fee").counterOffer;
     expect(co.text).toContain("fine of Rs. 200");
     expect(co.text).toContain("1 May 2027");
-    expect(co.marked).toEqual([]);
+    expect(ruleMarks(co)).toEqual([]);
   });
 
   it("marks a number the document does not contain, as a number", async () => {
@@ -135,11 +143,12 @@ describe("the scripted breaches", () => {
     expect(co.marked).toEqual([{ phrase: "14", kind: "number", start: co.text.indexOf("14"), end: co.text.indexOf("14") + 2 }]);
   });
 
-  it("cannot catch a new term: the insurance Counter-offer shows unmarked (a person reads for it)", async () => {
+  it("marks the words of a new term: the insurance Counter-offer (ticket 08b)", async () => {
     const { get } = await byTitle();
     const co = get("No liability for damaged stock").counterOffer;
     expect(co.text).toContain("insurance");
-    expect(co.marked).toEqual([]);
+    expect(ruleMarks(co)).toEqual([]);
+    expect(newTerms(co)).toEqual(["carry insurance", "covers"]);
   });
 
   it("shows a flag whose Counter-offer is missing, with counterOffer null", async () => {
@@ -208,7 +217,58 @@ describe("saved reviews keep the Counter-offer", () => {
     const co = reopened.riskFlags.find((f) => f.counterOffer?.text === "Vendor may bill 99 rupees.").counterOffer;
     expect(co.marked.map((m) => [m.phrase, m.kind ?? "word"])).toEqual([
       ["may", "word"],
+      ["bill", "new-term"],
       ["99", "number"],
+      ["rupees", "new-term"],
     ]);
+  });
+
+  it("keeps the needsNewTerm note through save and reopen (ticket 08b)", async () => {
+    const { result } = await run([flag({ needsNewTerm: true, newTermNote: "cure period before termination" })]);
+    const row = asRow(result);
+    expect(row.flags[0].counter_offer_note).toBe("cure period before termination");
+    const reopened = reopenReview({ documentText: vendorText, stored: row });
+    expect(reopened.riskFlags[0].counterOffer).toEqual(result.riskFlags[0].counterOffer);
+  });
+});
+
+describe("new terms (ticket 08b): marked, never withheld", () => {
+  it("leaves wording made of the document's own words unmarked, across case and word endings", async () => {
+    const { result } = await run([flag({ counterOffer: "CUSTOMER pays the Vendor's invoices within seven days; the invoiced fees are not increased." })]);
+    expect(result.riskFlags[0].counterOffer.marked).toEqual([]);
+  });
+
+  it("marks content words the document never uses, joining neighbours into one phrase", async () => {
+    const { result } = await run([flag({ counterOffer: "Vendor will refund the security deposit within seven days." })]);
+    expect(result.withheldCount).toBe(0);
+    expect(newTerms(result.riskFlags[0].counterOffer)).toEqual(["refund", "security deposit"]);
+  });
+
+  it('marks "not unreasonably withheld" and an "amount stated in this Agreement" the document lacks', async () => {
+    const { result } = await run([
+      flag({ counterOffer: "Customer's consent, not to be unreasonably withheld, is needed." }),
+      flag({ counterOffer: "Customer will pay the amount stated in this Agreement." }),
+    ]);
+    expect(newTerms(result.riskFlags[0].counterOffer)).toContain("not to be unreasonably withheld");
+    expect(newTerms(result.riskFlags[1].counterOffer)).toEqual(["the amount stated in this Agreement"]);
+  });
+
+  it("does not mark those phrases when the document has them", async () => {
+    const doc = vendorText + "\n8. Consent. Customer's consent is not to be unreasonably withheld.\n";
+    const { result } = await run([flag({ counterOffer: "Customer's consent is not to be unreasonably withheld." })], { documentText: doc });
+    expect(result.riskFlags[0].counterOffer.marked).toEqual([]);
+  });
+
+  it("shows the needsNewTerm note only when needsNewTerm is true, with hedge words marked", async () => {
+    const { result } = await run([
+      flag({ needsNewTerm: true, newTermNote: "The document has no cure period that may apply." }),
+      flag({ needsNewTerm: false, newTermNote: "cure period" }),
+      flag({ needsNewTerm: true, newTermNote: "  " }),
+    ]);
+    const [a, b, c] = result.riskFlags.map((f) => f.counterOffer.newTermNote);
+    expect(a.text).toBe("cure period that may apply");
+    expect(a.marked.map((m) => m.phrase)).toEqual(["may"]);
+    expect(b).toBeNull();
+    expect(c).toBeNull();
   });
 });
