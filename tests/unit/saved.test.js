@@ -70,7 +70,8 @@ describe("reopening a saved review", () => {
       expect(reopened.withheldCount).toBe(result.withheldCount);
       expect(reopened.withheld).toEqual(result.withheld);
       expect(reopened.riskFlagsStatus).toBe("checked");
-      expect(reopened.cleanResult).toBeNull();
+      expect(reopened.cleanResult).toBe(result.cleanResult);
+      expect(reopened.cleanResult).toBe(false);
     }
   });
 

@@ -64,12 +64,23 @@ export const COPY = {
     withheldTail: "Redline doesn't show a flag it can't trace to the contract.",
     sourceCaption: "Source sentence",
     sourceCaptionOf: (i, n) => `Source sentence ${i} of ${n}`,
-    none:
-      "No Risk flags came back for this contract, and no clause matched a Red line. This isn't a Clean result, because Redline doesn't check Outside references yet.",
+    // Shown only when no flags came back and the review is still not a Clean result.
+    none: "No Risk flags came back for this contract.",
     redLineMatchLabel: "Red line match",
     redLineMatched: (number, name) => `Red line ${number}: ${name}`,
     unreadable: "Redline couldn't read the Risk flags it got back, so it isn't showing any. Try again.",
     emptyGroup: "None at this level.",
+  },
+  // A Clean result (ADR 0006): said plainly, with every Red line checked and any Know this flags beneath.
+  // Never "safe", "fine" or "good to sign"; a unit test runs the verdict-word check over these strings.
+  clean: {
+    title: "Clean result",
+    statement:
+      "This contract has a Clean result. No clause came back as Don't sign as written or Negotiate, and none matches a Red line on your list.",
+    checkedLede: "Redline checked the contract against each of these Red lines, and no clause matched any of them.",
+    noRedLines: "Your Red line list was empty when Redline read this contract, so there was nothing to check it against.",
+    knowThisLede: "You don't need to raise these with the other side, but you should know about them before you sign.",
+    noKnowThis: "There are no Know this flags either.",
   },
   redLines: {
     title: "Red lines checked",
