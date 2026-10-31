@@ -52,3 +52,12 @@ Each change fails closed:
 - **General law.** Exempt only when the run starts a clause: at a sentence start, or right after with, under, by, of, in, to (so "subject to"), per, follow, comply, applicable or notwithstanding. A list separator, a capitalised word or any other word before it keeps the Red line 3 match.
 - **Self-titles.** A mention with no identifier is skipped only when the heading has none either, or when it points at the text itself ("this Order Form", "the Order Form above", "herein"). A mention qualified by other, prior, previous, each, any, every, separate, additional, further, future, dated or signed is always raised.
 
+
+## Addendum, 2026-10-31: one clause-start gate for both exemptions (security review 4)
+
+The general-law and undated-Act exemptions (QUESTIONS 44) now share one check, `startsClause`, so they cannot drift apart. Either exemption applies only where the run starts a clause:
+- at the start of the stored text, or after a clause number or "(a)" marker at a line start;
+- after a sentence end (". ! ? :") that does not follow an abbreviation such as Ltd., Pvt., Co. or No.;
+- or right after a fixed clause opener (with, under, by, of, in, to, per, follow, comply, applicable, notwithstanding).
+
+A bare line break is not a start: wrapped lines are collapsed first. In every case the word before must not be "and", "or" or "&", a possessive, a list separator or a party term, and an Act's name run must not open with a join. Anything else keeps the Red line 3 match. Tests: tests/unit/outside-reference-13c.test.js, "security review 4".

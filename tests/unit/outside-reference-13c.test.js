@@ -302,3 +302,35 @@ describe("security review 3: tighter exemptions", () => {
   });
 });
 
+
+describe("security review 4: one strict clause-start gate for both exemptions", () => {
+  const kinds = (text) => findOutsideReferences(text).found.map((f) => f.kinds);
+  const keepsRedLine3 = [
+    // A wrapped line is not a clause start.
+    "1. Each party will follow the Provider policies\nany law for the time being in force.",
+    // A full stop after an abbreviation does not end a sentence.
+    "1. Each party will follow the rules of Acme Pvt. Ltd. laws for the time being in force.",
+    "1. Each party will follow M/s Acme Co. any law for the time being in force.",
+    // A join before an undated known Act.
+    "1. Each party will follow the Provider policies and the Companies Act as amended from time to time.",
+    "1. Each party will follow the Provider policies or Companies Act as amended from time to time.",
+    "1. Each party will follow the Provider policies & the Registration Act for the time being in force.",
+    "1. Each party will follow the Provider policies, the Companies Act as amended from time to time.",
+  ];
+  for (const text of keepsRedLine3) {
+    it(`keeps the Red line 3 match: ${JSON.stringify(text.slice(30, 90))}`, () => {
+      expect(kinds(text)).toEqual([["as-amended"]]);
+    });
+  }
+
+  const stillExempt = [
+    "1. Each party will comply with the Companies Act as amended from time to time.",
+    "Payment is due monthly. Any law for the time being in force applies to late payment.",
+    "1. The fee is fixed.\n(b) any law for the time being in force applies.",
+  ];
+  for (const text of stillExempt) {
+    it(`still exempt: ${JSON.stringify(text.slice(0, 70))}`, () => {
+      expect(kinds(text)).toEqual([["other"]]);
+    });
+  }
+});
