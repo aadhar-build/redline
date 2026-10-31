@@ -9,6 +9,7 @@ import MarkedText, { isNumberMark } from "./MarkedText";
 import OwnerLine from "./OwnerLine";
 import QuestionBox from "./QuestionBox";
 import RiskFlags from "./RiskFlags";
+import CopyAll from "./CopyAll";
 
 /**
  * @param {{ review: object, documentText?: string, documentId?: string | null, askOff?: string | null, runToken?: string | null, onChangeOwner?: ((term: string) => void) | null, busy?: boolean, children?: React.ReactNode }} props
@@ -46,6 +47,12 @@ function Result({ review, documentText, documentId, askOff, runToken, onChangeOw
   const summary = review.summary;
   const marked = summary.marked ?? [];
   return (
+    <>
+    <CopyAll
+      key={JSON.stringify(review.outsideReferences?.map((r) => r.reviewed) ?? [])}
+      review={review}
+      ownerUnknownShown={!review.ownerParty && typeof onChangeOwner === "function" && (review.parties ?? []).length > 0}
+    />
     <div className="results">
       <section className="pane summary-pane" aria-labelledby="summary-title">
         <div className="pane-head">
@@ -82,5 +89,6 @@ function Result({ review, documentText, documentId, askOff, runToken, onChangeOw
         }
       />
     </div>
+    </>
   );
 }
