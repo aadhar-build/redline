@@ -29,6 +29,8 @@ export default function PasteForm({ account = "off", runToken = null }) {
   // Where OCR read the file's text (ADR 0008): [start, end] offsets, posted with the text so Review
   // can apply the unreadable-amount rule. Empty for any text that did not come from OCR.
   const [ocrRanges, setOcrRanges] = useState([]);
+  // The pages OCR read and the file's page count, for the scanned note (QUESTIONS 18). Numbers only.
+  const [ocrPages, setOcrPages] = useState({ pages: [], pageCount: null });
   const [removedLines, setRemovedLines] = useState([]); // running lines left out of a PDF; never sent
   const [state, setState] = useState({ kind: "empty" });
   const fileInput = useRef(null);
@@ -39,6 +41,7 @@ export default function PasteForm({ account = "off", runToken = null }) {
     setFileSource(null);
     setHiddenText(false);
     setOcrRanges([]);
+    setOcrPages({ pages: [], pageCount: null });
     setRemovedLines([]);
     setText("");
     if (fileInput.current) fileInput.current.value = "";
@@ -55,6 +58,7 @@ export default function PasteForm({ account = "off", runToken = null }) {
     setFileSource(null);
     setHiddenText(false);
     setOcrRanges([]);
+    setOcrPages({ pages: [], pageCount: null });
     setRemovedLines([]);
     setText("");
     setState({ kind: "reading", progress: null });
@@ -78,6 +82,7 @@ export default function PasteForm({ account = "off", runToken = null }) {
       setFileSource(result.source);
       setHiddenText((result.hiddenRuns ?? 0) > 0);
       setOcrRanges(result.ocrRanges ?? []);
+      setOcrPages({ pages: result.ocrPages ?? [], pageCount: result.pageCount ?? null });
       setRemovedLines(Array.isArray(result.removed) ? result.removed : []);
       return setState({ kind: "empty" });
     }
@@ -109,12 +114,14 @@ export default function PasteForm({ account = "off", runToken = null }) {
       res = await fetch("/api/review", {
         method: "POST",
         headers: { "content-type": "application/json", ...(runToken ? { "x-redline-run-token": runToken } : {}) },
-        // ocrRanges goes only with a file's text that OCR read; it holds offsets, never file content.
+        // ocrRanges, ocrPages and pageCount go only with a file's text that OCR read; they are numbers,
+        // never file content.
         body: JSON.stringify({
           text: documentText,
           source,
           ...(ownerParty ? { ownerParty } : {}),
           ...(source === "pdf" && ocrRanges.length > 0 ? { ocrRanges } : {}),
+          ...(source === "pdf" && ocrPages.pages.length > 0 ? { ocrPages: ocrPages.pages, pageCount: ocrPages.pageCount } : {}),
         }),
       });
       data = await res.json();

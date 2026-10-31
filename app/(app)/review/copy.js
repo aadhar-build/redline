@@ -44,6 +44,19 @@ export const COPY = {
     "Redline isn't supposed to use the highlighted words, because they hedge or pass judgment the contract doesn't back up. Check those parts against the contract.",
   // Ticket 22, ruling C(b): numbers in Redline's own text that the contract doesn't contain.
   numberNote: "The highlighted numbers aren't in the contract. Check them against the contract before you rely on them.",
+  // QUESTIONS 18 (decided 2026-10-31): shown on any review whose document OCR read, in whole or part.
+  // scanned: { pages, pageCount } from the review; pages or pageCount may be null (unknown).
+  scannedNote: ({ pages, pageCount }) => {
+    const tail = "It may have misread a word or number, so check the ones you rely on against the original.";
+    if (pages == null) return `Redline read part of this document from a scan. ${tail}`;
+    if (pageCount != null && pages === pageCount) {
+      return pages === 1
+        ? `Redline read this one-page document from a scan. ${tail}`
+        : `Redline read all ${pages} pages of this document from a scan. ${tail}`;
+    }
+    if (pageCount != null) return `Redline read ${pages} of this document's ${pageCount} pages from a scan. ${tail}`;
+    return `Redline read ${pages} ${pages === 1 ? "page" : "pages"} of this document from a scan. ${tail}`;
+  },
   // Ticket 22, ruling C(a).
   templateNote:
     "This looks like a blank form with gaps still to fill in. Redline describes what the form provides for, not what anyone has agreed to or signed.",

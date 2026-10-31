@@ -60,6 +60,8 @@ async function handle(request, adapter) {
         adapter,
         ownerParty,
         ocrRanges: body?.ocrRanges,
+        ocrPages: body?.ocrPages,
+        pageCount: body?.pageCount,
       });
       return json({ review: result, documentId, saved: documentId ? "saved" : "incomplete" }, 200);
     }
@@ -70,6 +72,8 @@ async function handle(request, adapter) {
       ownerParty,
       // Where OCR read the text (ADR 0008); only a PDF's text has any.
       ocrRanges: body?.source === "pdf" ? body?.ocrRanges : undefined,
+      ocrPages: body?.source === "pdf" ? body?.ocrPages : undefined,
+      pageCount: body?.source === "pdf" ? body?.pageCount : undefined,
     });
     return json({ review: result, documentId: null, saved: "signed-out" }, 200);
   } catch (err) {

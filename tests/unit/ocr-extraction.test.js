@@ -28,7 +28,7 @@ describe("readPdf with OCR", () => {
     const ocr = fakeOcr({ 2: [mid("The Supplier delivers the goods."), mid("Payment is due in 30 days.")] });
     const result = await readPdf(pdfjs, makePdf([textPage(["This Agreement is made on 1 May."]), scanPage(), textPage(["Signed by both parties."])]), {}, { ocr });
     expect(ocr.read).toEqual([2]);
-    expect(result).toMatchObject({ kind: "text", source: "pdf", ocrPages: [2] });
+    expect(result).toMatchObject({ kind: "text", source: "pdf", ocrPages: [2], pageCount: 3 });
     expect(result.text).toBe(
       "This Agreement is made on 1 May.\nThe Supplier delivers the goods.\nPayment is due in 30 days.\nSigned by both parties.",
     );

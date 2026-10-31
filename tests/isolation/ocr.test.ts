@@ -65,6 +65,8 @@ beforeAll(async () => {
     redLines: [],
     adapter: createFakeAdapter({ responses: [reply] }),
     ocrRanges,
+    ocrPages: [2],
+    pageCount: 2,
   });
   if (!result.documentId) throw new Error("the OCR document was not saved");
   savedId = result.documentId;
@@ -125,6 +127,37 @@ describe("OCR ranges and the unreadable-amount reason", () => {
       .single();
     expect(error).toBeNull();
     expect(data!.ocr_ranges).toEqual([]);
+  });
+
+  it("stores the pages OCR read, shows the scanned note, and keeps it on reopen (QUESTIONS 18)", async () => {
+    const { data } = await a.from("documents").select("ocr_pages, page_count").eq("id", savedId).single();
+    expect(data).toEqual({ ocr_pages: [2], page_count: 2 });
+    expect(firstReview.scanned).toEqual({ pages: 1, pageCount: 2 });
+    const opened = await openSaved({ db: a, documentId: savedId });
+    expect(opened!.review!.scanned).toEqual({ pages: 1, pageCount: 2 });
+    const { data: theirs } = await b.from("documents").select("ocr_pages").eq("id", savedId);
+    expect(theirs).toEqual([]);
+  });
+
+  it("accepts both reason codes added after the first list", async () => {
+    for (const reason of ["unsupported-number", "unreadable-amount"]) {
+      const { error } = await a.from("reviews").insert({
+        document_id: savedId, red_lines: [], summary: "s", flags: [], withheld: [{ reason }], withheld_count: 1,
+      });
+      expect(error).toBeNull();
+    }
+  });
+
+  it.each([
+    ["repeated", [1, 1], 2],
+    ["past the page count", [3], 2],
+    ["zero", [0], 2],
+    ["a string", ["1"], 2],
+  ])("refuses OCR pages that are %s", async (_, pages, count) => {
+    const { error } = await a
+      .from("documents")
+      .insert({ title: "x", source_kind: "pdf", extracted_text: "Some text here.", ocr_pages: pages, page_count: count });
+    expect(error).not.toBeNull();
   });
 
   it("still refuses a withheld reason that is not one of Review's codes", async () => {

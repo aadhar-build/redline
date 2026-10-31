@@ -101,10 +101,13 @@ test("an image-only PDF is read by OCR in the browser, and only its text and OCR
   await page.getByRole("button", { name: COPY.submit }).click();
   await expect.poll(() => requests.filter((q) => q.method === "POST").length).toBe(1);
   const body = postedBody(requests);
-  expect(Object.keys(body)).toEqual(["text", "source", "ocrRanges"]);
+  expect(Object.keys(body)).toEqual(["text", "source", "ocrRanges", "ocrPages", "pageCount"]);
   expect(body.source).toBe("pdf");
   expect(body.text).toBe(text);
   expect(body.ocrRanges).toEqual([[0, text.length]]);
+  expect(body.ocrPages).toEqual([1]);
+  expect(body.pageCount).toBe(1);
+  await expect(page.getByTestId("scanned-note")).toHaveText(COPY.scannedNote({ pages: 1, pageCount: 1 }), { timeout: 150_000 });
   expectOwnOrigin(requests, baseURL);
 });
 
@@ -125,6 +128,9 @@ test("a PDF with text on some pages only keeps the typed page and OCRs the scann
   await expect.poll(() => requests.filter((q) => q.method === "POST").length).toBe(1);
   const body = postedBody(requests);
   expect(body.ocrRanges).toEqual([[typed[0].length + 1, text.length]]);
+  expect(body.ocrPages).toEqual([2]);
+  expect(body.pageCount).toBe(2);
+  await expect(page.getByTestId("scanned-note")).toHaveText(COPY.scannedNote({ pages: 1, pageCount: 2 }), { timeout: 150_000 });
   expectOwnOrigin(requests, baseURL);
 });
 

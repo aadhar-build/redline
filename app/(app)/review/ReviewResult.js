@@ -35,6 +35,9 @@ export default function ReviewResult({
           <h2 className="pane-title" id="summary-title">{COPY.summaryCaption}</h2>
         </div>
         <div className="summary-body" aria-live="polite">
+          {review.scanned && (
+            <p className="template-note" data-testid="scanned-note">{COPY.scannedNote(review.scanned)}</p>
+          )}
           {review.template && <p className="template-note" data-testid="template-note">{COPY.templateNote}</p>}
           <p className="summary-text" data-testid="summary">
             <MarkedText text={summary.text} marked={marked} />
