@@ -346,3 +346,24 @@ describe("Source sentence check: extraction-shaped fixtures (research 09, sectio
     }
   }
 });
+
+describe("boundary walk on hostile input", () => {
+  it("stays fast and fails closed on a very long run of heading lines", () => {
+    const headings = Array.from({ length: 50000 }, (_, i) => `Clause ${i + 1}`).join("\n");
+    const text = `Intro text here.\n${headings}\nThe Supplier shall pay the fee.`;
+    const started = Date.now();
+    const result = checkSource(text, "The Supplier shall pay the fee.");
+    expect(Date.now() - started).toBeLessThan(2000);
+    // The heading chain is longer than the walk follows, so the quote is withheld.
+    expect(result.found).toBe(false);
+  });
+
+  it("still accepts a short heading chain", () => {
+    const text = "Intro text here.\n\n12.\nLimitation of Liability\nThe Supplier's liability is capped at the fees paid.";
+    expect(checkSource(text, "The Supplier's liability is capped at the fees paid.").found).toBe(true);
+  });
+
+  it("checkSources withholds instead of throwing", () => {
+    expect(checkSources({ toString() { throw new Error("boom"); } }, ["x."]).found).toBe(false);
+  });
+});
