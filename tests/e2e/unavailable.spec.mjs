@@ -16,3 +16,9 @@ test("the review route refuses to run", async ({ request }) => {
   expect(res.status()).toBe(503);
   expect(await res.json()).toEqual({ error: "unavailable" });
 });
+
+test("the question route refuses to run", async ({ request }) => {
+  const res = await request.post("/api/ask", { data: { text: "Any contract text.", question: "Is there a deposit?" } });
+  expect(res.status()).toBe(503);
+  expect(await res.json()).toEqual({ error: "unavailable" });
+});

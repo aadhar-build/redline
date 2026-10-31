@@ -5,6 +5,7 @@
 
 import { useState } from "react";
 import { COPY } from "./copy";
+import QuestionBox from "./QuestionBox";
 
 const MAX_LENGTH = 200_000;
 
@@ -52,7 +53,7 @@ export default function PasteForm() {
     if (!res.ok) return setState({ kind: "error", code: data?.error ?? "failed" });
     const summary = data?.review?.summary;
     if (summary?.status === "shown") {
-      return setState({ kind: "summary", text: summary.text, marked: summary.marked ?? [] });
+      return setState({ kind: "summary", text: summary.text, marked: summary.marked ?? [], documentText: text });
     }
     return setState({ kind: "error", code: summary?.reason ?? "failed" });
   }
@@ -96,6 +97,7 @@ export default function PasteForm() {
                 <p className="marked-note" data-testid="marked-note">{COPY.markedNote}</p>
               )}
               <p className="summary-note">{COPY.summaryNote}</p>
+              <QuestionBox key={state.documentText} documentText={state.documentText} />
             </>
           ) : (
             <p className="summary-empty">{busy ? COPY.submitBusy : COPY.emptyState}</p>

@@ -1,0 +1,147 @@
+{
+  "_note": "Question set for fixtures/contracts/vendor-agreement-01.txt (PRD criterion 10), with the scripted model reply the fake adapter returns for each. inDocument says whether the contract answers the question; expect is what Redline must return. Some replies misbehave on purpose: a not-in-document reply that also carries a general-knowledge answer, answers with no sources, invented or altered sources, unreadable output, and an answer that uses a banned word. These prove how Redline handles model output, not what a real model does.",
+  "questions": [
+    {
+      "question": "What is the GST rate on the monthly fee?",
+      "inDocument": false,
+      "expect": "not-in-document",
+      "reply": { "status": "not-in-document" }
+    },
+    {
+      "question": "Is there a security deposit?",
+      "inDocument": false,
+      "expect": "not-in-document",
+      "reply": { "status": "not-in-document" }
+    },
+    {
+      "question": "Can Vendor subcontract the cleaning to another company?",
+      "inDocument": false,
+      "expect": "not-in-document",
+      "reply": { "status": "not-in-document" }
+    },
+    {
+      "question": "What is the legal maximum interest a supplier can charge on late payments in India?",
+      "inDocument": false,
+      "expect": "not-in-document",
+      "reply": { "status": "not-in-document" }
+    },
+    {
+      "question": "How many cleaners will Vendor send each night?",
+      "inDocument": false,
+      "expect": "not-in-document",
+      "reply": { "status": "not-in-document" }
+    },
+    {
+      "question": "What happens if a dispute goes to arbitration?",
+      "inDocument": false,
+      "expect": "not-in-document",
+      "_misbehaves": "Says not-in-document but also sends a general-knowledge answer, which must never be shown.",
+      "reply": {
+        "status": "not-in-document",
+        "answer": "Under the Arbitration and Conciliation Act, 1996, a sole arbitrator decides the dispute and the award is binding."
+      }
+    },
+    {
+      "question": "Does Customer get a refund if a night's cleaning is missed?",
+      "inDocument": false,
+      "expect": "withheld",
+      "_misbehaves": "Answers from general knowledge and cites nothing.",
+      "reply": {
+        "status": "answered",
+        "answer": "Customer is entitled to a pro rata refund for any service not delivered.",
+        "sources": []
+      }
+    },
+    {
+      "question": "How much notice does Vendor give before raising the fee?",
+      "inDocument": false,
+      "expect": "withheld",
+      "_misbehaves": "Cites a sentence the contract does not contain.",
+      "reply": {
+        "status": "answered",
+        "answer": "Vendor gives thirty days' written notice before any fee increase.",
+        "sources": ["Vendor will give Customer thirty days' written notice of any fee increase."]
+      }
+    },
+    {
+      "question": "How much notice does Customer need to give to stop the agreement renewing?",
+      "inDocument": true,
+      "expect": "answered",
+      "reply": {
+        "status": "answered",
+        "answer": "Customer has to give written notice at least ninety days before the end of a term. Without it, the agreement renews for another two years.",
+        "sources": [
+          "It renews automatically for further two-year terms unless Customer gives written notice at least ninety days before the end of a term."
+        ]
+      }
+    },
+    {
+      "question": "When is each invoice due, and what happens if it is paid late?",
+      "inDocument": true,
+      "expect": "answered",
+      "reply": {
+        "status": "answered",
+        "answer": "Each invoice is due within seven days of its date. Any amount not paid on time carries interest at 2% a month.",
+        "sources": [
+          "Customer will pay each invoice within seven days of the invoice date.",
+          "Customer will pay interest at 2% per month on any amount not paid on time."
+        ]
+      }
+    },
+    {
+      "question": "Which courts hear disputes?",
+      "inDocument": true,
+      "expect": "answered",
+      "reply": {
+        "status": "answered",
+        "answer": "Only the courts at Pune. Indian law governs the agreement.",
+        "sources": ["This Agreement is governed by the laws of India, and the courts at Pune have exclusive jurisdiction."]
+      }
+    },
+    {
+      "question": "How long is the notice period for ending the renewal?",
+      "inDocument": true,
+      "expect": "withheld",
+      "_misbehaves": "Quotes the renewal sentence with ninety changed to sixty.",
+      "reply": {
+        "status": "answered",
+        "answer": "Customer has to give written notice at least sixty days before the end of a term.",
+        "sources": [
+          "It renews automatically for further two-year terms unless Customer gives written notice at least sixty days before the end of a term."
+        ]
+      }
+    },
+    {
+      "question": "What does it cost to leave early?",
+      "inDocument": true,
+      "expect": "withheld",
+      "_misbehaves": "One good source and one cut short before its end, so the whole answer is withheld.",
+      "reply": {
+        "status": "answered",
+        "answer": "Customer pays the monthly fee for every month left in the term.",
+        "sources": [
+          "If Customer ends this Agreement before the end of a term, Customer will pay Vendor the monthly fee for every month left in that term.",
+          "Vendor's total liability under this Agreement will not exceed"
+        ]
+      }
+    },
+    {
+      "question": "Can Vendor raise the fee?",
+      "inDocument": true,
+      "expect": "answered",
+      "_misbehaves": "Uses the banned word \"may\" in Redline's own words, so it is shown with the word marked.",
+      "reply": {
+        "status": "answered",
+        "answer": "Yes. Vendor may raise the monthly fee by up to 10% at each renewal.",
+        "sources": ["Vendor may increase the monthly fee by up to 10% at each renewal."]
+      }
+    },
+    {
+      "question": "Sum up clause 6 in one line.",
+      "inDocument": true,
+      "expect": "withheld",
+      "_misbehaves": "Replies in prose instead of JSON.",
+      "reply": "Clause 6 caps Vendor's liability at one month's fee."
+    }
+  ]
+}
