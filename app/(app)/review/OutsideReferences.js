@@ -14,6 +14,7 @@ import { Glyph, Tick, SEVERITY_LABELS } from "../../Glyph";
 import { formatSavedAt } from "../library/format";
 import { COPY } from "./copy";
 import MarkedText from "./MarkedText";
+import CounterOffer from "./CounterOffer";
 
 const KIND = { "dont-sign-as-written": "dont", negotiate: "negotiate", "know-this": "know" };
 
@@ -114,13 +115,7 @@ function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onRevi
           <figcaption>{COPY.flags.sourceCaption}</figcaption>
           <blockquote data-testid="source-sentence">{reference.sourceSentences[0].text}</blockquote>
         </figure>
-        {/* TICKET 08 HOOK: when ticket 08's Counter-offer box lands, show this through it. */}
-        {reference.counterOffer?.text ? (
-          <figure className="counter">
-            <figcaption>{copy.counterOfferCaption}</figcaption>
-            <p data-testid="outside-counter-offer">{reference.counterOffer.text}</p>
-          </figure>
-        ) : null}
+        <CounterOffer counterOffer={reference.counterOffer ?? null} number={number} />
         <div className="outside-review" data-testid="outside-review">
           {reviewed ? (
             <p className="basis basis-statement" data-testid="outside-statement">

@@ -147,10 +147,9 @@ export const COPY = {
   outside: {
     keyLabel: "Outside reference",
     title: "Outside references",
-    lede: "These sentences pull in terms from documents Redline wasn't given, so it hasn't read those terms.",
+    lede: "These sentences bring in terms from documents Redline wasn't given, so it hasn't read those terms.",
     notReviewedTag: "Not reviewed",
-    reviewedTag: "Marked reviewed by you",
-    counterOfferCaption: "Counter-offer",
+    reviewedTag: "You marked this reviewed",
     notReviewed: "You haven't marked this as reviewed, so this contract can't get a Clean result yet.",
     statementLabel: "Your statement",
     statement: (when) =>

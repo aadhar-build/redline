@@ -37,7 +37,7 @@ test("each seeded kind is raised with its Source sentence, and nothing fetches t
   await expect(refs.getByTestId("outside-state")).toHaveText(Array(4).fill(COPY.outside.notReviewedTag));
   for (const r of await refs.all()) {
     await expect(r).toHaveAttribute("data-severity", "negotiate");
-    await expect(r.getByTestId("outside-counter-offer")).toContainText("written agreement of both parties");
+    await expect(r.getByTestId("counter-offer-text")).toContainText("written agreement of both parties");
     await expect(r.getByTestId("outside-sign-in")).toHaveText(COPY.outside.signInToMark);
   }
   // The model gave no flags, but the review does not say it has none, and is not a Clean result.

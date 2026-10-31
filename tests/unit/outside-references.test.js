@@ -14,6 +14,7 @@ import { createLocalFakeAdapter } from "../../lib/review/adapters/index.js";
 import { DEFAULT_RED_LINES } from "../../lib/review/red-lines.js";
 import { reopenReview, toStoredReview } from "../../lib/review/saved.js";
 import {
+  MAX_REFERENCE_MATCHES,
   findOutsideReferences,
   ONE_SIDED_CHANGES_ID,
   outsideReferenceCounterOffer,
@@ -284,5 +285,29 @@ describe("saved Outside references", () => {
     expect(storedWithMark(r.outsideReferences, SOW, "yes", "2026-10-31T10:00:00.000Z")).toBeNull();
     // The sentence is matched after the ADR 0010 normalisations, so curly quotes still find it.
     expect(storedWithMark(r.outsideReferences, normalise(WEB).replace("'", "’"), true, "t")).not.toBeNull();
+  });
+});
+
+describe("cost limits (security review)", () => {
+  it("a long adversarial bare-domain string finishes quickly", () => {
+    const evil = "a".repeat(20000) + "-".repeat(20000) + "!";
+    const dots = "a.".repeat(20000) + "1";
+    const t0 = performance.now();
+    findOutsideReferences(`1.1 The terms ${evil}.`);
+    findOutsideReferences(`1.2 The terms ${dots}.`);
+    expect(performance.now() - t0).toBeLessThan(100);
+  });
+
+  it("a bare domain needs a letter in each label", () => {
+    expect(findOutsideReferences("1.1 Pay 4.in full.").found).toEqual([]);
+    expect(findOutsideReferences("1.1 See brightline.com for terms.").found).toHaveLength(1);
+  });
+
+  it("matches beyond the cap are counted as failed, so they still block", () => {
+    const n = MAX_REFERENCE_MATCHES + 5;
+    const text = Array.from({ length: n }, (_, i) => `${i + 1}.1 The work is in each Statement of Work.`).join("\n");
+    const { found, failed } = findOutsideReferences(text);
+    expect(found.length + failed).toBe(n);
+    expect(failed).toBeGreaterThanOrEqual(5);
   });
 });
