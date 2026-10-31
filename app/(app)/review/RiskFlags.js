@@ -7,7 +7,7 @@
 import { useState } from "react";
 import { Glyph, Tick, SEVERITY_LABELS } from "../../Glyph";
 import { COPY } from "./copy";
-import MarkedText from "./MarkedText";
+import MarkedText, { isNumberMark } from "./MarkedText";
 
 // Review's Severity ids, in their fixed group order, and the glyph each one uses.
 const GROUPS = [
@@ -27,7 +27,7 @@ function OwnText({ part }) {
 function Withheld({ count, withheld }) {
   if (count === 0) return null;
   const by = (reason) => withheld.filter((w) => w.reason === reason).length;
-  const reasons = ["source-not-found", "no-source", "unreadable"].filter((r) => by(r) > 0);
+  const reasons = ["source-not-found", "unsupported-number", "no-source", "unreadable"].filter((r) => by(r) > 0);
   return (
     <p className="withheld is-shown" data-testid="withheld">
       <Glyph kind="withheld" />
@@ -121,7 +121,8 @@ function RedLinesChecked({ redLines }) {
   );
 }
 
-export default function RiskFlags({ review }) {
+// above: shown under the pane heading, before the flags (the Owner line, ticket 22).
+export default function RiskFlags({ review, above = null }) {
   const flags = review.riskFlags ?? [];
   // Every flag starts open, so each Source sentence is on screen without a click.
   const [closed, setClosed] = useState(() => new Set());
@@ -133,7 +134,9 @@ export default function RiskFlags({ review }) {
     });
 
   const unreadable = review.riskFlagsStatus !== "checked";
-  const anyMarked = flags.some((f) => [f.title, f.says, f.judgment].some((p) => p && p.marked?.length > 0));
+  const marks = flags.flatMap((f) => [f.title, f.says, f.judgment].flatMap((p) => p?.marked ?? []));
+  const anyMarked = marks.some((m) => !isNumberMark(m));
+  const anyNumber = marks.some(isNumberMark);
 
   return (
     <section className="pane flags-pane" aria-labelledby="flags-title" data-testid="risk-flags">
@@ -141,6 +144,7 @@ export default function RiskFlags({ review }) {
         <h2 className="pane-title" id="flags-title">{COPY.flags.title}</h2>
         {!unreadable && <p className="pane-status">{COPY.flags.status(flags.length)}</p>}
       </div>
+      {above}
 
       {unreadable ? (
         <p className="flags-message" role="alert" data-testid="flags-unreadable">{COPY.flags.unreadable}</p>
@@ -162,6 +166,8 @@ export default function RiskFlags({ review }) {
               </li>
             </ul>
           </div>
+
+          <p className="severity-note" data-testid="severity-note">{COPY.flags.severityNote}</p>
 
           <Withheld count={review.withheldCount ?? 0} withheld={review.withheld ?? []} />
 
@@ -197,6 +203,7 @@ export default function RiskFlags({ review }) {
           )}
 
           {anyMarked && <p className="marked-note flags-note" data-testid="flags-marked-note">{COPY.markedNote}</p>}
+          {anyNumber && <p className="marked-note flags-note" data-testid="flags-number-note">{COPY.numberNote}</p>}
 
           <RedLinesChecked redLines={review.redLinesChecked ?? []} />
         </>

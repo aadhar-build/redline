@@ -73,7 +73,10 @@ describe("Review seam: summary", () => {
       adapter: createFakeAdapter({ responses: [reply(text)] }),
     });
 
-    expect(result.summary).toEqual({ status: "shown", text, marked: [] });
+    // No hedge or verdict word is marked. The fixture has neither 5,000 nor 2027, so since ticket 22
+    // (ruling C(b)) those two numbers are marked as numbers the document does not contain.
+    expect(result.summary.marked.filter((m) => m.kind !== "number")).toEqual([]);
+    expect(result.summary.marked.map((m) => m.phrase)).toEqual(["5,000", "2027"]);
   });
 
   it("shows a summary whose only hedge word sits in a sentence quoted word for word from the document", async () => {

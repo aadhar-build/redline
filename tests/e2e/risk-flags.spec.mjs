@@ -62,8 +62,20 @@ test("flags are grouped by Severity in the fixed order, in document order inside
   ]);
 });
 
-test("a judgment the Source sentence cannot prove carries the label Redline's judgment", async ({ page }) => {
+test("a judgment that claims what is usual or standard is not shown, and its flag still is (ticket 22, ruling D)", async ({ page }) => {
   await reviewVendorAgreement(page);
+  // Both scripted judgments compare the clause with what is usual or standard, so both are dropped.
+  await expect(page.getByTestId("flag-judgment")).toHaveCount(0);
+  await expect(page.getByTestId("risk-flag").filter({ hasText: "Paying out the rest of the term" })).toHaveCount(1);
+  const body = await page.locator("body").textContent();
+  expect(body).not.toContain("usually carries");
+  expect(body).not.toContain("not standard");
+});
+
+test("a judgment the Source sentence cannot prove carries the label Redline's judgment", async ({ page }) => {
+  await page.goto("/review");
+  await page.getByLabel(COPY.fieldLabel).fill(read("fixtures/contracts/licence-form-01.txt"));
+  await page.getByRole("button", { name: COPY.submit }).click();
   const judgments = page.getByTestId("flag-judgment");
   await expect(judgments).toHaveCount(2);
   for (const j of await judgments.all()) {

@@ -107,12 +107,14 @@ describe("Review seam: Risk flags from the scripted vendor agreement", () => {
     ]);
   });
 
-  it("labels every Market standard or unusualness claim Redline's judgment", async () => {
+  it("drops a judgment that claims what is usual, and still shows the flag (ticket 22, ruling D)", async () => {
     const result = await review({ documentText: vendorText, redLines: [], adapter: createLocalFakeAdapter({ root }) });
     const exit = result.riskFlags.find((f) => f.title.text.startsWith("Paying out"));
-    expect(exit.judgment).toMatchObject({ isJudgment: true });
-    expect(exit.judgment.text).toContain("usually");
+    // The scripted judgment says the terms are "usually" different, a claim v1 no longer shows.
+    expect(exit.judgment).toBeNull();
     expect(exit.says.isJudgment).toBe(false);
+    expect(exit.sourceSentences.length).toBeGreaterThan(0);
+    expect(result.judgmentsDropped).toBeGreaterThanOrEqual(1);
     for (const f of result.riskFlags) {
       if (f.judgment) expect(f.judgment.isJudgment).toBe(true);
     }
