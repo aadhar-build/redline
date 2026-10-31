@@ -8,7 +8,7 @@
 
 **Needs approval for:** None
 
-**Status:** ready-for-agent
+**Status:** merged into `development` (2026-10-31), Clean result held back by a gate until tickets 13 and 07
 
 - [x] Clean result content: the plain statement, every Red line in the Review input, and the Know this flags (PRD criterion 7).
 - [x] The verdict-word check on Clean result text finds zero "safe", "fine" or "good to sign" (PRD criterion 8).
