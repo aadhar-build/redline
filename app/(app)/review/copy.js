@@ -106,6 +106,12 @@ export const COPY = {
     unreadable: "Redline couldn't read the Risk flags it got back, so it isn't showing any. Try again.",
     emptyGroup: "None at this level.",
   },
+  // Ticket 07: an Ambiguous clause and its readings, none chosen.
+  ambiguous: {
+    label: "Ambiguous clause",
+    lede: "This clause can be read more than one way. Redline lists each reading without picking one.",
+    readingCaption: (i, n) => `Reading ${i} of ${n}`,
+  },
   // Tickets 08 and 17.
   counterOffer: {
     caption: "Counter-offer",
@@ -132,7 +138,7 @@ export const COPY = {
     noKnowThis: "There are no Know this flags either.",
     // Shown while the Clean result is held back (lib/review/clean-result-gate.js) on a review that would
     // otherwise be one.
-    held: "Redline can't check for Outside references or Ambiguous clauses yet, so it isn't giving this contract a Clean result.",
+    held: "Redline can't check for Outside references yet, so it isn't giving this contract a Clean result.",
   },
   redLines: {
     title: "Red lines checked",
