@@ -1,7 +1,12 @@
 // Builds small PDFs byte by byte for tests, so no real contract or scan is ever committed and no
 // PDF-writing dependency is needed. Text uses the standard Helvetica font (ASCII only).
 //
-//   textPage(lines)            a page of visible text, one line per entry
+//   textPage(lines, opts?)     a page of visible text, one line per entry. opts: { top, header,
+//                              footer }: top is the first line's baseline in points from the top
+//                              edge (default 72); header and footer are lines drawn 36 points from
+//                              the top and bottom edges, where a running header or page number sits;
+//                              footerAt moves the footer (points from the bottom edge), and
+//                              footerFirst draws it first, so pdf.js reads it before the body
 //   scanPage()                 a page that is one full-page image and no text
 //   hiddenOcrPage(lines)       a full-page image with the lines drawn invisibly (text render mode 3),
 //                              the way a scanner's OCR makes a scan searchable
@@ -12,16 +17,26 @@ const HEIGHT = 792;
 
 const escapePdfString = (s) => s.replace(/[\\()]/g, (c) => `\\${c}`);
 
-function textOps(lines, mode = 0) {
-  const out = ["BT", "/F1 11 Tf", `${mode} Tr`, "14 TL", `72 ${HEIGHT - 72} Td`];
+function textOps(lines, mode = 0, top = 72) {
+  const out = ["BT", "/F1 11 Tf", `${mode} Tr`, "14 TL", `72 ${HEIGHT - top} Td`];
   for (const line of lines) out.push(`(${escapePdfString(line)}) Tj`, "T*");
   out.push("ET");
   return out.join("\n");
 }
 
+const lineAt = (text, y) => `BT /F1 9 Tf 0 Tr 72 ${y} Td (${escapePdfString(text)}) Tj ET`;
+
 const IMAGE_DRAW = `q ${WIDTH} 0 0 ${HEIGHT} 0 0 cm /Im1 Do Q`;
 
-export const textPage = (lines) => ({ content: textOps(lines), image: false });
+export const textPage = (lines, { top = 72, header, footer, footerAt = 36, footerFirst = false } = {}) => ({
+  content: [
+    footer !== undefined && footerFirst ? lineAt(footer, footerAt) : "",
+    header === undefined ? "" : lineAt(header, HEIGHT - 36),
+    textOps(lines, 0, top),
+    footer === undefined || footerFirst ? "" : lineAt(footer, footerAt),
+  ].filter(Boolean).join("\n"),
+  image: false,
+});
 export const scanPage = () => ({ content: IMAGE_DRAW, image: true });
 export const hiddenOcrPage = (lines) => ({ content: `${IMAGE_DRAW}\n${textOps(lines, 3)}`, image: true });
 

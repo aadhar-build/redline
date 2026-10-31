@@ -1,6 +1,7 @@
 // Builds small DOCX files with JSZip for tests, so no real contract is committed.
-//   makeDocx({ body, numbering?, styles? }) -> Promise<Buffer>
-// body, numbering and styles are WordprocessingML fragments (the inside of w:body, w:numbering, w:styles).
+//   makeDocx({ body, numbering?, styles?, footnotes?, endnotes? }) -> Promise<Buffer>
+// Each is a WordprocessingML fragment: the inside of w:body, w:numbering, w:styles, w:footnotes or
+// w:endnotes.
 
 import JSZip from "jszip";
 
@@ -19,7 +20,7 @@ export const numPr = (numId, ilvl = 0) => `<w:numPr><w:ilvl w:val="${ilvl}"/><w:
 const REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 const CT = "application/vnd.openxmlformats-officedocument.wordprocessingml";
 
-export async function makeDocx({ body, numbering, styles }) {
+export async function makeDocx({ body, numbering, styles, footnotes, endnotes }) {
   const zip = new JSZip();
   const overrides = [`<Override PartName="/word/document.xml" ContentType="${CT}.document.main+xml"/>`];
   const docRels = [];
@@ -32,6 +33,12 @@ export async function makeDocx({ body, numbering, styles }) {
     overrides.push(`<Override PartName="/word/styles.xml" ContentType="${CT}.styles+xml"/>`);
     docRels.push(`<Relationship Id="rId2" Type="${REL}/styles" Target="styles.xml"/>`);
     zip.file("word/styles.xml", `${XML}<w:styles ${W}>${styles}</w:styles>`);
+  }
+  for (const [kind, notes, id] of [["footnotes", footnotes, "rId3"], ["endnotes", endnotes, "rId4"]]) {
+    if (!notes) continue;
+    overrides.push(`<Override PartName="/word/${kind}.xml" ContentType="${CT}.${kind}+xml"/>`);
+    docRels.push(`<Relationship Id="${id}" Type="${REL}/${kind}" Target="${kind}.xml"/>`);
+    zip.file(`word/${kind}.xml`, `${XML}<w:${kind} ${W}>${notes}</w:${kind}>`);
   }
   zip.file(
     "[Content_Types].xml",

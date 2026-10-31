@@ -39,6 +39,14 @@ describe("looksEnglish (ADR 0009)", () => {
     for (const s of samples) expect(looksEnglish(s)).toBe(false);
   });
 
+  it("judges the whole document, so a Hindi stamp-paper block, a Devanagari seal and ₹ amounts don't reject it", () => {
+    const stampPaper =
+      "भारतीय गैर न्यायिक\nदिल्ली DELHI\nई-स्टाम्प प्रमाणपत्र संख्या\nमुहर\n" +
+      "This agreement is made between the Licensor and the Licensee. The Licensee shall pay ₹ 1,50,000 every month to the Licensor, and a deposit of ₹ 4,50,000 which shall be returned within thirty days of the end of the term. The Licensee shall not sublet the premises without the consent of the Licensor.\n" +
+      "मुहर / सील";
+    expect(looksEnglish(stampPaper)).toBe(true);
+  });
+
   it("does not judge text too short to tell", () => {
     expect(looksEnglish("Kesari Cleaning Services Private Limited")).toBe(true);
   });
@@ -149,6 +157,32 @@ describe("scanned-page copy", () => {
 
   it("states the same file size limit the code applies", () => {
     expect(COPY.errors["too-large"]).toContain(`${MAX_FILE_BYTES / 1024 / 1024} MB`);
+  });
+
+  it("rejects a file over the limit before reading a byte of it", async () => {
+    const { extractFile } = await import("../../lib/extraction/index.js");
+    const file = {
+      name: "big.pdf",
+      size: MAX_FILE_BYTES + 1,
+      arrayBuffer() {
+        throw new Error("the file was read");
+      },
+    };
+    expect(MAX_FILE_BYTES).toBe(100 * 1024 * 1024);
+    expect(await extractFile(file)).toEqual({ kind: "rejected", reason: "too-large" });
+  });
+
+  it("names up to five left-out running lines and the total line count", () => {
+    expect(COPY.removedLines([{ text: "Page 2", count: 1 }])).toBe(
+      'Redline left out 1 line it read as a running header or page number: "Page 2".',
+    );
+    expect(COPY.removedLines([{ text: "Acme Ltd", count: 3 }, { text: "Draft", count: 3 }])).toBe(
+      'Redline left out 6 lines it read as running headers or page numbers: "Acme Ltd" and "Draft".',
+    );
+    const eight = Array.from({ length: 8 }, (_, i) => ({ text: `Page ${i + 1}`, count: 1 }));
+    expect(COPY.removedLines(eight)).toBe(
+      'Redline left out 8 lines it read as running headers or page numbers: "Page 1", "Page 2", "Page 3", "Page 4", "Page 5" and 3 more.',
+    );
   });
 
   it("builds the scanned-pages message", () => {

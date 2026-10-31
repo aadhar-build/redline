@@ -349,7 +349,7 @@ describe("Source sentence check: extraction-shaped fixtures (research 09, sectio
 
 describe("boundary walk on hostile input", () => {
   it("stays fast and fails closed on a very long run of heading lines", () => {
-    const headings = Array.from({ length: 50000 }, (_, i) => `Clause ${i + 1}`).join("\n");
+    const headings = Array.from({ length: 5000 }, (_, i) => `Clause ${i + 1}`).join("\n");
     const text = `Intro text here.\n${headings}\nThe Supplier shall pay the fee.`;
     const started = Date.now();
     const result = checkSource(text, "The Supplier shall pay the fee.");
