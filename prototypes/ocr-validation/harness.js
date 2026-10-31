@@ -4,6 +4,8 @@
 import * as pdfjs from 'pdfjs-dist';
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/nm/pdfjs-dist/build/pdf.worker.mjs';
+// Token from the driver; required by the server for /pdf/ and /save/.
+const TOKEN = new URL(location.href).searchParams.get('token') || '';
 const log = (s) => (document.getElementById('log').textContent += s + '\n');
 
 let worker;
@@ -92,12 +94,12 @@ function rotateCanvas(canvas, angle) {
 
 async function savePng(name, canvas) {
   const blob = await new Promise((r) => canvas.toBlob(r, 'image/png'));
-  await fetch('/save/' + name, { method: 'POST', body: blob });
+  await fetch('/save/' + name, { method: 'POST', body: blob, headers: { 'X-Harness-Token': TOKEN } });
 }
 
 async function ocrPages(id, pages, scale, opts = {}) {
   const t0 = performance.now();
-  const data = await (await fetch('/pdf/' + id)).arrayBuffer();
+  const data = await (await fetch('/pdf/' + encodeURIComponent(id), { headers: { 'X-Harness-Token': TOKEN } })).arrayBuffer();
   const doc = await pdfjs.getDocument({ data, isEvalSupported: false }).promise;
   const loadMs = performance.now() - t0;
   const out = [];
@@ -129,7 +131,7 @@ async function ocrPages(id, pages, scale, opts = {}) {
 }
 
 async function renderOnly(id, pages, scale) {
-  const data = await (await fetch('/pdf/' + id)).arrayBuffer();
+  const data = await (await fetch('/pdf/' + encodeURIComponent(id), { headers: { 'X-Harness-Token': TOKEN } })).arrayBuffer();
   const doc = await pdfjs.getDocument({ data, isEvalSupported: false }).promise;
   for (const n of pages) {
     const page = await doc.getPage(n);

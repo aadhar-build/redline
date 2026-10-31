@@ -15,6 +15,13 @@ import zlib from 'node:zlib';
 
 const [mode, base, browserName, ...rest] = process.argv.slice(2);
 const engines = { chromium, webkit };
+// Must match the server's HARNESS_TOKEN (serve-all.sh prints/exports it).
+const TOKEN = process.env.HARNESS_TOKEN || '';
+if (!TOKEN) {
+  console.error('HARNESS_TOKEN is required');
+  process.exit(1);
+}
+const withToken = (u, q = '') => u + '?' + (q ? q + '&' : '') + 'token=' + encodeURIComponent(TOKEN);
 
 async function open() {
   const browser = await engines[browserName].launch();
@@ -33,6 +40,12 @@ async function open() {
   context.on('response', async (res) => {
     const u = new URL(res.url());
     if (u.hostname !== 'localhost') return;
+    // Only size/compress first-load responses; doing it during OCR would steal
+    // CPU from the browser and skew the per-page timings.
+    if (phase !== 'load') {
+      responses.push({ phase, path: u.pathname, bytes: Number(res.headers()['content-length'] || 0) });
+      return;
+    }
     try {
       const body = await res.body();
       responses.push({
@@ -65,7 +78,7 @@ async function open() {
 if (mode === 'render') {
   const [id, pages, scale] = rest;
   const s = await open();
-  await s.page.goto(base);
+  await s.page.goto(withToken(base));
   await s.page.waitForFunction(() => window.harness);
   const n = await s.page.evaluate(
     ([id, pages, scale]) => window.harness.renderOnly(id, pages, scale),
@@ -77,7 +90,7 @@ if (mode === 'render') {
   const [planFile, outFile, scale = '2', query = ''] = rest;
   const plan = JSON.parse(fs.readFileSync(planFile, 'utf8'));
   const s = await open();
-  const url = base + (query ? '?' + query : '');
+  const url = withToken(base, query);
   const t0 = Date.now();
   await s.page.goto(url);
   await s.page.waitForFunction(() => window.harness, null, { timeout: 60000 });
