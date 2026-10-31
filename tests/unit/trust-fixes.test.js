@@ -72,9 +72,12 @@ describe("Ruling C(a): templates", () => {
     expect(prompt).not.toContain(TEMPLATE_PROMPT_LINE);
   });
 
-  it("tells the model never to call a form signed and to bring in no outside facts", async () => {
+  // Ticket 24 ruling 22 changed this rule's wording: a blank line is not evidence either way.
+  it("tells the model to call a document signed only where its text says so, and to bring in no outside facts", async () => {
     const { prompt } = await run(base());
-    expect(prompt).toContain("Never say it is signed, executed or dated.");
+    expect(prompt).toContain(
+      "- Say the document is signed, executed or dated only where its text states it. A blank signature or date line is not evidence either way.",
+    );
     expect(prompt).toContain("Bring in no facts from outside it");
     expect(prompt).toContain("Write every number exactly as the document writes it");
   });
@@ -99,6 +102,47 @@ describe("Ruling C(a): templates", () => {
     ["two underscores", "file_name__x"],
   ])("does not detect %s", (_, text) => {
     expect(looksLikeTemplate(text)).toBe(false);
+  });
+});
+
+describe("Ticket 24 ruling 22: only body blanks make a template", () => {
+  it.each([
+    ["a contents leader", "Definitions .......... 3"],
+    ["a contents leader with a roman numeral", "Preface .......... iv"],
+    ["signature and date lines", "Signature: ________\nDate: ______"],
+    ["a signature block", "For and on behalf of the Licensor\nAuthorised Signatory ____________\nName: ________\nPlace: ______  Seal and Stamp"],
+  ])("does not fire on %s alone", (_, text) => {
+    expect(looksLikeTemplate(text)).toBe(false);
+  });
+
+  it.each([
+    ["a day and month to fill in", "this ___ day of ____ 2024"],
+    ["an amount to fill in", "a monthly fee of Rs. ______"],
+    ["a black circle placeholder", "[●]"],
+    ["a dotted blank in a sentence", "The Licensee shall pay ........ per month."],
+  ])("fires on %s", (_, text) => {
+    expect(looksLikeTemplate(text)).toBe(true);
+  });
+
+  it("tells the model only that the document has blanks, never that it is unsigned or a form", async () => {
+    const { result, prompt } = await run(base(), { documentText: TEMPLATE });
+    expect(result.template).toBe(true);
+    expect(prompt).toContain("This document contains blanks.");
+    // The instructions only: the document itself is left out, and so is the reply-shape line
+    // ("Reply with JSON only, in the form {...}"), which describes the JSON, not the document.
+    const instructions = prompt
+      .slice(0, prompt.indexOf("<document>"))
+      .split("\n")
+      .filter((line) => !line.startsWith("Reply with JSON only, in the form {"))
+      .join("\n");
+    expect(instructions).not.toMatch(/\bunsigned\b/i);
+    expect(instructions).not.toMatch(/\bforms?\b/i);
+  });
+
+  it("gives the model no blanks line when the only blanks are signature and date lines", async () => {
+    const { result, prompt } = await run(base(), { documentText: `${LEASE}\nSignature: ________\nDate: ______` });
+    expect(result.template).toBe(false);
+    expect(prompt).not.toContain(TEMPLATE_PROMPT_LINE);
   });
 });
 
