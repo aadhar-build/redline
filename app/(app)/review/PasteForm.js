@@ -7,26 +7,11 @@
 import { useRef, useState } from "react";
 import { extractFile, extractPasted } from "../../../lib/extraction/index.js";
 import { COPY } from "./copy";
+import MarkedText from "./MarkedText";
+import QuestionBox from "./QuestionBox";
+import RiskFlags from "./RiskFlags";
 
 const MAX_LENGTH = 200_000;
-
-// Renders text with each marked span wrapped in <mark>. Spans are character offsets, in order.
-function MarkedText({ text, marked }) {
-  const parts = [];
-  let at = 0;
-  for (const { start, end } of marked) {
-    if (start < at || end > text.length) continue;
-    if (start > at) parts.push(text.slice(at, start));
-    parts.push(
-      <mark key={start} className="banned-word">
-        {text.slice(start, end)}
-      </mark>,
-    );
-    at = end;
-  }
-  parts.push(text.slice(at));
-  return parts;
-}
 
 export default function PasteForm() {
   const [text, setText] = useState("");
@@ -87,7 +72,13 @@ export default function PasteForm() {
     if (!res.ok) return setState({ kind: "error", code: data?.error ?? "failed" });
     const summary = data?.review?.summary;
     if (summary?.status === "shown") {
-      return setState({ kind: "summary", text: summary.text, marked: summary.marked ?? [] });
+      return setState({
+        kind: "summary",
+        text: summary.text,
+        marked: summary.marked ?? [],
+        documentText: text,
+        review: data.review,
+      });
     }
     return setState({ kind: "error", code: summary?.reason ?? "failed" });
   }
@@ -142,26 +133,30 @@ export default function PasteForm() {
         )}
       </form>
 
-      <section className="pane summary-pane" aria-labelledby="summary-title" aria-busy={busy}>
-        <div className="pane-head">
-          <h2 className="pane-title" id="summary-title">{COPY.summaryCaption}</h2>
-        </div>
-        <div className="summary-body" aria-live="polite">
-          {state.kind === "summary" ? (
-            <>
-              <p className="summary-text" data-testid="summary">
-                <MarkedText text={state.text} marked={state.marked} />
-              </p>
-              {state.marked.length > 0 && (
-                <p className="marked-note" data-testid="marked-note">{COPY.markedNote}</p>
-              )}
-              <p className="summary-note">{COPY.summaryNote}</p>
-            </>
-          ) : (
-            <p className="summary-empty">{busy ? COPY.submitBusy : COPY.emptyState}</p>
-          )}
-        </div>
-      </section>
+      <div className="results">
+        <section className="pane summary-pane" aria-labelledby="summary-title" aria-busy={busy}>
+          <div className="pane-head">
+            <h2 className="pane-title" id="summary-title">{COPY.summaryCaption}</h2>
+          </div>
+          <div className="summary-body" aria-live="polite">
+            {state.kind === "summary" ? (
+              <>
+                <p className="summary-text" data-testid="summary">
+                  <MarkedText text={state.text} marked={state.marked} />
+                </p>
+                {state.marked.length > 0 && (
+                  <p className="marked-note" data-testid="marked-note">{COPY.markedNote}</p>
+                )}
+                <p className="summary-note">{COPY.summaryNote}</p>
+                <QuestionBox key={state.documentText} documentText={state.documentText} />
+              </>
+            ) : (
+              <p className="summary-empty">{busy ? COPY.submitBusy : COPY.emptyState}</p>
+            )}
+          </div>
+        </section>
+        {state.kind === "summary" && <RiskFlags review={state.review} />}
+      </div>
     </div>
   );
 }

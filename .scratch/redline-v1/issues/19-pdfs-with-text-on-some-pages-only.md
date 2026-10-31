@@ -2,9 +2,9 @@
 
 **What to build:** A PDF with a text layer on some pages and only images on others is handled as decided, so no Clean result is given on terms Redline never read.
 
-**Blocked by:** 05 (Upload a text-layer PDF or DOCX file); OCR engine choice (../../spec-gaps/issues/24-which-ocr-engine.md)
+**Blocked by:** 05 (Upload a text-layer PDF or DOCX file)
 
-**Decisions (2026-10-31):** OQ18 / ADR 0008: accept mixed PDFs; OCR the pages without real text, including scans with a hidden OCR layer; no special marking.
+**Decisions (2026-10-31):** OCR engine: ppu-paddle-ocr, PP-OCRv5 English, self-hosted (../../spec-gaps/issues/24-which-ocr-engine.md). OQ18 / ADR 0008: accept mixed PDFs; OCR the pages without real text, including scans with a hidden OCR layer; no special marking.
 
 **Needs approval for:** None
 

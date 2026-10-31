@@ -1,0 +1,12 @@
+{
+  "_note": "Scripted to break the hedge-word ban on purpose inside a Risk flag. \"may\" in says is Redline's own word and must be marked; the Source sentence is the document's and is never marked.",
+  "riskFlags": [
+    {
+      "severity": "negotiate",
+      "title": "Daily late fee",
+      "says": "Neem Tree Books may owe Rs. 500 for every day a monthly fee is late.",
+      "judgment": null,
+      "sourceSentences": ["Licensee will pay a fine of Rs. 500 for each day a monthly fee is late."]
+    }
+  ]
+}

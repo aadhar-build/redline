@@ -17,6 +17,8 @@ Every implementation ticket in `.scratch/redline-v1/issues/` has a Blocked-by li
 - Unattended build rules (owner, 2026-10-31): finished ticket branches merge into `development` (cut from the spec branch) once tests and build pass; never main. Up to 3–4 implementers at once on non-overlapping tickets. The Claude Code CLI may run `claude -p --model claude-sonnet-5-5` on this machine with no cap. If a ticket fails after two retries, consult a Fable advisor, then try two more times before logging it in QUESTIONS.md. Sign-in is Supabase email magic link. Sample documents: a mix of public Indian contracts and other public English contracts, kept in ~/redline-samples with a source index, never committed. A hosted Supabase project is approved.
 - Also approved 2026-10-31: @supabase/ssr for magic-link sessions; hosted Supabase project in Mumbai (ap-south-1), keys into the Vercel project env. "Live" means the protected Vercel preview of `development` with everything except analysis; analysis runs only on the product owner's machine (no API key adopted). The owner promotes to main.
 - From 2026-10-31 the working branch for spec and code is `development`; `spec/wayfinder-gaps` is frozen.
+- Hosted Supabase created 2026-10-31: project `redline` (ref kwtpcbbvurfahgnhohmb, Mumbai), migrations 01–02 pushed; NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY set in Vercel for Preview on `development`. DB password lives only in the integration worktree's .env.local. Still to do when ticket 10 lands: allow the preview URLs as auth redirect URLs.
+- Question rule (owner, 2026-10-31): a new question first goes to a Fable advisor (a subagent on the Fable model, briefed with the relevant spec). Act on its answer when it is confident; park the question in QUESTIONS.md for the owner only when its confidence is low. Record each Fable-settled answer in the ticket it affects, marked "settled by Fable advisor". The OCR engine (ticket 24) was chosen by Claude on the owner's instruction.
 - C1 (ranking within a Severity level) is already settled: grouped by level, not ranked (ADR 0003, CLAUDE.md edit 2026-10-20).
 
 ## Decisions so far
@@ -49,10 +51,11 @@ Every implementation ticket in `.scratch/redline-v1/issues/` has a Blocked-by li
 - [What the Counter-offer for an Outside reference says](issues/26-outside-reference-counter-offer.md): The Counter-offer for an Outside reference asks that the referenced document be attached as a schedule and that its terms be fixed as at the signing date, changing only by written agreement of both parties.
 - [Draft the India Market standard table for the owner to approve](issues/28-india-market-standard-table.md): only the three statute rows approved; no lease or vendor practice rows in v1.
 - [How a statute citation is checked before it is shown](issues/29-statute-citation-check.md): a fixed approved list; the model selects by id and Redline shows the entry's own text.
+- [Which OCR engine to adopt](issues/24-which-ocr-engine.md): ppu-paddle-ocr with self-hosted PP-OCRv5 English models; the only permissive option that reads ₹.
 
 ## Not yet specified
 
-- **Open tickets now:** OCR engine (24, waits on the bake-off 27, which needs the owner's scans) and verifying the three statute rows against India Code (30).
+- **Open tickets now:** none in the map; Registration Act s.49 is parked for the owner (ticket 30).
 
 - **Eval targets.** PRD.md section 4 "Numbers that are unset": targets for misses, false alarms, Clean result share, how many Know this flags is too many, and a method for catching unsupported claims. Becomes sharp once the model (ticket 05) and Market standard basis (ticket 19) are known and a first real run exists.
 - **What a "clear case" for Don't sign as written is**, outside Red line matches (ADR 0005). Probably falls out of ticket 19.
