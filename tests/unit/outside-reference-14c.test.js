@@ -33,8 +33,9 @@ describe("Bug 3: for the time being in force", () => {
     expect(r.outsideReferences[0].redLineMatch).toMatchObject({ id: ONE_SIDED_CHANGES_ID });
   });
 
-  it("an Act without a year is not exempt (fail closed)", () => {
-    expect(kindsOf("4. The Customer will follow the Shops Act for the time being in force.")).toEqual([["as-amended"]]);
+  it("an Act without a year is exempt since QUESTIONS.md 44; undated Rules are not", () => {
+    expect(kindsOf("4. The Customer will follow the Shops Act for the time being in force.")).toEqual([["other"]]);
+    expect(kindsOf("4. The Customer will follow the Shops Rules for the time being in force.")).toEqual([["as-amended"]]);
   });
 });
 

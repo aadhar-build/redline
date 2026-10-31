@@ -139,7 +139,8 @@ describe("27: a statute as amended is no Red line 3 match, and fails closed", ()
   it.each([
     "1. The Customer will follow the Provider's Rules, as amended from time to time.",
     "2. The Customer will follow the Act and the Provider's policies, as amended from time to time.",
-    "3. The Customer will comply with the Shops Act, as amended from time to time.",
+    // An undated Act is exempt since QUESTIONS.md 44; undated Rules are not.
+    "3. The Customer will comply with the Shops Rules, as amended from time to time.",
   ])("still flags %s", (text) => {
     expect(kindsOf(text)).toEqual([["as-amended"]]);
   });

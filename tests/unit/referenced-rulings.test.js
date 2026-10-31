@@ -25,9 +25,7 @@ const SCHEDULE_B = "SCHEDULE B\nService Levels\n\n1. The Supplier will deliver w
 
 const AMENDED = "SUPPLY AGREEMENT\n\n1. The Supplier will deliver the goods each week.\n2. The Customer will follow the rules in the Order Form, as amended from time to time.\n";
 const AMENDED_REF = "2. The Customer will follow the rules in the Order Form, as amended from time to time.";
-// Titled without the words "Order Form": an added text's own title line naming its kind is still read
-// as a reference (QUESTIONS.md 43, open).
-const ORDER_FORM = "ORDER DETAILS\n\n1. The Customer will keep the goods dry.\n";
+const ORDER_FORM = "ORDER FORM\n\n1. The Customer will keep the goods dry.\n";
 
 const added = (text, referenceSentence, id = R1_ID, extra = {}) => ({ id, title: text.split("\n")[0], text, referenceSentence, ocrRanges: [], ...extra });
 
@@ -94,7 +92,7 @@ describe("39: an \"as amended\" reference with its document added", () => {
     expect(ref.resolved).toBe(false);
     expect(r.cleanResult).toBe(false);
     const text = reviewAsText(r);
-    expect(text).toContain(COPY.outside.added("ORDER DETAILS"));
+    expect(text).toContain(COPY.outside.added("ORDER FORM"));
     expect(text).toContain(COPY.outside.addedStillBlocks(ref.redLineMatch.number));
     expect(text).not.toContain(COPY.outside.stillBlocks);
   });
