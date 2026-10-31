@@ -11,3 +11,20 @@
 - [ ] Unreadable-amount rule (spec-gaps 24) as a tested matcher with the five S04 shapes as fixtures (shapes only, no sample text committed); flags citing such a sentence are withheld with reason "unreadable-amount" (stored reason code via migration).
 - [ ] Progress shown per page; the Reviewer can cancel; copy through the humanizer.
 - [ ] The 5 real scans in ~/redline-samples run end to end locally; results summarised in the ticket.
+
+
+## Real scans (2026-10-31)
+
+| Scan | OCR pages | Time | Result | Characters (no spaces) | Dictionary-word share | Requests off the origin |
+|---|---|---|---|---|---|---|
+| S01 | 3 | 22 s | text loaded | 5,346 | 0.81 | 0 |
+| S02 | 304 | 587 s | rejected after OCR: over the 200,000-character limit | (none loaded) | n/a | 0 |
+| S03 | 4 | 24 s | text loaded | 5,834 | 0.83 | 0 |
+| S04 | 12 | 65 s | text loaded | 19,554 | 0.85 | 0 |
+| S05 | 1 | 5 s | text loaded | 735 | 0.75 | 0 |
+
+Run 2026-10-31 on the product owner's machine, from the scans in ~/redline-samples/scans (never committed), with the harness in the job's ocr-runs folder driving the real /review page in Chromium. What it covers: upload, in-browser OCR of every page, and the text reaching the field. It does not run the analysis. S02 read all 304 pages (about 1.9 s a page) and was then refused by the existing 200,000-character limit (MAX_TEXT_LENGTH in lib/extraction/result.js), so its exact length is not known. The limit stays as it is (coordinator, 2026-10-31).
+
+**Engine seam.** lib/extraction/ocr-engine.js is the only module that knows the engine (today ppu-paddle-ocr, PP-OCRv5 English mobile, ONNX Runtime WASM, single-threaded). It takes a straightened page image and returns lines of boxes. The worker (ocr-worker.js) only deskews and shapes lines, so a different engine means replacing that file and the assets scripts/copy-ocr-assets.mjs self-hosts.
+
+**Marking (QUESTIONS 18, decided by the product owner 2026-10-31): OCR text is marked per document.** documents.ocr_pages and documents.page_count (migration 20261031002400, checked by a constraint, covered by the table's Row Level Security) record the pages OCR read, as numbers only. The browser posts ocrPages and pageCount with the text, and every review of that document, fresh or reopened, shows one note above the summary (COPY.scannedNote, e.g. "Redline read 1 of this document's 2 pages from a scan."). There is no marking per sentence or per page.

@@ -214,18 +214,25 @@ async function expectRejected(page, requests, message, screenshot) {
   await expect(page.getByTestId("summary")).toHaveCount(0);
 }
 
-test("an image-only PDF is stopped with the scanned pages named and nothing is sent", async ({ page }) => {
+// ADR 0008: image pages go to OCR (tests/e2e/ocr.spec.mjs reads real text). A PDF is rejected only
+// when OCR also finds no text, as on these blank grey-checker "scans".
+test("an image-only PDF where OCR finds no text is rejected and nothing is sent", async ({ page }) => {
+  test.setTimeout(120_000);
   const requests = recordRequests(page);
   await page.goto("/review");
   await choose(page, "scan.pdf", PDF, makePdf([scanPage(), scanPage()]));
-  await expectRejected(page, requests, COPY.scannedPages([1, 2]), "scanned.png");
+  await expect(page.locator(".form-error[role=alert]")).toBeVisible({ timeout: 100_000 });
+  await expectRejected(page, requests, COPY.errors["no-text"], "scanned.png");
 });
 
-test("a scan with a hidden OCR text layer is stopped too, not read from its hidden text", async ({ page }) => {
+test("a scan with a hidden OCR text layer is read by OCR, never from its hidden text", async ({ page }) => {
+  test.setTimeout(120_000);
   const requests = recordRequests(page);
   await page.goto("/review");
   await choose(page, "searchable-scan.pdf", PDF, makePdf([hiddenOcrPage(wrap(fixtureText))]));
-  await expectRejected(page, requests, COPY.scannedPages([1]));
+  // The image under the hidden text is blank, so OCR finds nothing, and the hidden text is not used.
+  await expect(page.locator(".form-error[role=alert]")).toBeVisible({ timeout: 100_000 });
+  await expectRejected(page, requests, COPY.errors["no-text"]);
 });
 
 test("a file in another language is rejected before anything is sent", async ({ page }) => {

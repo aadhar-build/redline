@@ -109,3 +109,6 @@ Thumbs.db
 
 # ---- pdf.js assets copied from node_modules at build time ----
 public/pdfjs/
+
+# ---- OCR runtime and model files, copied or downloaded at build time (scripts/copy-ocr-assets.mjs) ----
+public/ocr/
