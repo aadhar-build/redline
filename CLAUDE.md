@@ -44,7 +44,7 @@ Build these capabilities and stop there:
 - Keep credentials in .env.local, which is gitignored. Never commit a secret: a key is public the moment it is pushed and has to be rotated.
 - The GitHub repo (aadhar-build/redline) is public. Check the staged diff for keys and tokens before every commit. Never commit a real contract or scan.
 - Work on a feature branch and push as you go. Never push to main.
-- Ask before adding a dependency. Approved so far: Vitest, @supabase/supabase-js and the Supabase CLI, @playwright/test, pdfjs-dist, JSZip.
+- Ask before adding a dependency. Approved so far: Vitest, @supabase/supabase-js, @supabase/ssr and the Supabase CLI, @playwright/test, pdfjs-dist, JSZip, and tesseract.js plus one PaddleOCR browser port for the OCR bake-off only.
 - All copy a Reviewer reads in this product, meaning the landing page, UI labels, error messages and empty states, has to be run through the humanizer skill before it is committed. Copy that reads as though a model wrote it is a defect, not a matter of taste.
 
 ## Working while unattended
