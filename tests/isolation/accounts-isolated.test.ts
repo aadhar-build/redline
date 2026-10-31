@@ -235,6 +235,42 @@ describe("writing rows owned by another account", () => {
     const aView = await a.client.from("documents").select("id").eq("id", bDocumentId);
     expect(aView.data).toEqual([]);
   });
+
+  it("B cannot hand its own review over to A", async () => {
+    const own = await b.client
+      .from("reviews")
+      .insert({ document_id: bDocumentId, red_lines: [] })
+      .select("id")
+      .single();
+    expect(own.error).toBeNull();
+    const handover = await b.client.from("reviews").update({ owner_id: a.id }).eq("id", own.data!.id).select("id");
+    expect(handover.data).toBeNull();
+    expect(handover.error?.code).toBe("42501");
+  });
+});
+
+describe("an account changing its own rows", () => {
+  it("A can edit its own Red line, and updated_at moves forward", async () => {
+    const before = await a.client.from("red_lines").select("updated_at").eq("id", aRows.red_lines).single();
+    expect(before.error).toBeNull();
+    const upd = await a.client
+      .from("red_lines")
+      .update({ text: "A's edited Red line" })
+      .eq("id", aRows.red_lines)
+      .select("text, updated_at");
+    expect(upd.error).toBeNull();
+    expect(upd.data).toHaveLength(1);
+    expect(upd.data![0].text).toBe("A's edited Red line");
+    expect(new Date(upd.data![0].updated_at).getTime()).toBeGreaterThan(new Date(before.data!.updated_at).getTime());
+  });
+
+  it("A can delete a row of its own", async () => {
+    const extra = await a.client.from("red_lines").insert({ text: "Throwaway" }).select("id").single();
+    expect(extra.error).toBeNull();
+    const del = await a.client.from("red_lines").delete().eq("id", extra.data!.id).select("id");
+    expect(del.error).toBeNull();
+    expect(del.data).toEqual([{ id: extra.data!.id }]);
+  });
 });
 
 describe("signed-out (anon) access", () => {
@@ -301,11 +337,13 @@ describe("what the schema stores", () => {
     }
   });
 
-  it("no storage bucket exists for uploaded files", () => {
-    const buckets = psql(
-      "select case when to_regclass('storage.buckets') is null then 0 else (select count(*) from storage.buckets) end",
-    );
-    expect(buckets).toBe("0");
+  it("no storage bucket exists for uploaded files", async () => {
+    // Needs the storage service running, so the check cannot pass vacuously.
+    expect(psql("select to_regclass('storage.buckets') is not null")).toBe("t");
+    expect(psql("select count(*) from storage.buckets")).toBe("0");
+    const { data, error } = await admin.storage.listBuckets();
+    expect(error).toBeNull();
+    expect(data).toEqual([]);
   });
 
   it("RLS is on and forced for every Redline table, and anon holds no privileges", () => {
