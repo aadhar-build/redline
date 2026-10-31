@@ -4,7 +4,9 @@
     "@supabase/supabase-js": "^2.118.0",
     "jszip": "3.10.2",
     "next": "^16.3.4",
+    "onnxruntime-web": "1.31.1",
     "pdfjs-dist": "6.4.299",
+    "ppu-paddle-ocr": "6.6.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
@@ -20,9 +22,9 @@
     "test:e2e": "npm run build && playwright test",
     "check:client-bundle": "node scripts/check-client-bundle.mjs .next",
     "test:bundle-check-plant": "node scripts/prove-bundle-check-fails.mjs",
-    "predev": "node scripts/copy-pdfjs-assets.mjs",
-    "predev:local": "node scripts/copy-pdfjs-assets.mjs",
-    "prebuild": "node scripts/copy-pdfjs-assets.mjs"
+    "predev": "node scripts/copy-pdfjs-assets.mjs && node scripts/copy-ocr-assets.mjs",
+    "predev:local": "node scripts/copy-pdfjs-assets.mjs && node scripts/copy-ocr-assets.mjs",
+    "prebuild": "node scripts/copy-pdfjs-assets.mjs && node scripts/copy-ocr-assets.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
