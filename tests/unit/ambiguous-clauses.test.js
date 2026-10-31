@@ -37,12 +37,12 @@ const ambiguous = (extra = {}) => ({
   ...extra,
 });
 
-// The decision with the gate both shut (as shipped) and lifted.
+// The decision with the gate lifted (as shipped) and, for safety, shut.
 function expectNotClean(r) {
   expect(cleanResultOf(r)).toBe(false);
   expect(gateCleanResult(cleanResultOf(r), false)).toEqual({ cleanResult: null, cleanResultHeld: false });
   expect(gateCleanResult(cleanResultOf(r), true)).toEqual({ cleanResult: false, cleanResultHeld: false });
-  expect(r.cleanResult).toBeNull();
+  expect(r.cleanResult).toBe(false);
   expect(r.cleanResultHeld).toBe(false);
 }
 
@@ -117,11 +117,12 @@ describe("against a Clean result (ticket 16, PRD criteria 7 and 11)", () => {
     expectNotClean(r);
   });
 
-  it("would give a Clean result to the same contract with no flags (the gate holds it back)", async () => {
+  it("gives a Clean result to the same contract with no flags", async () => {
     const r = await scripted(onlyText, []);
     expect(cleanResultOf(r)).toBe(true);
     expect(gateCleanResult(true, true)).toEqual({ cleanResult: true, cleanResultHeld: false });
-    expect(r.cleanResultHeld).toBe(true);
+    expect(r.cleanResult).toBe(true);
+    expect(r.cleanResultHeld).toBe(false);
   });
 });
 

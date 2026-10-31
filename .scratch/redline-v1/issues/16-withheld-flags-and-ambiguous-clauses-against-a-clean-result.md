@@ -8,7 +8,7 @@
 
 **Needs approval for:** None
 
-**Status:** done (2026-10-31, fixture runs)
+**Status:** done (2026-10-31, fixture runs); Clean-result gate lifted 2026-10-31 with ticket 13
 
 - [x] The withheld count appears where OQ11 decides (PRD criterion 2).
 - [x] Clean result fixtures including withheld flags and Ambiguous clauses give the outcome OQ12 and OQ5 decide (PRD criterion 7, 11).
@@ -17,3 +17,5 @@
 ## Comments
 
 - The withheld count shows at the top of the Risk flags pane (existing Withheld notice). cleanResultOf blocks on any withheld flag and any Ambiguous clause; tests/unit/ambiguous-clauses.test.js proves both with the gate shut and lifted, fresh and reopened.
+
+- Gate lifted (2026-10-31, with ticket 13): the shipped review now gives cleanResult false for the withheld-only and Ambiguous-clause-only fixtures, and true for the same contract with no flags, fresh and reopened (tests/unit/ambiguous-clauses.test.js).

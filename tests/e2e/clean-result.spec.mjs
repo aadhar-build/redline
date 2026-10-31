@@ -1,9 +1,8 @@
 // The Clean result through the interface (ticket 11, ADR 0006). Signed out, the review runs against the
 // Default Red lines.
 //
-// The Clean result is held back until tickets 13 and 07 land (lib/review/clean-result-gate.js). A
-// review that would be one still lists every Red line checked and its Know this flags, and says in one
-// line why it isn't a Clean result.
+// Tickets 13 and 07 have landed, so the gate is lifted (lib/review/clean-result-gate.js): the clean
+// fixture gets a Clean result listing every Red line checked and its Know this flags.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -24,11 +23,12 @@ async function reviewText(page, text) {
   await expect(page.getByTestId("risk-flags")).toBeVisible();
 }
 
-test("while the gate holds, a review that would be a Clean result says why it isn't one and still shows what was checked", async ({ page }) => {
+test("the clean fixture gets a Clean result that shows what was checked", async ({ page }) => {
   await reviewText(page, cleanText);
 
-  await expect(page.getByTestId("clean-result")).toHaveCount(0);
-  await expect(page.getByTestId("clean-result-held")).toHaveText(COPY.clean.held);
+  await expect(page.getByTestId("clean-result")).toBeVisible();
+  await expect(page.getByTestId("clean-statement")).toHaveText(COPY.clean.statement);
+  await expect(page.getByTestId("clean-result-held")).toHaveCount(0);
 
   const checked = page.getByTestId("red-line-checked");
   await expect(checked).toHaveCount(DEFAULT_RED_LINES.length);
@@ -45,10 +45,10 @@ test("while the gate holds, a review that would be a Clean result says why it is
     return clone.textContent;
   });
   expect(findBannedWording(own)).toEqual([]);
-  await page.screenshot({ path: test.info().outputPath("clean-result-held.png"), fullPage: true });
+  await page.screenshot({ path: test.info().outputPath("clean-result.png"), fullPage: true });
 });
 
-test("a review with Negotiate or Don't sign as written flags is not a Clean result and gets no held note", async ({ page }) => {
+test("a review with Negotiate or Don't sign as written flags is not a Clean result", async ({ page }) => {
   await reviewText(page, read("fixtures/contracts/vendor-agreement-01.txt"));
   await expect(page.getByTestId("group-negotiate")).toBeVisible();
   await expect(page.getByTestId("clean-result")).toHaveCount(0);
