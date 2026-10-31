@@ -65,10 +65,10 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 
 ## Open (from tickets 08 and 17, 2026-10-31)
 
-24. **When a Counter-offer changes a number, which direction counts as "tightening"?** The owner's rule allows tightening a term, and that can change a figure. Whether a new figure is closer to the Owner's interest depends on the clause. A lower fee helps the Owner. A lower cap on the Counterparty's liability hurts. A longer notice period helps when the Counterparty has to give it and hurts when the Owner does. Code can't tell these apart safely, so as built, any number in a Counter-offer that the contract doesn't contain is highlighted, the flag still shows, and a note asks the Reviewer to check the figure. Nothing is withheld. Options:
+24. ~~**When a Counter-offer changes a number, which direction counts as "tightening"?** The own…~~ Settled by Fable advisor, 2026-10-31, as built (see lib/review/counter-offer.js header).
     - (a) Keep it as built: highlight and don't withhold.
     - (b) Withhold a Counter-offer with a number the contract lacks, as is done for "says".
     - (c) Have the model state the direction for each changed figure and show that as Redline's judgment.
     Also known: only numbers written in digits are checked, so "thirty days" written in words is never highlighted.
-25. **A flag that comes back without a Counter-offer.** As built, the flag still shows, because its Source sentences checked out, with the line "Redline has no Counter-offer for this flag." Withholding it would hide a verified risk and block a Clean result. The same line shows on reviews saved before Counter-offers existed. Alternative: withhold such a flag and count it.
-26. **A Counter-offer that copies a document sentence containing "may".** As built, the hedge-word check on Counter-offers does not excuse text reproduced word for word from the document. Only the two context exemptions apply ("fine" next to an amount, "May" the month), because the Counter-offer is wording the Owner would sign. So a Counter-offer that repeats "Vendor may increase the monthly fee…" has "may" highlighted. Say if quoting the contract inside a Counter-offer should be excused.
+25. ~~**A flag that comes back without a Counter-offer.** As built, the flag still shows, becaus…~~ Settled by Fable advisor, 2026-10-31, as built (see lib/review/counter-offer.js header).
+26. ~~**A Counter-offer that copies a document sentence containing "may".** As built, the hedge-…~~ Settled by Fable advisor, 2026-10-31, as built (see lib/review/counter-offer.js header).
