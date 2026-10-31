@@ -1,0 +1,51 @@
+{
+  "_note": "Scripted Risk flags for client-agreement-01, where the Owner is the design studio. Every Default Red line is seeded; Red line 3 is seeded as the Client changing terms and fees by notice. Several Red line matches are scripted below Don't sign as written on purpose. Red lines 2 and 4 cite two sentences each. The 45-day payment term matches no Red line and keeps its scripted Severity.",
+  "riskFlags": [
+    {
+      "severity": "negotiate",
+      "title": "Payment 45 days after each invoice",
+      "says": "Northwind pays each monthly invoice within forty-five days.",
+      "judgment": null,
+      "sourceSentences": ["Client will pay Agency $6,000 per month within forty-five days of each invoice."],
+      "redLine": null
+    },
+    {
+      "severity": "negotiate",
+      "title": "Client can change scope, fees and terms by notice",
+      "says": "Northwind can change the scope, the fees or any other term by written notice, and the change takes effect fifteen days later.",
+      "judgment": null,
+      "sourceSentences": ["Client can change the scope of the services, the fees or any other term of this Agreement by sending Agency written notice, and the change takes effect fifteen days after the notice."],
+      "redLine": "default-one-sided-changes"
+    },
+    {
+      "severity": "dont-sign-as-written",
+      "title": "Twenty-four-month renewing term, and $10,000 to leave",
+      "says": "The agreement runs for twenty-four months and renews by itself for twelve months at a time unless Pixel and Pine gives written notice at least ninety days before a term ends. Ending it before a term is over costs a $10,000 termination fee.",
+      "judgment": null,
+      "sourceSentences": [
+        "This Agreement runs for twenty-four months from December 1, 2026 and renews automatically for further twelve-month terms unless Agency gives written notice at least ninety days before the end of a term.",
+        "If Agency ends this Agreement before the end of a term, Agency will pay Client a termination fee of $10,000."
+      ],
+      "redLine": "default-auto-renewal-or-long-term"
+    },
+    {
+      "severity": "negotiate",
+      "title": "Sole member's personal guarantee",
+      "says": "Dana Whitfield personally guarantees every obligation Pixel and Pine has under the agreement.",
+      "judgment": null,
+      "sourceSentences": ["Dana Whitfield, the sole member of Agency, personally guarantees the performance of every obligation of Agency under this Agreement."],
+      "redLine": "default-personal-guarantee"
+    },
+    {
+      "severity": "know-this",
+      "title": "Indemnity including lost profits",
+      "says": "Pixel and Pine covers Northwind against all losses, damages and costs from the services or any claim connected with them, including lost profits and indirect losses.",
+      "judgment": "No cap appears in the document.",
+      "sourceSentences": [
+        "Agency will indemnify Client against all losses, damages and costs arising from the services or from any claim connected with them.",
+        "Agency's obligation under this clause includes lost profits and indirect losses."
+      ],
+      "redLine": "default-uncapped-liability"
+    }
+  ]
+}

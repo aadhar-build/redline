@@ -1,0 +1,51 @@
+{
+  "_note": "Scripted Risk flags for vendor-agreement-03, an Indian card machine agreement modelled on First American with the $495 exit fee given as Rs. 42,000 (about $495 at roughly Rs. 85 to the dollar). Every Default Red line is seeded; Red line 3 is seeded as terms 'as amended from time to time'. Several Red line matches are scripted below Don't sign as written on purpose. Red lines 2 and 4 cite two sentences each.",
+  "riskFlags": [
+    {
+      "severity": "dont-sign-as-written",
+      "title": "Three-year minimum term",
+      "says": "The minimum term is three years from the date the card machine is installed.",
+      "judgment": null,
+      "sourceSentences": ["The minimum term of this Agreement is three years from the date the card machine is installed."],
+      "redLine": "default-auto-renewal-or-long-term"
+    },
+    {
+      "severity": "know-this",
+      "title": "Automatic renewal, and Rs. 42,000 to leave",
+      "says": "After the minimum term the agreement renews by itself for a year at a time unless Meera Sweets gives written notice at least sixty days before a renewal date. Ending it before the minimum term or a renewal period is over costs Rs. 42,000.",
+      "judgment": null,
+      "sourceSentences": [
+        "After the minimum term, this Agreement renews automatically for successive periods of one year unless Merchant gives written notice at least sixty days before a renewal date.",
+        "If Merchant ends this Agreement before the end of the minimum term or of any renewal period, Merchant will pay Provider an exit fee of Rs. 42,000."
+      ],
+      "redLine": "default-auto-renewal-or-long-term"
+    },
+    {
+      "severity": "negotiate",
+      "title": "Charges as amended from time to time by Provider",
+      "says": "The 1.8% fee on each card sale and the Rs. 450 monthly rental both apply as amended from time to time by Sanchay.",
+      "judgment": null,
+      "sourceSentences": ["Merchant will pay a fee of 1.8% of each card sale and a machine rental of Rs. 450 a month, both as amended from time to time by Provider."],
+      "redLine": "default-one-sided-changes"
+    },
+    {
+      "severity": "dont-sign-as-written",
+      "title": "Partner's personal guarantee",
+      "says": "Meera Kulkarni personally guarantees every amount Meera Sweets owes under the agreement.",
+      "judgment": null,
+      "sourceSentences": ["Meera Kulkarni, a partner of Merchant, personally guarantees the payment of every amount Merchant owes under this Agreement."],
+      "redLine": "default-personal-guarantee"
+    },
+    {
+      "severity": "know-this",
+      "title": "Indemnity for every card transaction",
+      "says": "Meera Sweets covers Sanchay against all claims, penalties and losses from any card transaction at its shop, and this liability is not limited to the charges it has paid.",
+      "judgment": "No cap appears in the document.",
+      "sourceSentences": [
+        "Merchant will indemnify Provider against all claims, penalties and losses arising from any card transaction at Merchant's shop.",
+        "Merchant's liability under this clause is not limited to the charges paid under this Agreement."
+      ],
+      "redLine": "default-uncapped-liability"
+    }
+  ]
+}

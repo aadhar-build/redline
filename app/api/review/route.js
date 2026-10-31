@@ -1,4 +1,5 @@
 import { getModelAdapter } from "../../../lib/review/adapters/index.js";
+import { DEFAULT_RED_LINES } from "../../../lib/review/red-lines.js";
 import { review, ReviewInputError } from "../../../lib/review/review.js";
 import { LibraryError, saveAndReview, sourceKindFrom } from "../../../lib/library/library.js";
 import { currentAccount } from "../../../lib/supabase/server.js";
@@ -25,17 +26,19 @@ export async function POST(request) {
   }
 
   try {
+    // Until the Reviewer can edit and save Red lines (ticket 12), every review runs against the defaults.
     const { db, user } = await currentAccount();
     if (user) {
       const { review: result, documentId } = await saveAndReview({
         db,
         text: body?.text,
         sourceKind: sourceKindFrom(body?.source),
+        redLines: DEFAULT_RED_LINES,
         adapter,
       });
       return json({ review: result, documentId, saved: documentId ? "saved" : "incomplete" }, 200);
     }
-    const result = await review({ documentText: body?.text, redLines: [], adapter });
+    const result = await review({ documentText: body?.text, redLines: DEFAULT_RED_LINES, adapter });
     return json({ review: result, documentId: null, saved: "signed-out" }, 200);
   } catch (err) {
     if (err instanceof ReviewInputError) return json({ error: err.code }, 400);
