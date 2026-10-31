@@ -54,7 +54,10 @@ describe("Default Red lines", () => {
   });
 
   it("keep ADR 0004's qualifiers: Red line 2's threshold is a judgment, Red line 3's basis is weak", () => {
-    const [, two, three] = DEFAULT_RED_LINES;
+    const [one, two, three] = DEFAULT_RED_LINES;
+    // Red lines 1 and 3 rest on search excerpts only (ADR 0004, "snippet only").
+    expect(one.basis.note).toMatch(/only a search excerpt/);
+    expect(three.basis.note).toMatch(/in a search excerpt, and never opened the original survey/);
     expect(two.basis.note).toMatch(/12-month threshold is the product owner's judgment/);
     expect(two.basis.note).toContain("$495");
     expect(three.basis.kind).toBe("weak-research");
