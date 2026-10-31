@@ -208,7 +208,7 @@ describe("28: other wordings of as amended", () => {
       // The raw matching stops at the cap and counts the rest.
       const t0 = performance.now();
       const raw = rawReferenceMatches(t);
-      expect(performance.now() - t0).toBeLessThan(200);
+      expect(performance.now() - t0).toBeLessThan(600); // Linear work runs in ~50 ms; the margin absorbs a loaded machine (it flaked at 207 ms during parallel builds). A backtracking regression takes seconds.
       expect(raw).toEqual({ matched: MAX_REFERENCE_MATCHES, overflow: 5000 - MAX_REFERENCE_MATCHES });
       // The whole pass (300 Source sentence checks at most) stays bounded too.
       const t1 = performance.now();
