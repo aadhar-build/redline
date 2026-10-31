@@ -6,7 +6,10 @@
       "title": "Daily late fee",
       "says": "Neem Tree Books may owe Rs. 500 for every day a monthly fee is late.",
       "judgment": null,
-      "sourceSentences": ["Licensee will pay a fine of Rs. 500 for each day a monthly fee is late."]
+      "sourceSentences": [
+        "Licensee will pay a fine of Rs. 500 for each day a monthly fee is late."
+      ],
+      "counterOffer": "Licensee will pay a fine of Rs. 500 for each day a monthly fee is late, counted only from 1 May 2027."
     }
   ]
 }

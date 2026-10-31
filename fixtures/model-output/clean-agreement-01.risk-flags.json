@@ -6,16 +6,22 @@
       "title": "Interest on late invoices",
       "says": "Willow Lane Florist pays interest of 1% a month on any invoice not paid within thirty days.",
       "judgment": null,
-      "sourceSentences": ["Client will pay interest of 1% per month on any invoice not paid within thirty days."],
-      "redLine": null
+      "sourceSentences": [
+        "Client will pay interest of 1% per month on any invoice not paid within thirty days."
+      ],
+      "redLine": null,
+      "counterOffer": "Client will pay interest of 1% per month on any invoice not paid within thirty days of the date Client receives it."
     },
     {
       "severity": "know-this",
       "title": "Liability limited to three months of fees",
       "says": "Each side's total liability is limited to the fees Willow Lane Florist paid in the three months before a claim. The same limit applies to what Willow Lane Florist can recover from Northgate.",
       "judgment": null,
-      "sourceSentences": ["Each party's total liability under this Agreement is limited to the fees Client paid in the three months before the claim."],
-      "redLine": null
+      "sourceSentences": [
+        "Each party's total liability under this Agreement is limited to the fees Client paid in the three months before the claim."
+      ],
+      "redLine": null,
+      "counterOffer": "Each party's total liability under this Agreement is limited to the fees Client paid in the three months before the claim."
     }
   ]
 }

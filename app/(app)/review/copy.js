@@ -106,6 +106,20 @@ export const COPY = {
     unreadable: "Redline couldn't read the Risk flags it got back, so it isn't showing any. Try again.",
     emptyGroup: "None at this level.",
   },
+  // Tickets 08 and 17.
+  counterOffer: {
+    caption: "Counter-offer",
+    copy: "Copy",
+    copied: "Copied",
+    copyLabel: (n) => `Copy Counter-offer for flag ${n}`,
+    copyFailed: "Couldn't copy the wording. Select it and copy it yourself.",
+    missing: "Redline has no Counter-offer for this flag.",
+    note:
+      "A Counter-offer should only restate or tighten terms already in the contract. Redline can't check whether it adds a new term, so read it against the contract before you send it.",
+    markedNote: "Counter-offers aren't allowed to use the highlighted words, because they hedge. Reword them before you send it.",
+    numberNote:
+      "The highlighted numbers in Counter-offers aren't in the contract. Tightening a term can change a figure, so check each one is what you want to ask for.",
+  },
   // A Clean result (ADR 0006): said plainly, with every Red line checked and any Know this flags beneath.
   // Never "safe", "fine" or "good to sign"; a unit test runs the verdict-word check over these strings.
   clean: {

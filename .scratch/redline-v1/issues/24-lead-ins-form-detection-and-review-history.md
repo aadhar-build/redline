@@ -40,7 +40,7 @@
     - Tests cover every accept and withhold case the ruling lists. They also cover quotes ending "…shall not:", "…COMPENSATION:", "…in the Act:" and a list item's ";". The twelve addendum cases and ruling B's cases are unchanged.
     - One existing test flipped, as the ruling intends: "Fees:\nThe Company…" and "Fees; Taxes\nThe Company…" were withheld and are now shown (A). The test now also checks that a quote can't end at "Fees; Taxes", and that "The Company shall:" is still a lead-in.
     - "C. GRANT COMMISSION: If…" (ticket 22's negative) stays withheld, because that heading sits mid-line and D needs a line start.
-    - Not built: the case "NOW IT IS AGREED THAT:" withheld. Rule A as written reads that line as a heading, so the test is skipped. See QUESTIONS.md 25.
+    - Not built: the case "NOW IT IS AGREED THAT:" withheld. Rule A as written reads that line as a heading, so the test is skipped. See QUESTIONS.md 27.
     - ADR 0010 has a new addendum with the four exceptions.
   - **22** (lib/review/wording.js `looksLikeTemplate`):
     - Placeholder brackets count anywhere.
@@ -48,7 +48,7 @@
     - The two prompt lines are now "This document contains blanks." and the signed, executed or dated rule as ruled. No other prompt line changed.
     - The note now reads "This document has blanks that haven't been filled in. Redline calls it signed or dated only where the document itself says so." It went through the humanizer.
     - The test that the prompt contains neither "unsigned" nor "form" looks only at the prompt's instructions. It leaves out the document and the reply-shape line, which is untouched and says "in the form {…}" about the JSON. The old prompt-wording test now expects the new rule.
-  - **Gates:** unit tests 528 passed (1 skipped, QUESTIONS 25); build, check:client-bundle and e2e (54) pass. Nothing under supabase/ changed.
+  - **Gates:** unit tests 528 passed (1 skipped, QUESTIONS 27); build, check:client-bundle and e2e (54) pass. Nothing under supabase/ changed.
 - 2026-10-31, real re-run after part 1.
   - **Setup:** Sonnet 5.5 (the adapter's fixed `CLI_MODEL`) through the CLI adapter, with `DEFAULT_RED_LINES`, one run per document. The text was re-extracted with the merged lib/extraction and is byte-identical to ticket 22's final text for all six documents. Outputs are kept outside the repo.
   - **Before:** ticket 22's two final runs (for T05, its runs d and e). Every withheld flag before and after is `source-not-found`. No `unsupported-number` on either side.
@@ -65,10 +65,10 @@
   - **Withheld:** 30 of 97 before (31%, two runs per document) and 12 of 48 after (25%, one run each). A single run can't separate the rule change from model variance. The replay column checks that: re-checking ticket 22's own replies with the new code takes the withheld count from 30 to 27.
   - **Changed flags,** comparing development's check with the new one on the same replies: 5 gained and 2 lost on ticket 22's replies, 4 gained and 1 lost on the new runs.
     - Gained: T01 "3.1 Licence period…" under "3. LICENCE PERIOD; EFFECTIVE DATE" (A); T02 clause 1 after "AS FOLLOWS:" (B); T05 "Provided that where the Allottee(s)…" (C); T06 "A. The City may terminate…" and T07 "1. TERM: The initial term…" (D).
-    - Lost: all to the operative-word guard on a plain heading. These are "No change in Control…" under "9. NO CHANGE IN CONTROL" (T01, twice) and "24.1 …" under "24. WAIVER NOT A LIMITATION TO ENFORCE" (T05). See QUESTIONS.md 26.
+    - Lost: all to the operative-word guard on a plain heading. These are "No change in Control…" under "9. NO CHANGE IN CONTROL" (T01, twice) and "24.1 …" under "24. WAIVER NOT A LIMITATION TO ENFORCE" (T05). See QUESTIONS.md 28.
   - **Still withheld in the new runs:**
     - T01: list items or sub-clauses that end in ";" or follow one (correct under the ruling), one quote the model altered, and the guard loss above.
-    - T03: clause 1 after "agreed as follows:-". That line ends ":-", not ":", so B doesn't apply (QUESTIONS.md 27). Also a "WHEREAS…" after a lead-in ending "tender:".
+    - T03: clause 1 after "agreed as follows:-". That line ends ":-", not ":", so B doesn't apply (QUESTIONS.md 29). Also a "WHEREAS…" after a lead-in ending "tender:".
     - T05: 2 altered quotes; a sentence after an address block ending "Allottee [•]"; and "1.2 The Total Price…", where the model's quote ended mid-sentence.
     - T06: a lettered item after a line ending ";".
   - **Blanks note:**

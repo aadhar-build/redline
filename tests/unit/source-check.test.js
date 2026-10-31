@@ -499,8 +499,8 @@ describe("Ticket 24 ruling 21: lead-in exceptions, start-only", () => {
   });
 
   // The ruling lists this as withheld, but its rule A reads the line as a heading: five capitalised
-  // words, none of them operative, ending ":". Not guessed; asked in QUESTIONS.md 25.
-  it.skip("withholds clause 1 after NOW IT IS AGREED THAT: (QUESTIONS.md 25)", () => {
+  // words, none of them operative, ending ":". Not guessed; asked in QUESTIONS.md 27.
+  it.skip("withholds clause 1 after NOW IT IS AGREED THAT: (QUESTIONS.md 27)", () => {
     expect(found("The fee is due.\nNOW IT IS AGREED THAT:\n1. The Licensor grants the licence.", "1. The Licensor grants the licence.")).toBe(false);
   });
 });

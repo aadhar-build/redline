@@ -291,6 +291,19 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .counter figcaption { color: var(--ink-2); }
 .source blockquote { padding: 0.3rem 0.65rem 0.6rem; font: 400 1rem / 1.5 var(--font-text-stack); }
 .counter p { padding: 0.3rem 0.65rem 0.6rem; font: 400 0.9375rem / 1.5 var(--font-text-stack); }
+/* Tickets 08 and 17: the caption row carries the copy button; a Know this Counter-offer is quieter. */
+.flag-panel .counter figcaption { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding-top: 0.35rem; }
+.copy-button {
+  font: 600 0.75rem / 1 var(--font-label-stack); letter-spacing: 0.07em; text-transform: uppercase;
+  background: var(--paper); color: var(--ink); border: 1px solid var(--rule); border-radius: 2px;
+  padding: 0.3rem 0.5rem; cursor: pointer;
+}
+.copy-button:hover { background: var(--ink); color: var(--sheet); }
+.copy-button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.counter.is-quiet { background: transparent; }
+.counter.is-quiet p { color: var(--ink-2); font-size: 0.875rem; }
+.counter .counter-copy-failed { font: 400 0.875rem / 1.4 var(--font-ui-stack); color: var(--red); padding-top: 0; }
+.counter-missing { font-style: italic; }
 .show-link {
   justify-self: start; background: none; border: 0; padding: 0; cursor: pointer;
   color: var(--blue); text-decoration: underline; text-underline-offset: 0.18em; font-size: 0.875rem;
