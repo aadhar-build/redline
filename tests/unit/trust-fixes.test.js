@@ -199,6 +199,25 @@ describe("Ruling E: the Owner's side", () => {
   });
 });
 
+describe("A reply wrapped in a code fence (seen in a ticket 22 real run)", () => {
+  const fenced = (body) => createFakeAdapter({ responses: [body] });
+  it("reads a reply that is one JSON code fence and nothing else", async () => {
+    const body = "```json\n" + JSON.stringify(base()) + "\n```";
+    const result = await review({ documentText: LEASE, redLines: [], adapter: fenced(body) });
+    expect(result.summary.status).toBe("shown");
+    expect(result.riskFlagsStatus).toBe("checked");
+  });
+
+  it.each([
+    ["text before the fence", "Here is the review:\n```json\n" + JSON.stringify(base()) + "\n```"],
+    ["text after the fence", "```json\n" + JSON.stringify(base()) + "\n```\nDone."],
+  ])("still treats %s as unreadable", async (_, body) => {
+    const result = await review({ documentText: LEASE, redLines: [], adapter: fenced(body) });
+    expect(result.summary.status).toBe("withheld");
+    expect(result.riskFlagsStatus).toBe("unreadable-output");
+  });
+});
+
 describe("A saved review reopens with the same checks", () => {
   it("stores unsupported-number as a reason code", async () => {
     expect(WITHHELD_REASONS).toContain("unsupported-number");
