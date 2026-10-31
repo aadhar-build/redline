@@ -438,6 +438,7 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .banned-word { background: var(--blue-wash); color: var(--ink); text-decoration: underline wavy var(--ink); text-underline-offset: 0.2em; padding-inline: 0.1em; }
 .marked-note { font-size: 0.875rem; color: var(--ink); border-left: 3px solid var(--ink); padding: 0.2rem 0 0.2rem 0.65rem; }
 /* A number the contract doesn't contain (ticket 22): double underline, so it reads apart from a banned word without colour. */
+.new-term { background: var(--blue-wash); color: var(--ink); text-decoration: underline dotted var(--ink); text-underline-offset: 0.2em; padding-inline: 0.1em; }
 .unsupported-number { background: var(--blue-wash); color: var(--ink); text-decoration: underline double var(--ink); text-underline-offset: 0.2em; padding-inline: 0.1em; }
 .template-note { font-size: 0.875rem; color: var(--ink); border-left: 3px solid var(--ink-2); padding: 0.2rem 0 0.2rem 0.65rem; }
 /* Whose side the review is for (ticket 22), above the Risk flags. */

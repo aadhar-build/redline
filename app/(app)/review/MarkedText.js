@@ -2,6 +2,10 @@
 // Used for Redline's own words that break the hedge-word and verdict-word ban, and (kind "number") for
 // numbers the contract doesn't contain (ticket 22).
 export const isNumberMark = (m) => m.kind === "number";
+// Ticket 08b: a Counter-offer word the contract doesn't use.
+export const isNewTermMark = (m) => m.kind === "new-term";
+const markClass = (m) => (isNumberMark(m) ? "unsupported-number" : isNewTermMark(m) ? "new-term" : "banned-word");
+const markKind = (m) => (isNumberMark(m) ? "number" : isNewTermMark(m) ? "new-term" : "word");
 
 export default function MarkedText({ text, marked }) {
   const parts = [];
@@ -11,7 +15,7 @@ export default function MarkedText({ text, marked }) {
     if (start < at || end > text.length) continue;
     if (start > at) parts.push(text.slice(at, start));
     parts.push(
-      <mark key={start} className={isNumberMark(m) ? "unsupported-number" : "banned-word"} data-mark={isNumberMark(m) ? "number" : "word"}>
+      <mark key={start} className={markClass(m)} data-mark={markKind(m)}>
         {text.slice(start, end)}
       </mark>,
     );

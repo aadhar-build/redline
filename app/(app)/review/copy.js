@@ -144,8 +144,15 @@ export const COPY = {
     copyFailed: "Couldn't copy the wording. Select it and copy it yourself.",
     missing: "Redline has no Counter-offer for this flag.",
     note:
-      "A Counter-offer should only restate or tighten terms already in the contract. Redline can't check whether it adds a new term, so read it against the contract before you send it.",
+      "A Counter-offer should only restate or tighten terms already in the contract. Redline highlights words the contract doesn't use, but it can't catch every new term, so read it against the contract before you send it.",
     markedNote: "Counter-offers aren't allowed to use the highlighted words, because they hedge. Reword them before you send it.",
+    newTermNote:
+      "The highlighted words in Counter-offers aren't in the contract. Each one can bring in a term the contract doesn't have, so check them before you send it.",
+    // Ticket 08b: the model's note naming a term the contract lacks. Never shown as proposed wording.
+    needsNewTerm: {
+      lead: "Redline's judgment: the contract has no ",
+      tail: ". Adding one would be a new term, so this Counter-offer leaves it out.",
+    },
     numberNote:
       "The highlighted numbers in Counter-offers aren't in the contract. Tightening a term can change a figure, so check each one is what you want to ask for.",
   },
