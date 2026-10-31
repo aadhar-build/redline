@@ -54,5 +54,6 @@ export const COPY = {
       "This local setup only has scripted reviews for the sample contracts in fixtures/contracts. Paste one of those.",
     failed: "Redline couldn't finish reading the contract. Try again.",
     network: "Couldn't reach Redline. Check your connection and try again.",
+    "save-failed": "Redline couldn't save the contract to your library, so it didn't review it. Try again.",
   },
 };

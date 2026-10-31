@@ -2,16 +2,19 @@
 
 // Browser side of paste-and-summarise. It sends the pasted text to the server route and shows what
 // comes back. It must never import from lib/review: the model adapter is server-only.
+//
+// Signed in, the server saves the text and the review and returns the document id; the question box
+// then asks about the saved document by id, so its answers are checked against the stored text.
 
 import { useState } from "react";
+import { LIBRARY_COPY } from "../library/library-copy";
 import { COPY } from "./copy";
-import MarkedText from "./MarkedText";
-import QuestionBox from "./QuestionBox";
-import RiskFlags from "./RiskFlags";
+import ReviewResult from "./ReviewResult";
 
 const MAX_LENGTH = 200_000;
 
-export default function PasteForm() {
+/** @param {{ account: "off" | "signed-out" | "signed-in" }} props */
+export default function PasteForm({ account = "off" }) {
   const [text, setText] = useState("");
   const [state, setState] = useState({ kind: "empty" });
 
@@ -37,19 +40,14 @@ export default function PasteForm() {
     if (!res.ok) return setState({ kind: "error", code: data?.error ?? "failed" });
     const summary = data?.review?.summary;
     if (summary?.status === "shown") {
-      return setState({
-        kind: "summary",
-        text: summary.text,
-        marked: summary.marked ?? [],
-        documentText: text,
-        review: data.review,
-      });
+      return setState({ kind: "summary", documentText: text, documentId: data.documentId ?? null, review: data.review });
     }
     return setState({ kind: "error", code: summary?.reason ?? "failed" });
   }
 
   const busy = state.kind === "busy";
   const errorText = state.kind === "error" ? (COPY.errors[state.code] ?? COPY.errors.failed) : null;
+  const paste = LIBRARY_COPY.paste;
 
   return (
     <div className="paste-grid">
@@ -71,32 +69,36 @@ export default function PasteForm() {
         {errorText && (
           <p className="form-error" role="alert">{errorText}</p>
         )}
+        {account === "signed-out" && (
+          <p className="field-hint" data-testid="not-signed-in">
+            {paste.signedOut} <a href="/sign-in">{paste.signedOutLink}</a>
+          </p>
+        )}
       </form>
 
-      <div className="results">
-        <section className="pane summary-pane" aria-labelledby="summary-title" aria-busy={busy}>
-          <div className="pane-head">
-            <h2 className="pane-title" id="summary-title">{COPY.summaryCaption}</h2>
-          </div>
-          <div className="summary-body" aria-live="polite">
-            {state.kind === "summary" ? (
-              <>
-                <p className="summary-text" data-testid="summary">
-                  <MarkedText text={state.text} marked={state.marked} />
-                </p>
-                {state.marked.length > 0 && (
-                  <p className="marked-note" data-testid="marked-note">{COPY.markedNote}</p>
-                )}
-                <p className="summary-note">{COPY.summaryNote}</p>
-                <QuestionBox key={state.documentText} documentText={state.documentText} />
-              </>
+      {state.kind === "summary" ? (
+        <ReviewResult review={state.review} documentText={state.documentText} documentId={state.documentId}>
+          {account === "signed-in" &&
+            (state.documentId ? (
+              <p className="saved-note" data-testid="saved-note">
+                {paste.saved} <a href={`/library/${state.documentId}`}>{paste.savedLink}</a>
+              </p>
             ) : (
+              <p className="marked-note" data-testid="not-saved-note">{paste.notSaved}</p>
+            ))}
+        </ReviewResult>
+      ) : (
+        <div className="results">
+          <section className="pane summary-pane" aria-labelledby="summary-title" aria-busy={busy}>
+            <div className="pane-head">
+              <h2 className="pane-title" id="summary-title">{COPY.summaryCaption}</h2>
+            </div>
+            <div className="summary-body" aria-live="polite">
               <p className="summary-empty">{busy ? COPY.submitBusy : COPY.emptyState}</p>
-            )}
-          </div>
-        </section>
-        {state.kind === "summary" && <RiskFlags review={state.review} />}
-      </div>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 }
