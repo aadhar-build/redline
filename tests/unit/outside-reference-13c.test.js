@@ -22,7 +22,7 @@ const inR = (r, id) => r.outsideReferences.filter((o) => o.referencedDocument?.i
 describe("44: general law and undated Acts", () => {
   const exempt = [
     "1. Notwithstanding anything contained in any law for the time being in force, the Buyer will pay on time.",
-    "1. Nothing here limits any other law for the time being in force.",
+    "1. Nothing here is subject to any other law for the time being in force.",
     "1. Each party will follow all applicable laws, rules and regulations for the time being in force.",
     "1. Each party will follow the applicable laws of India for the\ntime being in force.",
     "1. The Lender may recover dues under the Revenue Recovery Act for the time being in force.",
@@ -65,14 +65,14 @@ describe("44: general law and undated Acts", () => {
   });
 
   it("reopens a stored as-amended row as one reference of kind other, keeping the mark", () => {
-    const text = "1. Nothing here limits any other law for the time being in force.";
+    const text = "1. Nothing here is subject to any other law for the time being in force.";
     const stored = { summary: "A summary.", flags: [], withheld: [], withheld_count: 0, red_lines: DEFAULT_RED_LINES, outside_references: [{ kinds: ["as-amended"], label: "for the time being in force", source_sentences: [text], reviewed: true, reviewed_at: AT, referenced_document_id: null }] };
     const r = reopenReview({ documentText: text, stored });
     expect(r.outsideReferences.map((o) => [o.kinds, o.severity, o.reviewed])).toEqual([[["other"], "negotiate", { at: AT }]]);
   });
 
   it("keeps a model Red line 3 flag that cites only a general-law sentence", async () => {
-    const text = "1. Nothing here limits any other law for the time being in force.";
+    const text = "1. Nothing here is subject to any other law for the time being in force.";
     const flag = { severity: "dont-sign-as-written", title: "Law", says: "Other law applies.", judgment: null, sourceSentences: [text], redLine: ONE_SIDED_CHANGES_ID, readings: null, counterOffer: null };
     const r = await run(text, { reply: { riskFlags: [flag] } });
     expect(r.mergedCount).toBe(0);
@@ -248,6 +248,57 @@ describe("security review of 43/44: the exemptions fail closed", () => {
       findOutsideReferences(`${filler}Act for the time being in force.`);
       expect(performance.now() - t).toBeLessThan(200);
     }
+  });
+});
+
+describe("security review 3: tighter exemptions", () => {
+  const kinds = (text) => findOutsideReferences(text).found.map((f) => f.kinds);
+  it.each([
+    "1. The Customer will follow the Acme Companies Act for the time being in force.",
+    "1. The Customer will follow the Platform Rent Control Act as amended from time to time.",
+    "1. The Customer will follow the Provider Registration Act for the time being in force.",
+  ])("an extra capitalised word before a known Act keeps Red line 3: %s", (text) => {
+    expect(kinds(text)).toEqual([["as-amended"]]);
+  });
+
+  it.each([
+    "1. The Customer will follow the Provider Policy, applicable laws for the time being in force.",
+    "1. The Customer will follow the Handbook; any law for the time being in force.",
+    "1. The Customer will follow the Handbook / applicable laws for the time being in force.",
+    "1. The Customer will follow Provider Directions applicable laws for the time being in force.",
+    "1. The Customer will follow the policies applicable laws for the time being in force.",
+  ])("general law not starting a clause keeps Red line 3: %s", (text) => {
+    expect(kinds(text)).toEqual([["as-amended"]]);
+  });
+
+  it.each([
+    "Applicable laws for the time being in force govern this agreement.",
+    "1. Each party will comply with applicable laws for the time being in force.",
+    "1. Each party is subject to any law for the time being in force.",
+    "1. Fees are payable as per applicable laws for the time being in force.",
+  ])("general law starting a clause is exempt: %s", (text) => {
+    expect(kinds(text)).toEqual([["other"]]);
+  });
+
+  const CONTRACT = "SUPPLY AGREEMENT\n\n1. The prices are set out in the Order Form.\n";
+  const OF_REF = "1. The prices are set out in the Order Form.";
+  const inR1 = async (text) => inR(await run(CONTRACT, { referencedDocuments: [added(text, OF_REF)] }), R1_ID);
+
+  it("raises a bare mention under a numbered heading unless it points at itself", async () => {
+    expect((await inR1("ORDER FORM No. 3\n\n1. The fees in the Order Form apply.\n")).map((o) => o.kinds)).toEqual([["order-form"]]);
+    expect(await inR1("ORDER FORM No. 3\n\n1. The fees in this Order Form apply.\n2. The Order Form above is final.\n3. The Order Form herein binds both.\n")).toEqual([]);
+  });
+
+  it.each(["other", "prior", "previous", "each", "any", "every", "separate", "additional", "further", "future"])(
+    "raises a mention qualified by %s",
+    async (q) => {
+      expect((await inR1(`ORDER FORM\n\n1. The fees in ${q === "each" || q === "every" || q === "any" ? "" : "the "}${q} Order Form apply.\n`)).map((o) => o.kinds)).toEqual([["order-form"]]);
+    },
+  );
+
+  it("raises a mention qualified by dated or signed", async () => {
+    expect((await inR1("ORDER FORM\n\n1. The fees in the Order Form dated 1 May 2026 apply.\n")).map((o) => o.kinds)).toEqual([["order-form"]]);
+    expect((await inR1("ORDER FORM\n\n1. The fees in the signed Order Form apply.\n")).map((o) => o.kinds)).toEqual([["order-form"]]);
   });
 });
 
