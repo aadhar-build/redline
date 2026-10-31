@@ -5,7 +5,7 @@ import { COPY } from "./copy";
 // Availability is read per request, so a build started without an adapter (Vercel) says so.
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Paste a contract: Redline" };
+export const metadata = { title: "Upload or paste a contract: Redline" };
 
 export default function ReviewPage() {
   const available = isAnalysisAvailable();

@@ -1,9 +1,11 @@
 "use client";
 
-// Browser side of paste-and-summarise. It sends the pasted text to the server route and shows what
-// comes back. It must never import from lib/review: the model adapter is server-only.
+// Browser side of upload-or-paste and summarise. A chosen file is read here by Extraction
+// (lib/extraction); only the text it returns is posted to the server route, never the file.
+// It must never import from lib/review: the model adapter is server-only.
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { extractFile, extractPasted } from "../../../lib/extraction/index.js";
 import { COPY } from "./copy";
 
 const MAX_LENGTH = 200_000;
@@ -28,12 +30,45 @@ function MarkedText({ text, marked }) {
 
 export default function PasteForm() {
   const [text, setText] = useState("");
+  const [fileName, setFileName] = useState(null); // set while the text shown came from a file
   const [state, setState] = useState({ kind: "empty" });
+  const fileInput = useRef(null);
+
+  function clearFile() {
+    setFileName(null);
+    setText("");
+    if (fileInput.current) fileInput.current.value = "";
+  }
+
+  async function onFileChosen(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setFileName(null);
+    setText("");
+    setState({ kind: "reading" });
+    let result;
+    try {
+      result = await extractFile(file);
+    } catch {
+      result = { kind: "rejected", reason: "unreadable" };
+    }
+    if (result.kind === "text") {
+      setText(result.text);
+      setFileName(file.name);
+      return setState({ kind: "empty" });
+    }
+    // A rejected file, or one with scanned pages (OCR is not built yet): nothing is sent.
+    if (fileInput.current) fileInput.current.value = "";
+    if (result.kind === "needs-ocr") return setState({ kind: "error", code: "needs-ocr", pages: result.pages });
+    return setState({ kind: "error", code: result.reason });
+  }
 
   async function onSubmit(event) {
     event.preventDefault();
     if (text.trim().length === 0) return setState({ kind: "error", code: "empty-document" });
     if (text.length > MAX_LENGTH) return setState({ kind: "error", code: "document-too-long" });
+    const checked = extractPasted(text);
+    if (checked.kind !== "text") return setState({ kind: "error", code: checked.reason });
 
     setState({ kind: "busy" });
     let res;
@@ -58,11 +93,35 @@ export default function PasteForm() {
   }
 
   const busy = state.kind === "busy";
-  const errorText = state.kind === "error" ? (COPY.errors[state.code] ?? COPY.errors.failed) : null;
+  const reading = state.kind === "reading";
+  let errorText = null;
+  if (state.kind === "error") {
+    errorText = state.code === "needs-ocr" ? COPY.scannedPages(state.pages) : (COPY.errors[state.code] ?? COPY.errors.failed);
+  }
 
   return (
     <div className="paste-grid">
       <form className="action-box paste-form" onSubmit={onSubmit} noValidate>
+        <label className="field-label" htmlFor="contract-file">{COPY.fileLabel}</label>
+        <p className="field-hint" id="contract-file-hint">{COPY.fileHint}</p>
+        <input
+          ref={fileInput}
+          id="contract-file"
+          className="file-field"
+          type="file"
+          accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          aria-describedby="contract-file-hint"
+          onChange={onFileChosen}
+          disabled={busy || reading}
+        />
+        {reading && <p className="field-hint" role="status">{COPY.fileReading}</p>}
+        {fileName && (
+          <p className="file-loaded" data-testid="file-loaded">
+            {COPY.fileLoaded(fileName)}{" "}
+            <button type="button" className="link-button" onClick={clearFile}>{COPY.clearFile}</button>
+          </p>
+        )}
+
         <label className="field-label" htmlFor="contract-text">{COPY.fieldLabel}</label>
         <p className="field-hint" id="contract-text-hint">{COPY.fieldHint}</p>
         <textarea
@@ -71,10 +130,11 @@ export default function PasteForm() {
           aria-describedby="contract-text-hint"
           value={text}
           onChange={(e) => setText(e.target.value)}
+          readOnly={fileName !== null}
           rows={16}
           spellCheck={false}
         />
-        <button className="cta" type="submit" disabled={busy}>
+        <button className="cta" type="submit" disabled={busy || reading}>
           {busy ? COPY.submitBusy : COPY.submit}
         </button>
         {errorText && (
