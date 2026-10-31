@@ -43,3 +43,8 @@ Run 2026-10-31 on the product owner's machine, from the scans in ~/redline-sampl
 **Post-check.** v6 small does not print ₹ either. It mostly leaves the sign out (". 14,57,00,000/-"), a shape the first unreadable-amount rule did not catch. lib/review/unreadable-amount.js now also finds a bare full stop before an amount, a broken roman-numeral marker ("(ii )", "()"), and a line that starts with Article, Clause or Section but has no number. A Risk flag citing such a sentence in an OCR range is withheld with the existing reason "unreadable-amount" and counted, so no migration is needed. The withheld note now reads "...couldn't make out an amount or a clause number." The post-check only flags. It never repairs the text.
 
 **Stray glyphs.** The v6 dictionary holds 18,709 entries, including CJK. On the real scans OCR printed a few stray Han characters (2 on S01, 3 on S04). None of them tripped the English-language check.
+
+**OCR noise rules (coordinator ruling, 2026-10-31).** On blank or noisy areas, v6 small returns boxes like "一" or a lone "1". The noise rules in lib/extraction/ocr-lines.js handle them:
+- A box with no Latin letter, digit or ₹ is dropped. This also removes the stray CJK glyphs.
+- An OCR'd page with fewer than 20 Latin letters counts as having no readable text and contributes nothing. A scan that holds only such pages gets the "no text" result, not "not English".
+- There is no confidence floor. On the round-2 pages, 4 of 361 real boxes score under 0.6.
