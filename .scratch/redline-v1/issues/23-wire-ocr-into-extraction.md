@@ -41,3 +41,11 @@ PP-OCRv6 small replaces PP-OCRv5 English mobile, as research 31 recommends. The 
 | S05 | 1 | 5 s (5 s) | 660 | 0.79 (0.75) | 0 | 0 | 0 | 0 |
 
 S04 has 5 ₹ figures. v6 small printed ₹ on 2 of them and left it out on the other 3, and the post-check found all 3, so a flag citing any of those 3 sentences is withheld. All four scans loaded, and the stray Han glyphs did not trip the English-language check. S02 was not re-run (it is over the character limit, see above).
+
+**Open regression from the switch (e2e, 2026-10-31).** In e2e, 63 tests passed and 3 failed. One failure is outside-references-saved, on the check constraint another builder is changing. The other two are real and come from v6:
+- upload.spec.mjs:219, "image-only PDF where OCR finds no text"
+- upload.spec.mjs:228, "hidden OCR text layer"
+
+On the blank grey-checker test pages, v6 small reads a few huge, low-confidence boxes ("一" and "1", confidence 0.51 to 0.55), where v5 read nothing. The page is then rejected as "not English" instead of "has no text".
+
+A confidence floor would fix the test, but it is not a free choice. On the round-2 pages, 4 of 361 real boxes score under 0.6, so a floor would silently drop real text. The fix needs a decision first: a confidence floor, a minimum letter count before the language check, or dropping boxes with no Latin letter or digit. Not fixed on this branch.
