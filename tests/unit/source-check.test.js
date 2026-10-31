@@ -367,3 +367,12 @@ describe("boundary walk on hostile input", () => {
     expect(checkSources({ toString() { throw new Error("boom"); } }, ["x."]).found).toBe(false);
   });
 });
+
+describe("astral format characters in a gap", () => {
+  it("treats U+E0001 between sentences like any other format character", () => {
+    const tag = String.fromCodePoint(0xe0001);
+    const text = `The Supplier shall pay the fee. ${tag} The Customer shall sign.`;
+    expect(checkSource(text, "The Customer shall sign.").found).toBe(true);
+    expect(checkSource(text, "The Supplier shall pay the fee.").found).toBe(true);
+  });
+});
