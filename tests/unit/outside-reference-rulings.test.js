@@ -271,7 +271,7 @@ describe("30: one reference per referenced document", () => {
     const r = await withFlags(text);
     const row = asRow(r);
     expect(row.outside_references).toEqual([
-      { kinds: ["statement-of-work"], label: "Statement of Work", source_sentences: lines, reviewed: false, reviewed_at: null },
+      { kinds: ["statement-of-work"], label: "Statement of Work", source_sentences: lines, reviewed: false, reviewed_at: null, referenced_document_id: null },
     ]);
     // Any one of its sentences names the group.
     const { reopened, stored } = mark(text, row, lines[2]);

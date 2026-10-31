@@ -3,21 +3,22 @@
 // "Reviewed for: the Allottee" above the Risk flags, with a Change control (ticket 22, ruling E).
 // Change re-runs the review with the chosen party fixed as the Owner. It is offered right after a review
 // and on the latest saved review of a document (ticket 24), where the server re-runs the saved document.
-// A saved review stores only its Owner, not every party the model named, so with fewer than two parties
-// known the Reviewer types the party's name; the server refuses a party the contract doesn't name.
+// A saved review stores its party terms (ticket 24 part 2), so a reopened one offers them in a list too.
+// With fewer than two known, the Reviewer types the party's name; the server refuses a party the
+// contract doesn't name.
 
 import { useState } from "react";
 import { COPY } from "./copy";
 
 /**
  * @param {{ ownerParty: { term: string, fixed: boolean } | null, parties: string[], onChange?: ((term: string) => void) | null, busy?: boolean, typed?: boolean }} props
- * typed: the Reviewer types the party instead of picking from the list (a reopened saved review).
+ * typed: a reopened saved review, where the Reviewer types the party when fewer than two are known.
  */
 export default function OwnerLine({ ownerParty, parties = [], onChange = null, busy = false, typed = false }) {
   const [editing, setEditing] = useState(false);
   const [choice, setChoice] = useState(ownerParty?.term ?? parties[0] ?? "");
   const canChange = typeof onChange === "function" && (parties.length > 0 || typed);
-  const pick = parties.length >= 2 && !typed;
+  const pick = parties.length >= 2;
 
   if (!ownerParty && !canChange) return null;
 

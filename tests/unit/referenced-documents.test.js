@@ -1,7 +1,9 @@
 // Referenced documents (ticket 18, ADR 0007, spec-gaps 14): the Reviewer adds the text of a document an
 // Outside reference brings in. It is reviewed together with the referencing document as one review; each
 // flag is checked against the text it cites alone; the reference resolves once the text is in, except a
-// Red line match; and a referenced text that brings in yet another document blocks a Clean result.
+// Red line match; and a reference inside an added text is an Outside reference like any other
+// (QUESTIONS.md 36). On an Outside reference, addedDocument is the document added against it and
+// referencedDocument is the added text it sits in (null for the contract), as on a flag.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -98,7 +100,7 @@ describe("resolving an Outside reference by adding its document", () => {
     expect(before.outsideReferences).toHaveLength(1);
     expect(cleanResultOf(before)).toBe(false);
     const after = await run(ONLY_B, [], [B(scheduleB, ONLY_B_REF)]);
-    expect(after.outsideReferences[0]).toMatchObject({ resolved: true, referencedDocument: { title: "SCHEDULE B" }, reviewed: null });
+    expect(after.outsideReferences[0]).toMatchObject({ resolved: true, addedDocument: { title: "SCHEDULE B" }, referencedDocument: null, reviewed: null });
     expect(cleanResultOf(after)).toBe(true);
     expect(after.cleanResult).toBe(true);
   });
@@ -118,17 +120,19 @@ describe("resolving an Outside reference by adding its document", () => {
   it("never resolves an \"as amended\" reference, even with the document added", async () => {
     const r = await run(AMENDED, [], [B("ORDER FORM\n\n1. The Customer will keep the goods dry.\n", AMENDED_REF)]);
     const ref = r.outsideReferences[0];
-    expect(ref.referencedDocument).not.toBeNull();
+    expect(ref.addedDocument).not.toBeNull();
     expect(ref.redLineMatch).not.toBeNull();
     expect(ref.resolved).toBe(false);
     expect(cleanResultOf(r)).toBe(false);
   });
 
-  it("blocks a Clean result when the added text brings in yet another document", async () => {
+  it("blocks a Clean result when the added text brings in yet another document, as an Outside reference in that text", async () => {
     const withRef = "SCHEDULE B\nService Levels\n\n1. The service credits are set out in the Order Form.\n";
     const r = await run(ONLY_B, [], [B(withRef, ONLY_B_REF)]);
     expect(r.outsideReferences[0].resolved).toBe(true);
-    expect(r.referencedOutsideReferences.map((x) => x.sourceSentences[0].text)).toEqual(["1. The service credits are set out in the Order Form."]);
+    expect(r.outsideReferences[1]).toMatchObject({ number: 2, referencedDocument: { id: B().id, title: "SCHEDULE B", index: 1 }, addedDocument: null, resolved: false });
+    expect(r.outsideReferences[1].sourceSentences.map((s) => s.text)).toEqual(["1. The service credits are set out in the Order Form."]);
+    expect(r.referencedOutsideReferences).toBeUndefined();
     expect(cleanResultOf(r)).toBe(false);
   });
 
@@ -159,10 +163,11 @@ describe("Copy all with a referenced document", () => {
     expect(text).not.toContain(COPY.clean.outsideReviewed);
   });
 
-  it("lists references inside the added document", async () => {
+  it("lists references inside the added document with the others, saying which document they sit in", async () => {
     const r = await run(ONLY_B, [], [B("SCHEDULE B\nService Levels\n\n1. The service credits are set out in the Order Form.\n", ONLY_B_REF)]);
     const text = reviewAsText(r);
-    expect(text).toContain(COPY.outside.inReferencedTitle);
+    expect(text).toContain(`${COPY.outside.title} (2)`);
+    expect(text).toContain(COPY.outside.inAdded("SCHEDULE B"));
     expect(text).toContain("1. The service credits are set out in the Order Form.");
   });
 });
@@ -183,7 +188,8 @@ describe("a saved review run with a referenced document", () => {
     const r = await run(ONLY_B, [flag({ document: "R1" })], [B(scheduleB, ONLY_B_REF)]);
     const reopened = reopenReview({ documentText: ONLY_B, stored: toStoredReview(r), referencedDocuments: [] });
     expect(reopened.riskFlags).toHaveLength(0);
-    expect(reopened.withheld.map((w) => w.reason)).toEqual(["source-not-found"]);
+    // QUESTIONS.md 37: the review lists the document, so it was removed.
+    expect(reopened.withheld.map((w) => w.reason)).toEqual(["referenced-document-removed"]);
     expect(reopened.outsideReferences[0].resolved).toBe(false);
     expect(cleanResultOf(reopened)).toBe(false);
   });

@@ -42,7 +42,13 @@ function MarkControl({ reference, documentId, onReview }) {
       res = await fetch("/api/outside-references", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ documentId, sourceSentence: reference.sourceSentences[0].text, referenceKey: reference.key ?? null, reviewed: !reviewed }),
+        body: JSON.stringify({
+          documentId,
+          sourceSentence: reference.sourceSentences[0].text,
+          referenceKey: reference.key ?? null,
+          inDocumentId: reference.referencedDocument?.id ?? null,
+          reviewed: !reviewed,
+        }),
       });
       data = await res.json();
     } catch {
@@ -64,7 +70,47 @@ function MarkControl({ reference, documentId, onReview }) {
   );
 }
 
-function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onReview, runToken }) {
+// QUESTIONS.md 37: the Reviewer removes a document they added. The server reviews the contract again
+// without it and only then deletes it, and sends back the new review.
+function RemoveControl({ added, documentId, onReview, runToken }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
+  const copy = COPY.outside.remove;
+
+  async function remove() {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    let res;
+    let data;
+    try {
+      res = await fetch("/api/referenced-documents", {
+        method: "DELETE",
+        headers: { "content-type": "application/json", ...(runToken ? { "x-redline-run-token": runToken } : {}) },
+        body: JSON.stringify({ documentId, referencedDocumentId: added.id }),
+      });
+      data = await res.json();
+    } catch {
+      setBusy(false);
+      return setError(COPY.errors.network);
+    }
+    setBusy(false);
+    if (res.ok && data?.saved === "saved" && data?.review) return onReview(data.review);
+    const code = res.ok ? "incomplete" : (data?.error ?? "failed");
+    setError(copy.errors[code] ?? COPY.errors[code] ?? copy.errors.failed);
+  }
+
+  return (
+    <div className="outside-mark">
+      <button type="button" className="link-button" onClick={remove} disabled={busy} data-testid="outside-remove">
+        {busy ? copy.busy : copy.button}
+      </button>
+      {error && <p className="form-error" role="alert">{error}</p>}
+    </div>
+  );
+}
+
+function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onReview, runToken, charactersUsed }) {
   const copy = COPY.outside;
   const kind = KIND[reference.severity] ?? "negotiate";
   const panelId = `outside-panel-${number}`;
@@ -88,7 +134,7 @@ function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onRevi
           </span>
           <span className="flag-src">{reference.sourceSentences[0].text}</span>
           <span className={`outside-state ${reviewed ? "is-reviewed" : ""}`} data-testid="outside-state">
-            {reference.referencedDocument ? copy.addedTag : reviewed ? copy.reviewedTag : copy.notReviewedTag}
+            {reference.addedDocument ? copy.addedTag : reviewed ? copy.reviewedTag : copy.notReviewedTag}
           </span>
         </span>
         <span className="flag-ref">
@@ -97,6 +143,9 @@ function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onRevi
         </span>
       </button>
       <div className="flag-panel" id={panelId} hidden={!isOpen}>
+        {reference.referencedDocument ? (
+          <p className="basis" data-testid="outside-in-added">{copy.inAdded(reference.referencedDocument.title)}</p>
+        ) : null}
         <p className="says" data-testid="outside-says">
           <OwnText part={reference.says} />
         </p>
@@ -120,10 +169,10 @@ function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onRevi
         </figure>
         <CounterOffer counterOffer={reference.counterOffer ?? null} number={number} />
         <div className="outside-review" data-testid="outside-review">
-          {reference.referencedDocument ? (
-            <p className="basis basis-statement" data-testid="outside-added">{copy.added(reference.referencedDocument.title)}</p>
+          {reference.addedDocument ? (
+            <p className="basis basis-statement" data-testid="outside-added">{copy.added(reference.addedDocument.title)}</p>
           ) : null}
-          {reference.referencedDocument ? null : reviewed ? (
+          {reference.addedDocument ? null : reviewed ? (
             <p className="basis basis-statement" data-testid="outside-statement">
               <span className="basis-label">{copy.statementLabel}</span>
               {copy.statement(formatSavedAt(reference.reviewed.at))}
@@ -131,13 +180,20 @@ function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onRevi
           ) : (
             <p className="basis" data-testid="outside-not-reviewed">{copy.notReviewed}</p>
           )}
-          {reference.redLineMatch ? <p className="basis" data-testid="outside-still-blocks">{copy.stillBlocks}</p> : null}
+          {reference.redLineMatch ? (
+            <p className="basis" data-testid="outside-still-blocks">
+              {reference.addedDocument ? copy.addedStillBlocks(reference.redLineMatch.number) : copy.stillBlocks}
+            </p>
+          ) : null}
           {reference.sourceSentences.length > 1 ? (
             <p className="basis" data-testid="outside-mark-covers">{copy.markCovers(reference.sourceSentences.length)}</p>
           ) : null}
-          {reference.referencedDocument ? null : <MarkControl reference={reference} documentId={documentId} onReview={onReview} />}
-          {documentId && onReview && !reference.referencedDocument && reference.kinds.some((k) => k !== "as-amended") ? (
-            <AddReferenced reference={reference} number={number} documentId={documentId} runToken={runToken} onReview={onReview} />
+          {reference.addedDocument ? null : <MarkControl reference={reference} documentId={documentId} onReview={onReview} />}
+          {documentId && onReview && reference.addedDocument ? (
+            <RemoveControl added={reference.addedDocument} documentId={documentId} onReview={onReview} runToken={runToken} />
+          ) : null}
+          {documentId && onReview && !reference.addedDocument && reference.kinds.some((k) => k !== "as-amended") ? (
+            <AddReferenced reference={reference} number={number} documentId={documentId} runToken={runToken} onReview={onReview} charactersUsed={charactersUsed} />
           ) : null}
         </div>
       </div>
@@ -150,9 +206,9 @@ function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onRevi
  * firstNumber: the number of the first reference, after the pane's other flags, so every number in the
  * pane is unique.
  */
-export default function OutsideReferences({ references, firstNumber, documentId = null, onReview = null, runToken = null, inReferenced = [] }) {
+export default function OutsideReferences({ references, firstNumber, documentId = null, onReview = null, runToken = null, charactersUsed = null }) {
   const [closed, setClosed] = useState(() => new Set());
-  if (references.length === 0 && inReferenced.length === 0) return null;
+  if (references.length === 0) return null;
   const toggle = (n) =>
     setClosed((prev) => {
       const next = new Set(prev);
@@ -171,7 +227,7 @@ export default function OutsideReferences({ references, firstNumber, documentId 
           const number = firstNumber + i;
           return (
             <ReferenceItem
-              key={r.key ?? r.sourceSentences[0].start}
+              key={`${r.referencedDocument?.id ?? "main"}|${r.key ?? r.sourceSentences[0].start}`}
               reference={r}
               number={number}
               isOpen={!closed.has(number)}
@@ -179,24 +235,11 @@ export default function OutsideReferences({ references, firstNumber, documentId 
               documentId={documentId}
               onReview={onReview}
               runToken={runToken}
+              charactersUsed={charactersUsed}
             />
           );
         })}
       </ul>
-      {inReferenced.length > 0 ? (
-        <div data-testid="outside-in-referenced">
-          <h4 className="group-title">{COPY.outside.inReferencedTitle} <span className="count">{inReferenced.length}</span></h4>
-          <p className="group-empty">{COPY.outside.inReferencedLede}</p>
-          <ul className="flags">
-            {inReferenced.map((r, i) => (
-              <li key={i} className="flag">
-                <p className="basis">{COPY.outside.fromReferenced(r.referencedDocument?.title)}</p>
-                <blockquote data-testid="source-sentence">{r.sourceSentences[0].text}</blockquote>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
     </div>
   );
 }

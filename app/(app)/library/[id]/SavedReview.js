@@ -14,7 +14,7 @@ import { LIBRARY_COPY } from "../library-copy";
 /**
  * @param {{ review: object, documentId: string, askOff?: string | null, runToken?: string | null, canChange: boolean, readOnly: boolean }} props
  */
-export default function SavedReview({ review, documentId, askOff = null, runToken = null, canChange, readOnly }) {
+export default function SavedReview({ review, documentId, askOff = null, runToken = null, canChange, readOnly, reviewId = null }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
@@ -52,6 +52,7 @@ export default function SavedReview({ review, documentId, askOff = null, runToke
       askOff={askOff}
       runToken={runToken}
       readOnly={readOnly}
+      reviewId={readOnly ? reviewId : null}
       typedOwner
       busy={busy}
       onChangeOwner={canChange && !readOnly ? change : null}

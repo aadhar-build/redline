@@ -33,8 +33,10 @@ function MarkedText({ text, marked }) {
  * documentId: a saved document. Only its id is sent; the server reads the stored text itself.
  * documentText: an unsaved paste, the text the summary was made from, not the live paste box.
  * runToken: set only with the local Claude Code CLI adapter; the route requires it back.
+ * reviewId: the saved review shown, when it is not the latest (QUESTIONS.md 41); the server answers from
+ *   the documents added to that review. withAdded: the review shown has added documents.
  */
-export default function QuestionBox({ documentText, documentId = null, runToken = null }) {
+export default function QuestionBox({ documentText, documentId = null, runToken = null, reviewId = null, withAdded = false }) {
   const [question, setQuestion] = useState("");
   const [state, setState] = useState({ kind: "empty" });
 
@@ -51,7 +53,7 @@ export default function QuestionBox({ documentText, documentId = null, runToken 
       res = await fetch("/api/ask", {
         method: "POST",
         headers: { "content-type": "application/json", ...(runToken ? { "x-redline-run-token": runToken } : {}) },
-        body: JSON.stringify(documentId ? { documentId, question: q } : { text: documentText, question: q }),
+        body: JSON.stringify(documentId ? { documentId, question: q, ...(reviewId ? { reviewId } : {}) } : { text: documentText, question: q }),
       });
       data = await res.json();
     } catch {
@@ -104,9 +106,14 @@ export default function QuestionBox({ documentText, documentId = null, runToken 
               <p className="marked-note" data-testid="answer-marked-note">{ASK_COPY.markedNote}</p>
             )}
             {state.answer.sources.map((s) => (
-              <figure className="source" key={s.start} data-testid="answer-source">
+              <figure className="source" key={`${s.referencedDocument?.id ?? "main"}:${s.start}`} data-testid="answer-source">
                 <figcaption>
-                  <Tick className="source-tick" /> {ASK_COPY.sourceCaption}
+                  <Tick className="source-tick" />{" "}
+                  {withAdded
+                    ? s.referencedDocument
+                      ? ASK_COPY.sourceFrom(s.referencedDocument.title)
+                      : ASK_COPY.sourceFromContract
+                    : ASK_COPY.sourceCaption}
                 </figcaption>
                 <blockquote className="source-quote">{s.text}</blockquote>
               </figure>
@@ -115,7 +122,7 @@ export default function QuestionBox({ documentText, documentId = null, runToken 
           </div>
         )}
         {state.kind === "not-in-document" && (
-          <p className="answer-none" data-testid="not-in-document">{ASK_COPY.notInDocument}</p>
+          <p className="answer-none" data-testid="not-in-document">{withAdded ? ASK_COPY.notInAdded : ASK_COPY.notInDocument}</p>
         )}
         {state.kind === "withheld" && (
           <p className="answer-none" data-testid="answer-withheld">

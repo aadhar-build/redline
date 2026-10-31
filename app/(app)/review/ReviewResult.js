@@ -30,24 +30,27 @@ export default function ReviewResult({
   busy = false,
   readOnly = false,
   typedOwner = false,
+  reviewId = null,
   children,
 }) {
   // After the Reviewer marks an Outside reference, the server sends the saved review back (ticket 13).
-  // It replaces what is shown until a new review arrives from the parent. Whose side the review is for
-  // is not stored, so that is kept from the review as it was.
+  // It replaces what is shown until a new review arrives from the parent. The Owner and the parties are
+  // stored (ticket 24), so they come back with it. The review sent back is the latest, so the question
+  // box then asks about the latest (QUESTIONS.md 41).
   const [marked, setMarked] = useState(null);
-  const current =
-    marked && marked.base === review ? { ...marked.review, ownerParty: review.ownerParty, parties: review.parties } : review;
+  const swapped = marked && marked.base === review;
+  const current = swapped ? marked.review : review;
   const onReview = documentId && !readOnly ? (next) => setMarked({ base: review, review: next }) : null;
   return (
     <Result review={current} documentText={documentText} documentId={documentId} askOff={askOff} runToken={runToken}
+      reviewId={swapped ? null : reviewId}
       onChangeOwner={readOnly ? null : onChangeOwner} busy={busy} onReview={onReview} typedOwner={typedOwner}>
       {children}
     </Result>
   );
 }
 
-function Result({ review, documentText, documentId, askOff, runToken, onChangeOwner, busy, onReview, typedOwner, children }) {
+function Result({ review, documentText, documentId, askOff, runToken, onChangeOwner, busy, onReview, typedOwner, reviewId, children }) {
   const summary = review.summary;
   const marked = summary.marked ?? [];
   return (
@@ -77,7 +80,14 @@ function Result({ review, documentText, documentId, askOff, runToken, onChangeOw
           {askOff ? (
             <p className="summary-note" data-testid="ask-off">{askOff}</p>
           ) : (
-            <QuestionBox key={documentId ?? documentText} documentId={documentId} documentText={documentText} runToken={runToken} />
+            <QuestionBox
+              key={`${documentId ?? documentText}|${(review.referencedDocuments ?? []).map((d) => d.id).join(",")}`}
+              documentId={documentId}
+              documentText={documentText}
+              runToken={runToken}
+              reviewId={reviewId}
+              withAdded={(review.referencedDocuments ?? []).length > 0}
+            />
           )}
         </div>
       </section>
