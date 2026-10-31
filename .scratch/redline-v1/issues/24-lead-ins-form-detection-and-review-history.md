@@ -14,7 +14,7 @@
 - **C. Provisos.** An inline ":" followed by whitespace and exactly "Provided that" / "Provided further that" / "Provided always that" (capital P) is a start boundary for the proviso. The main clause still cannot end at that ":".
 - **D. Inline all-caps heading** (extends ticket 22 ruling B). The skipped prefix may also contain ALL-CAPS words (≥2 letters; digits, &, comma, hyphen allowed), each optionally ending ":" or ";", up to 8 words and 80 chars, no operative word, starting at line start on a boundary; the quote must pass OPENS_SENTENCE. The shown span starts at the line start. Title-case inline headings are not skipped.
 - Accept: "AS FOLLOWS:\n1. The Licensor hereby grants…" quoted from "The Licensor"; "7. COMPENSATION: A. GRANT APPLICATION GDS shall pay…" quoted from "GDS shall" and from "A. GRANT", shown from "7."; "3. LICENCE PERIOD; EFFECTIVE DATE\n3.1 The licence period…"; "…as provided in the Act: Provided that no fee…" quoted from "Provided that".
-- Withhold: "The Licensee shall not:\n(a) sublet…" quoted as "(a) sublet…" or "sublet…"; "LICENSEE SHALL NOT sublet" quoted as "sublet"; a quote ending "…shall not:"; "…as provided in the Act:" without its proviso; "Subject to Clause 9:\n(a) …" quoted as "(a) …"; "NOW IT IS AGREED THAT:\n…"; "7. Compensation: A. Grant Application GDS shall" quoted as "GDS shall". Regression: the twelve addendum cases and ticket 22 ruling B's cases unchanged.
+- Withhold: "The Licensee shall not:\n(a) sublet…" quoted as "(a) sublet…" or "sublet…"; "LICENSEE SHALL NOT sublet" quoted as "sublet"; a quote ending "…shall not:"; "…as provided in the Act:" without its proviso; "Subject to Clause 9:\n(a) …" quoted as "(a) …"; ~~"NOW IT IS AGREED THAT:\n…"~~ (now shown, QUESTIONS.md 27); "7. Compensation: A. Grant Application GDS shall" quoted as "GDS shall". Regression: the twelve addendum cases and ticket 22 ruling B's cases unchanged.
 
 **22. Form detection** (high on the dot-leader and signature-block rules, medium on prompt wording). `template` fires only on body blanks: (i) any placeholder bracket ("[●]", "[__]", "[Name…]"); (ii) an underscore or dot/ellipsis run only when, after removing the run, punctuation and the label words {name, date, signature, signed, by, title, designation, witness, witnesses, place, for, authorised, authorized, signatory, seal, stamp, and}, at least 3 words remain on that line. A dot/ellipsis run followed by optional space and a number or roman numeral at line end (a contents leader) never counts. Prompt: the fixed line becomes "This document contains blanks."; the rule becomes "Say the document is signed, executed or dated only where its text states it. A blank signature or date line is not evidence either way." The UI note says the document has blanks, not "unsigned form". Tests: "Definitions .......... 3" alone → false; "Signature: ________\nDate: ______" alone → false; "this ___ day of ____ 2024" → true; "a monthly fee of Rs. ______" → true; "[●]" → true; through the Review seam, the prompt contains neither "unsigned" nor "form".
 
@@ -40,7 +40,7 @@
     - Tests cover every accept and withhold case the ruling lists. They also cover quotes ending "…shall not:", "…COMPENSATION:", "…in the Act:" and a list item's ";". The twelve addendum cases and ruling B's cases are unchanged.
     - One existing test flipped, as the ruling intends: "Fees:\nThe Company…" and "Fees; Taxes\nThe Company…" were withheld and are now shown (A). The test now also checks that a quote can't end at "Fees; Taxes", and that "The Company shall:" is still a lead-in.
     - "C. GRANT COMMISSION: If…" (ticket 22's negative) stays withheld, because that heading sits mid-line and D needs a line start.
-    - Not built: the case "NOW IT IS AGREED THAT:" withheld. Rule A as written reads that line as a heading, so the test is skipped. See QUESTIONS.md 27.
+    - "NOW IT IS AGREED THAT:" was later ruled shown (QUESTIONS.md 27, part 2 below).
     - ADR 0010 has a new addendum with the four exceptions.
   - **22** (lib/review/wording.js `looksLikeTemplate`):
     - Placeholder brackets count anywhere.
@@ -76,3 +76,19 @@
     - It no longer fires on T06, whose only blanks are signature and date lines. T06's summary now says: "The opening text says it was made and executed on the 17th day of April 2024. The execution line at the end leaves the day and month blank." That matches the text, and ticket 22's "the form is unsigned" claim (QUESTIONS 22) is gone in this run.
   - **Other results:** judgments dropped: 0 in the six runs. The Owner was named in all six.
   - **Not ticked:** "New copy through the humanizer" covers part 2 as well. Part 1's one new string went through it.
+- 2026-10-31, part 2: QUESTIONS.md 27 to 29, settled by Fable advisor.
+  - **27** (lib/review/source-check.js): AGREED THAT and AGREE THAT join `FORMULA_OPENERS`. A new `LEAD_IN_WORDS` set (that, agree, agrees, agreed, undertake, undertakes, covenant, covenants, hereby) disqualifies a heading line only on the rule A path, that is, at a start boundary with a trailing ":" or ";". B is still checked before A. "NOW IT IS AGREED THAT:\n1. The Licensor…" is now shown, and the skipped test is flipped.
+    - Two ruled cases conflict with rules already built, so their tests are skipped and they're asked in QUESTIONS.md 30. First, "LESSEE AGREES TO:\n(a) Pay…" stays shown, because rule D (unchanged) reads LESSEE AGREES TO: as an all-caps prefix. Second, "The Licensor…" quoted without its "1." shows without it, because "1. The" is already a boundary under ADR 0010.
+  - **28:** the guard is kept as built. The tests cover "9. NO CHANGE IN CONTROL", "24. WAIVER NOT A LIMITATION TO ENFORCE" and "THE LESSEE SHALL NOT" (all withheld), and "9. CHANGE IN CONTROL" (shown).
+  - **29:** a lead-in colon may be ":" plus one hyphen-minus or one DASH character. This holds in `isFormulaOpener`, in the B/C branch of `isBoundary`, on A's start path and in `isEndBoundary`. D is unchanged. Two dashes, or a space before the dash, still don't count.
+  - The ADR 0010 addendum is updated with the new openers, the lead-in words, the guard's accepted cost and the dash rule.
+  - **Replay:** no model calls. The stored replies were re-checked with part 1's check (before) and part 2's (after). The script and outputs are outside the repo, in ~/redline-tools/t24b (inputs in ~/redline-tools/t24).
+
+  | Replies | Before: shown / withheld | After: shown / withheld |
+  |---|---|---|
+  | Ticket 22, run 1 (six docs) | 37 / 11 | 37 / 11 |
+  | Ticket 22, run 2 (six docs) | 33 / 16 | 33 / 16 |
+  | Part 1's new runs (six docs) | 36 / 12 | 36 / 12 |
+
+    - No flag changed on any document. T03's clause 1 after "agreed as follows:-" now has a start boundary: a probe with the clause's dot-leader blank replaced is withheld before and shown after. The model's quotes of that clause still carry the dot-leader blank, though, and are withheld as `ellipsis`, so the count doesn't move.
+    - The two QUESTIONS 28 losses (T01, T05) stay withheld, as ruled. None of the six texts has an AGREED THAT or AGREE THAT opener.

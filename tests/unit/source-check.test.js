@@ -498,9 +498,94 @@ describe("Ticket 24 ruling 21: lead-in exceptions, start-only", () => {
     expect(found(doc, quote)).toBe(false);
   });
 
-  // The ruling lists this as withheld, but its rule A reads the line as a heading: five capitalised
-  // words, none of them operative, ending ":". Not guessed; asked in QUESTIONS.md 27.
-  it.skip("withholds clause 1 after NOW IT IS AGREED THAT: (QUESTIONS.md 27)", () => {
-    expect(found("The fee is due.\nNOW IT IS AGREED THAT:\n1. The Licensor grants the licence.", "1. The Licensor grants the licence.")).toBe(false);
+  it("shows clause 1 after NOW IT IS AGREED THAT: (QUESTIONS.md 27)", () => {
+    expect(shown("The fee is due.\nNOW IT IS AGREED THAT:\n1. The Licensor grants the licence.", "1. The Licensor grants the licence.")).toBe("1. The Licensor grants the licence.");
+  });
+});
+
+describe("QUESTIONS.md 27: lead-in words on rule A, formula openers ending THAT", () => {
+  const shown = (doc, quote) => {
+    const r = checkSource(doc, quote);
+    return r.found ? r.text : null;
+  };
+  const agreed = "The fee is due.\nNOW IT IS AGREED THAT:\n1. The Licensor grants the licence.";
+
+  it.each([
+    ["the clause with its number", agreed, "1. The Licensor grants the licence.", "1. The Licensor grants the licence."],
+    ["HEREBY AGREED THAT", "The fee is due.\nNOW IT IS HEREBY AGREED THAT:\nThe Licensee shall pay.", "The Licensee shall pay.", "The Licensee shall pay."],
+    ["agree that in lower case", "The fee is due.\nThe parties agree that:\n(a) The Licensee shall pay the fee.", "(a) The Licensee shall pay the fee.", "(a) The Licensee shall pay the fee."],
+    ["WHEREAS: still a heading", "The fee is due.\nWHEREAS:\nA. The Lessor owns the premises.", "A. The Lessor owns the premises.", "A. The Lessor owns the premises."],
+    ["Payment Terms: still a heading", "The fee is due.\nPayment Terms:\nThe Licensee shall pay monthly.", "The Licensee shall pay monthly.", "The Licensee shall pay monthly."],
+  ])("shows %s", (_, doc, quote, expected) => {
+    expect(shown(doc, quote)).toBe(expected);
+  });
+
+  it.each([
+    ["Undertakes That", "The fee is due.\nLessee Undertakes That:\n(a) Pay the rent on time.", "(a) Pay the rent on time."],
+    ["hereby covenants", "The fee is due.\nThe Lessee hereby covenants:\n(a) Pay the rent on time.", "(a) Pay the rent on time."],
+    ["a quote ending at the opener", "The fee is due.\nNOW IT IS AGREED THAT:\n1. The Licensor grants the licence.", "NOW IT IS AGREED THAT:"],
+  ])("withholds %s", (_, doc, quote) => {
+    expect(found(doc, quote)).toBe(false);
+  });
+  it("shows the clause quoted without its number", () => {
+    expect(found(agreed, "The Licensor grants the licence.")).toBe(true);
+  });
+
+  // "1. The" is already a sentence boundary under ADR 0010, so the span starts where the quote does.
+  it("shows a clause quoted without its number without the number", () => {
+    expect(shown(agreed, "The Licensor grants the licence.")).toBe("The Licensor grants the licence.");
+  });
+
+  // Rule D: a lead-in word also disqualifies an all-caps prefix word.
+  it.each([
+    ["with the item letter", "(a) Pay the rent on time."],
+    ["without the item letter", "Pay the rent on time."],
+  ])("withholds an item after LESSEE AGREES TO: %s", (_, quote) => {
+    expect(found("The fee is due.\nLESSEE AGREES TO:\n(a) Pay the rent on time.", quote)).toBe(false);
+  });
+});
+
+describe("QUESTIONS.md 28: the operative-word guard on every heading line", () => {
+  it.each([
+    ["9. NO CHANGE IN CONTROL", "9. NO CHANGE IN CONTROL\nNo change in Control of the Licensee is permitted.", "No change in Control of the Licensee is permitted."],
+    ["24. WAIVER NOT A LIMITATION TO ENFORCE", "24. WAIVER NOT A LIMITATION TO ENFORCE\n24.1 No waiver limits enforcement.", "24.1 No waiver limits enforcement."],
+    ["an operative caps line before a capital", "THE LESSEE SHALL NOT\nBE LIABLE FOR ANY LOSS.", "BE LIABLE FOR ANY LOSS."],
+    ["an operative caps line before an item", "THE LESSEE SHALL NOT\n(a) Sublet the premises.", "(a) Sublet the premises."],
+  ])("withholds the sentence under %s", (_, doc, quote) => {
+    expect(found(`The fee is due.\n${doc}`, quote)).toBe(false);
+  });
+
+  it("shows the sentence under a heading without NO or NOT", () => {
+    const r = checkSource("The fee is due.\n9. CHANGE IN CONTROL\nNo change in Control is permitted.", "No change in Control is permitted.");
+    expect(r.found && r.text).toBe("No change in Control is permitted.");
+  });
+});
+
+describe("QUESTIONS.md 29: a lead-in colon written with a dash", () => {
+  const shown = (doc, quote) => {
+    const r = checkSource(doc, quote);
+    return r.found ? r.text : null;
+  };
+
+  it.each([
+    ["AS FOLLOWS:-", "The fee is due.\nNOW THE PARTIES AGREED AS FOLLOWS:-\n1. The Contractor shall perform the works.", "1. The Contractor shall perform the works."],
+    ["AS FOLLOWS: with an en dash", "The fee is due.\nNOW THE PARTIES AGREED AS FOLLOWS:\u2013\n1. The Contractor shall perform the works.", "1. The Contractor shall perform the works."],
+    ["AS FOLLOWS: with an em dash", "The fee is due.\nNOW THE PARTIES AGREED AS FOLLOWS:\u2014\n1. The Contractor shall perform the works.", "1. The Contractor shall perform the works."],
+    ["as under:-", "The fee is due.\nThe parties agreed as under:-\nThe Contractor shall perform the works.", "The Contractor shall perform the works."],
+    ["a heading ending :-", "The fee is due.\n7. COMPENSATION:-\nGDS shall pay the fee.", "GDS shall pay the fee."],
+    ["a proviso after :-", "The Licensee shall pay the fee as provided in the Act:- Provided that no fee is due.", "Provided that no fee is due."],
+  ])("shows the text after %s", (_, doc, quote) => {
+    expect(shown(doc, quote)).toBe(quote);
+  });
+
+  it.each([
+    ["a quote ending as follows:-", "The fee is due.\n\nThe parties agreed as follows:-\n\n1. The Contractor shall perform.", "The parties agreed as follows:-"],
+    ["a quote ending 7. COMPENSATION:-", "The fee is due.\n\n7. COMPENSATION:-\n\nGDS shall pay.", "7. COMPENSATION:-"],
+    ["an operative lead-in ending :-", "The Licensee shall not:-\n(a) sublet the premises.", "(a) sublet the premises."],
+    ["a lowercase line after AS FOLLOWS:-", "The fee is due.\nAGREE AS FOLLOWS:-\nthe Licensor grants.", "the Licensor grants."],
+    ["two dashes", "The fee is due.\nThe parties agreed as follows:--\n1. The Contractor shall perform the works.", "1. The Contractor shall perform the works."],
+    ["a space before the dash", "The fee is due.\nThe parties agreed as follows: -\n1. The Contractor shall perform the works.", "1. The Contractor shall perform the works."],
+  ])("withholds %s", (_, doc, quote) => {
+    expect(found(doc, quote)).toBe(false);
   });
 });
