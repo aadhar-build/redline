@@ -41,3 +41,24 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 18. **OCR text is still shown unmarked; do you want to keep that?** (Parked by the Fable advisor: it reverses your own explicit choice, so it's yours.) The OCR validation on 5 public scans measured: ₹ read correctly 0 of 5 (as "Z" or "2", so "₹. 17,19,26,000/-" became "2. 17,19,26,000/-"); a zero read as "o" inside an amount; section numbers 38 of 44 right ("(iii)" became "(ii )", "ARTICLE 9." lost its 9); a heading dropped with no warning; the engine's confidence scores didn't flag the garbage; 1.5% character error rate after deskew, tuned on the same 8 pages it was scored on. Already decided either way: flags citing a sentence with an unreadable amount are withheld and counted. Your choice: keep OCR text unmarked as decided, or add the cheapest safeguard, a note on any document that was partly read from a scan.
 19. ~~Removed PDF headers per upload (from ticket 21).~~ Answered: settled by Fable advisor, 2026-10-31. Show them at upload in one line (up to five distinct strings, then "and N more", plus the total line count); never store or send them. Built in PasteForm (feature/21b-running-lines).
 20. ~~Page numbers outside the 10% band (from ticket 21).~~ Answered: settled by Fable advisor, 2026-10-31. Keep the band at 10% and rules (a) and (b); add rule (c): a page-number line at any height is removed when the same shape sits within 0.02 of the page height on at least 3 pages and half the pages and one of its numbers counts up with the page. Built in lib/extraction/pdf-text.js.
+
+## Open (from ticket 22, 2026-10-31)
+
+21. **Clauses withheld after a lead-in ending ":" or ";" (from ticket 22's real re-run).** This is now the largest cause of withheld flags (T01, T05). ADR 0010 holds that a line ending ":" or ";" does not end a sentence, so a list item can't be cited without its lead-in. It also catches ordinary clauses:
+    - clause 1 after "NOW IT IS HEREBY AGREED AS FOLLOWS:" (T02, T03, T07);
+    - a clause under an inline heading ("7. COMPENSATION: A. GRANT APPLICATION GDS shall…", "3. LICENCE PERIOD; EFFECTIVE DATE 3.1 Licence period…");
+    - provisos after "…as provided in the Act: Provided that…".
+
+    Options:
+    - (a) Leave it. Those flags stay withheld.
+    - (b) Treat ":" followed by a line break and a clause number as a boundary.
+    - (c) Have the prompt ask the model to quote from the lead-in when a sentence follows one.
+22. **A form that the text says was executed (from ticket 22).** Template detection fires on any blank, including a blank signature or date line. T06's preamble says "made and executed this 17th day of April 2024", but its signature blocks and closing date line are blank. In one run of two, the summary then said "the form is unsigned". Options:
+    - (a) Keep it as built.
+    - (b) Drop the "never say signed/executed" line when the text itself says "executed" or "signed" with a date, and keep the template note.
+    - (c) Word the fixed line as "This document contains blanks" without "unsigned".
+    - Also: T01 matches on its table-of-contents dot leaders alone. Should dot leaders count?
+23. **Change when signed in, and what a reopened review keeps (from ticket 22).**
+    - Signed in, each Change saves the document again as a new library entry. Should Change instead replace the review on the same document?
+    - The Owner chosen and the count of dropped judgments are not stored, so a reopened review shows neither. Store them, which needs a migration, or leave them out?
+    - Should the dropped-judgment count be shown to the Reviewer at all?
