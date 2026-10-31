@@ -25,6 +25,27 @@
 
 Run 2026-10-31 on the product owner's machine, from the scans in ~/redline-samples/scans (never committed), with the harness in the job's ocr-runs folder driving the real /review page in Chromium. What it covers: upload, in-browser OCR of every page, and the text reaching the field. It does not run the analysis. S02 read all 304 pages (about 1.9 s a page) and was then refused by the existing 200,000-character limit (MAX_TEXT_LENGTH in lib/extraction/result.js), so its exact length is not known. The limit stays as it is (coordinator, 2026-10-31).
 
-**Engine seam.** lib/extraction/ocr-engine.js is the only module that knows the engine (today ppu-paddle-ocr, PP-OCRv5 English mobile, ONNX Runtime WASM, single-threaded). It takes a straightened page image and returns lines of boxes. The worker (ocr-worker.js) only deskews and shapes lines, so a different engine means replacing that file and the assets scripts/copy-ocr-assets.mjs self-hosts.
+**Engine seam.** lib/extraction/ocr-engine.js is the only module that knows the engine (ppu-paddle-ocr on ONNX Runtime WASM, single-threaded; PP-OCRv6 small since 2026-10-31, research 31). It takes a straightened page image and returns lines of boxes. The worker (ocr-worker.js) only deskews and shapes lines, so a different engine means replacing that file and the assets scripts/copy-ocr-assets.mjs self-hosts.
 
 **Marking (QUESTIONS 18, decided by the product owner 2026-10-31): OCR text is marked per document.** documents.ocr_pages and documents.page_count (migration 20261031002400, checked by a constraint, covered by the table's Row Level Security) record the pages OCR read, as numbers only. The browser posts ocrPages and pageCount with the text, and every review of that document, fresh or reopened, shows one note above the summary (COPY.scannedNote, e.g. "Redline read 1 of this document's 2 pages from a scan."). There is no marking per sentence or per page.
+
+## Engine switch to PP-OCRv6 small (2026-10-31, branch feature/23b-ocr-v6)
+
+PP-OCRv6 small replaces PP-OCRv5 English mobile, as research 31 recommends. The unreadable-amount rule gets the post-check (missing ₹, broken roman numerals, headings with no number); ADR 0008 has the amendment. The real scans were re-run through the in-browser pipeline (production build, Chromium, 127.0.0.1:3121). The harness and outputs are in the job's ocr-runs-v6 folder. Nothing from the samples is committed.
+
+| Scan | OCR pages | Time (v5 before) | Characters, no spaces | Dictionary-word share (v5 before) | Post-check hits | ₹ printed | Stray non-Latin letters | Requests off the origin |
+|---|---|---|---|---|---|---|---|---|
+| S01 | 3 | 25 s (22 s) | 5,391 | 0.84 (0.81) | 0 | 0 | 2 Han | 0 |
+| S03 | 4 | 28 s (24 s) | 6,377 | 0.87 (0.83) | 0 | 0 | 0 | 0 |
+| S04 | 12 | 85 s (65 s) | 19,921 | 0.86 (0.85) | 3, all a missing ₹ | 2 | 3 Han | 0 |
+| S05 | 1 | 5 s (5 s) | 660 | 0.79 (0.75) | 0 | 0 | 0 | 0 |
+
+S04 has 5 ₹ figures. v6 small printed ₹ on 2 of them and left it out on the other 3, and the post-check found all 3, so a flag citing any of those 3 sentences is withheld. All four scans loaded, and the stray Han glyphs did not trip the English-language check. S02 was not re-run (it is over the character limit, see above).
+
+**Regression from the switch, found by e2e (2026-10-31), now fixed.** In e2e, 63 tests passed and 3 failed. One failure is outside-references-saved, on the check constraint another builder is changing. The other two are real and come from v6:
+- upload.spec.mjs:219, "image-only PDF where OCR finds no text"
+- upload.spec.mjs:228, "hidden OCR text layer"
+
+On the blank grey-checker test pages, v6 small reads a few huge, low-confidence boxes ("一" and "1", confidence 0.51 to 0.55), where v5 read nothing. The page is then rejected as "not English" instead of "has no text".
+
+Fixed by the coordinator's ruling (2026-10-31), with no confidence floor, because 4 of 361 real boxes on the round-2 pages score under 0.6. ocr-lines.js drops any box with no Latin letter, digit or ₹. An OCR'd page with fewer than 20 Latin letters counts as having no readable text, so a blank scan gets "no text". Both rules have unit tests in ocr-extraction.test.js and are recorded in ADR 0008.

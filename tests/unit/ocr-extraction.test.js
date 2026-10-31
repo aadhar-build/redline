@@ -4,7 +4,7 @@
 // runs in the browser e2e test (tests/e2e/ocr.spec.mjs).
 import { describe, expect, it } from "vitest";
 import { readPdf } from "../../lib/extraction/pdf.js";
-import { ocrPageLines } from "../../lib/extraction/ocr-lines.js";
+import { MIN_OCR_LATIN_LETTERS, ocrPageLines, ocrPageReadable } from "../../lib/extraction/ocr-lines.js";
 import { rowVariance } from "../../lib/extraction/deskew.js";
 import { hiddenOcrPage, makePdf, scanPage, textPage } from "../support/make-pdf.mjs";
 
@@ -35,22 +35,22 @@ describe("readPdf with OCR", () => {
   });
 
   it("records exactly where the OCR text sits (ticket 19: a mixed PDF is accepted)", async () => {
-    const ocr = fakeOcr({ 2: [mid("Page two text.")], 3: [mid("Page three text.")], 5: [mid("Page five text.")] });
+    const ocr = fakeOcr({ 2: [mid("Page two text, read from the scan.")], 3: [mid("Page three text, read from the scan.")], 5: [mid("Page five text, read from the scan.")] });
     const pages = [textPage(["Typed page one."]), scanPage(), scanPage(), textPage(["Typed page four."]), scanPage()];
     const result = await readPdf(pdfjs, makePdf(pages), {}, { ocr });
-    expect(result.text).toBe("Typed page one.\nPage two text.\nPage three text.\nTyped page four.\nPage five text.");
+    expect(result.text).toBe("Typed page one.\nPage two text, read from the scan.\nPage three text, read from the scan.\nTyped page four.\nPage five text, read from the scan.");
     // Pages 2 and 3 are consecutive OCR pages: one range, including the newline between them.
     expect(result.ocrRanges.map(([s, e]) => result.text.slice(s, e))).toEqual([
-      "Page two text.\nPage three text.",
-      "Page five text.",
+      "Page two text, read from the scan.\nPage three text, read from the scan.",
+      "Page five text, read from the scan.",
     ]);
   });
 
   it("reads a scan's hidden OCR layer again instead of using it", async () => {
-    const ocr = fakeOcr({ 1: [mid("What Redline read.")] });
+    const ocr = fakeOcr({ 1: [mid("What Redline read, read from the scan.")] });
     const result = await readPdf(pdfjs, makePdf([hiddenOcrPage(["What the scanner read."])]), {}, { ocr });
     expect(ocr.read).toEqual([1]);
-    expect(result.text).toBe("What Redline read.");
+    expect(result.text).toBe("What Redline read, read from the scan.");
     expect(result.ocrRanges).toEqual([[0, result.text.length]]);
   });
 
@@ -118,6 +118,35 @@ describe("readPdf with OCR", () => {
   it("gives a text-only PDF no OCR fields", async () => {
     const result = await readPdf(pdfjs, makePdf([textPage(["Typed."])]), {}, { ocr: fakeOcr({}) });
     expect(result).toEqual({ kind: "text", source: "pdf", text: "Typed.", removed: [] });
+  });
+});
+
+describe("OCR noise rules (ADR 0008, coordinator ruling 2026-10-31)", () => {
+  it("drops a box with no Latin letter, digit or ₹, and keeps the rest", () => {
+    const result = { lines: [[{ text: "一" }, { text: "The fee is" }, { text: "₹" }, { text: "--" }], [{ text: "一" }], [{ text: "7" }]] };
+    expect(ocrPageLines(result, 100)).toEqual([
+      { text: "The fee is ₹", top: null },
+      { text: "7", top: null },
+    ]);
+  });
+
+  it("calls a page readable only from 20 Latin letters on", () => {
+    expect(ocrPageReadable([{ text: "1 1 1" }])).toBe(false);
+    expect(ocrPageReadable([{ text: "abcdefghij" }, { text: "klmnopqrs 123" }])).toBe(false);
+    expect(ocrPageReadable([{ text: "abcdefghij" }, { text: "klmnopqrst" }])).toBe(true);
+    expect(MIN_OCR_LATIN_LETTERS).toBe(20);
+  });
+
+  it("rejects a scan whose OCR finds only stray glyphs as having no text, not as another language", async () => {
+    const ocr = fakeOcr({ 1: [mid("1"), mid("1")], 2: [mid("I 1")] });
+    const result = await readPdf(pdfjs, makePdf([scanPage(), scanPage()]), {}, { ocr });
+    expect(result).toEqual({ kind: "rejected", reason: "no-text" });
+  });
+
+  it("drops a near-empty OCR page from a mixed PDF and keeps the typed text", async () => {
+    const ocr = fakeOcr({ 2: [mid("1")] });
+    const result = await readPdf(pdfjs, makePdf([textPage(["Typed page one."]), scanPage()]), {}, { ocr });
+    expect(result.text).toBe("Typed page one.");
   });
 });
 
