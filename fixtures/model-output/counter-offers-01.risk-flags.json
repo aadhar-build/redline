@@ -1,0 +1,50 @@
+{
+  "_note": "Tickets 08 and 17: scripted Counter-offer breaches. Each flag's Source sentence is exact, so every flag shows. Late fee: no breach; \"fine\" next to an amount and \"May\" the month are both exempt, so nothing is marked. Termination: \"may\" is in the proposed wording and must be marked. Fee: 14 is not in the document and must be marked as a number, not withheld. Liability: adds insurance, a term the document does not contain; code cannot catch it, so it shows unmarked (a person reads for it, PRD criterion 17). Visits: no counterOffer at all; the flag still shows, with the no-Counter-offer line.",
+  "ownerParty": "Client",
+  "parties": ["Contractor", "Client"],
+  "riskFlags": [
+    {
+      "severity": "negotiate",
+      "title": "Daily late fee",
+      "says": "Amla Bakery pays Rs. 200 for each day a monthly fee is late.",
+      "judgment": "No limit on the total late fee appears in the document.",
+      "sourceSentences": ["Client will pay a fine of Rs. 200 for each day a monthly fee is late."],
+      "counterOffer": "Client will pay a fine of Rs. 200 for each day a monthly fee is late, counted only from 1 May 2027."
+    },
+    {
+      "severity": "dont-sign-as-written",
+      "title": "Contractor can end the agreement on three days' notice",
+      "says": "Lotus Pest Control can end the agreement at any time on three days' written notice.",
+      "judgment": null,
+      "sourceSentences": ["Contractor may end this Agreement at any time by giving Client three days' notice in writing."],
+      "counterOffer": "Contractor may end this Agreement only at the end of a month, by giving Client three days' notice in writing.",
+      "_misbehaves": "\"may\" in the proposed wording."
+    },
+    {
+      "severity": "negotiate",
+      "title": "Seven days to pay",
+      "says": "Amla Bakery pays Rs. 4,000 a month within seven days of each visit.",
+      "judgment": null,
+      "sourceSentences": ["Client will pay Contractor Rs. 4,000 per month within seven days of each visit."],
+      "counterOffer": "Client will pay Contractor Rs. 4,000 per month within 14 days of each visit.",
+      "_misbehaves": "14 is a number the document does not contain."
+    },
+    {
+      "severity": "know-this",
+      "title": "No liability for damaged stock",
+      "says": "Lotus Pest Control is not liable for damage the treatment causes to the bakery's stock.",
+      "judgment": null,
+      "sourceSentences": ["Contractor is not liable for any damage to Client's stock caused by the treatment."],
+      "counterOffer": "Contractor is liable for any damage to Client's stock caused by the treatment, and Contractor will carry insurance that covers that damage.",
+      "_misbehaves": "Adds insurance, a term the document does not contain."
+    },
+    {
+      "severity": "know-this",
+      "title": "Monthly visits from May 2027",
+      "says": "Lotus Pest Control treats the bakery once a month, from 1 May 2027.",
+      "judgment": null,
+      "sourceSentences": ["Contractor will treat Client's bakery once a month, from 1 May 2027."],
+      "_misbehaves": "No counterOffer."
+    }
+  ]
+}

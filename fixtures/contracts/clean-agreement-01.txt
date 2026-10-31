@@ -1,0 +1,19 @@
+WEBSITE MAINTENANCE AGREEMENT
+
+This Agreement is made on December 1, 2026 between Northgate Web Studio LLC, an Ohio company ("Provider"), and Willow Lane Florist LLC, a flower shop in Dayton, Ohio ("Client"). Both businesses and every name in this document are made up for testing Redline.
+
+1. Services. Provider will update the content of Client's website, apply security updates and fix reported errors within two business days.
+
+2. Term. This Agreement runs for six months from the date Client signs it and then ends. It does not renew by itself.
+
+3. Ending early. Either party can end this Agreement at any time by giving the other party thirty days' written notice. No fee is payable for ending it early.
+
+4. Fees. Client will pay Provider $300 per month, invoiced at the start of each month. The fee stays the same for the whole term, and any change to this Agreement needs both parties to agree in writing.
+
+5. Late payment. Client will pay interest of 1% per month on any invoice not paid within thirty days.
+
+6. Liability. Each party's total liability under this Agreement is limited to the fees Client paid in the three months before the claim.
+
+7. Ownership. Client owns all content on its website. Provider will hand over every login and file within five business days after this Agreement ends.
+
+8. Governing law. This Agreement is governed by the laws of the State of Ohio.

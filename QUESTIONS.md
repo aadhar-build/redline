@@ -39,5 +39,36 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 ## Parked for you (2026-10-31)
 
 18. **OCR text is still shown unmarked; do you want to keep that?** (Parked by the Fable advisor: it reverses your own explicit choice, so it's yours.) The OCR validation on 5 public scans measured: ₹ read correctly 0 of 5 (as "Z" or "2", so "₹. 17,19,26,000/-" became "2. 17,19,26,000/-"); a zero read as "o" inside an amount; section numbers 38 of 44 right ("(iii)" became "(ii )", "ARTICLE 9." lost its 9); a heading dropped with no warning; the engine's confidence scores didn't flag the garbage; 1.5% character error rate after deskew, tuned on the same 8 pages it was scored on. Already decided either way: flags citing a sentence with an unreadable amount are withheld and counted. Your choice: keep OCR text unmarked as decided, or add the cheapest safeguard, a note on any document that was partly read from a scan.
-19. **Removed PDF headers per upload (from ticket 21).** Extraction now records the running headers and page numbers it strips (distinct strings and counts), but only on the extraction result: they are not stored, shown or sent. Should they be stored with the document (a migration and a change to the posted body) or shown at upload?
-20. **Page numbers outside the 10% band (from ticket 21).** One real sample (T05) prints its "Page n of m" footer 13.4% up from the bottom, and pdf.js reads it first on each page, so it stays in the text at every page join and any quote crossing a join is withheld. Should a page-number line that repeats on most pages be removed wherever it sits, or the band be widened?
+19. ~~Removed PDF headers per upload (from ticket 21).~~ Answered: settled by Fable advisor, 2026-10-31. Show them at upload in one line (up to five distinct strings, then "and N more", plus the total line count); never store or send them. Built in PasteForm (feature/21b-running-lines).
+20. ~~Page numbers outside the 10% band (from ticket 21).~~ Answered: settled by Fable advisor, 2026-10-31. Keep the band at 10% and rules (a) and (b); add rule (c): a page-number line at any height is removed when the same shape sits within 0.02 of the page height on at least 3 pages and half the pages and one of its numbers counts up with the page. Built in lib/extraction/pdf-text.js.
+
+## Open (from ticket 22, 2026-10-31)
+
+21. ~~**Clauses withheld after a lead-in ending ":" or ";" (from ticket 22's real re-run).** Thi…~~ Settled by Fable advisor, 2026-10-31: see .scratch/redline-v1/issues/24-lead-ins-form-detection-and-review-history.md.
+    - clause 1 after "NOW IT IS HEREBY AGREED AS FOLLOWS:" (T02, T03, T07);
+    - a clause under an inline heading ("7. COMPENSATION: A. GRANT APPLICATION GDS shall…", "3. LICENCE PERIOD; EFFECTIVE DATE 3.1 Licence period…");
+    - provisos after "…as provided in the Act: Provided that…".
+
+    Options:
+    - (a) Leave it. Those flags stay withheld.
+    - (b) Treat ":" followed by a line break and a clause number as a boundary.
+    - (c) Have the prompt ask the model to quote from the lead-in when a sentence follows one.
+22. ~~**A form that the text says was executed (from ticket 22).** Template detection fires on a…~~ Settled by Fable advisor, 2026-10-31: see .scratch/redline-v1/issues/24-lead-ins-form-detection-and-review-history.md.
+    - (a) Keep it as built.
+    - (b) Drop the "never say signed/executed" line when the text itself says "executed" or "signed" with a date, and keep the template note.
+    - (c) Word the fixed line as "This document contains blanks" without "unsigned".
+    - Also: T01 matches on its table-of-contents dot leaders alone. Should dot leaders count?
+23. ~~**Change when signed in, and what a reopened review keeps (from ticket 22).**…~~ Settled by Fable advisor, 2026-10-31: see .scratch/redline-v1/issues/24-lead-ins-form-detection-and-review-history.md.
+    - Signed in, each Change saves the document again as a new library entry. Should Change instead replace the review on the same document?
+    - The Owner chosen and the count of dropped judgments are not stored, so a reopened review shows neither. Store them, which needs a migration, or leave them out?
+    - Should the dropped-judgment count be shown to the Reviewer at all?
+
+## Open (from tickets 08 and 17, 2026-10-31)
+
+24. ~~**When a Counter-offer changes a number, which direction counts as "tightening"?** The own…~~ Settled by Fable advisor, 2026-10-31, as built (see lib/review/counter-offer.js header).
+    - (a) Keep it as built: highlight and don't withhold.
+    - (b) Withhold a Counter-offer with a number the contract lacks, as is done for "says".
+    - (c) Have the model state the direction for each changed figure and show that as Redline's judgment.
+    Also known: only numbers written in digits are checked, so "thirty days" written in words is never highlighted.
+25. ~~**A flag that comes back without a Counter-offer.** As built, the flag still shows, becaus…~~ Settled by Fable advisor, 2026-10-31, as built (see lib/review/counter-offer.js header).
+26. ~~**A Counter-offer that copies a document sentence containing "may".** As built, the hedge-…~~ Settled by Fable advisor, 2026-10-31, as built (see lib/review/counter-offer.js header).

@@ -102,7 +102,9 @@ test("a signed-in review is saved with its withheld count and reopens from the l
   const summary = await page.getByTestId("summary").textContent();
   const titles = await flagTitles(page);
   const shownSources = await sources(page);
+  const counterOffers = await page.getByTestId("counter-offer-text").allTextContents();
   expect(titles).toHaveLength(6);
+  expect(counterOffers).toHaveLength(6);
   await expect(page.getByTestId("withheld-count")).toHaveText(COPY.flags.withheldTitle(5));
   const withheldLine = await page.getByTestId("withheld").textContent();
   expect(withheldLine).toContain(COPY.flags.withheldReason["source-not-found"](5, 5));
@@ -122,6 +124,8 @@ test("a signed-in review is saved with its withheld count and reopens from the l
   expect(await flagTitles(page)).toEqual(titles);
   expect(await sources(page)).toEqual(shownSources);
   for (const s of await sources(page)) expect(vendorText).toContain(s);
+  // Tickets 08 and 17: each flag's Counter-offer is stored with the review and reopens with it.
+  expect(await page.getByTestId("counter-offer-text").allTextContents()).toEqual(counterOffers);
   await expect(page.getByTestId("withheld-count")).toHaveText(COPY.flags.withheldTitle(5));
   // The withheld line reads exactly as it did fresh, reasons included.
   await expect(page.getByTestId("withheld")).toHaveText(withheldLine);

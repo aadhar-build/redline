@@ -291,6 +291,19 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .counter figcaption { color: var(--ink-2); }
 .source blockquote { padding: 0.3rem 0.65rem 0.6rem; font: 400 1rem / 1.5 var(--font-text-stack); }
 .counter p { padding: 0.3rem 0.65rem 0.6rem; font: 400 0.9375rem / 1.5 var(--font-text-stack); }
+/* Tickets 08 and 17: the caption row carries the copy button; a Know this Counter-offer is quieter. */
+.flag-panel .counter figcaption { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding-top: 0.35rem; }
+.copy-button {
+  font: 600 0.75rem / 1 var(--font-label-stack); letter-spacing: 0.07em; text-transform: uppercase;
+  background: var(--paper); color: var(--ink); border: 1px solid var(--rule); border-radius: 2px;
+  padding: 0.3rem 0.5rem; cursor: pointer;
+}
+.copy-button:hover { background: var(--ink); color: var(--sheet); }
+.copy-button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.counter.is-quiet { background: transparent; }
+.counter.is-quiet p { color: var(--ink-2); font-size: 0.875rem; }
+.counter .counter-copy-failed { font: 400 0.875rem / 1.4 var(--font-ui-stack); color: var(--red); padding-top: 0; }
+.counter-missing { font-style: italic; }
 .show-link {
   justify-self: start; background: none; border: 0; padding: 0; cursor: pointer;
   color: var(--blue); text-decoration: underline; text-underline-offset: 0.18em; font-size: 0.875rem;
@@ -424,6 +437,15 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 /* A word Redline's wording rules ban: wavy graphite underline on the reference wash, so it never relies on colour. */
 .banned-word { background: var(--blue-wash); color: var(--ink); text-decoration: underline wavy var(--ink); text-underline-offset: 0.2em; padding-inline: 0.1em; }
 .marked-note { font-size: 0.875rem; color: var(--ink); border-left: 3px solid var(--ink); padding: 0.2rem 0 0.2rem 0.65rem; }
+/* A number the contract doesn't contain (ticket 22): double underline, so it reads apart from a banned word without colour. */
+.unsupported-number { background: var(--blue-wash); color: var(--ink); text-decoration: underline double var(--ink); text-underline-offset: 0.2em; padding-inline: 0.1em; }
+.template-note { font-size: 0.875rem; color: var(--ink); border-left: 3px solid var(--ink-2); padding: 0.2rem 0 0.2rem 0.65rem; }
+/* Whose side the review is for (ticket 22), above the Risk flags. */
+.owner-line { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; font-size: 0.9375rem; color: var(--ink); }
+.owner-line .owner-label { color: var(--ink-2); }
+.owner-line button { font: inherit; font-size: 0.875rem; background: none; border: 1px solid var(--rule); color: var(--ink); padding: 0.15rem 0.6rem; cursor: pointer; }
+.owner-line select { font: inherit; font-size: 0.9375rem; padding: 0.15rem 0.4rem; }
+.severity-note { font-size: 0.8125rem; color: var(--ink-2); margin: 0 1rem; }
 
 /* ---------- App: the question box, under the summary ---------- */
 .question-box { border-top: 1px solid var(--rule); padding-top: 1rem; display: grid; gap: 0.85rem; }
@@ -496,12 +518,25 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .saved-fields dt { font: 600 0.75rem / 1.2 var(--font-label-stack); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-2); }
 .saved-fields dd { margin: 0.2rem 0 0; font-variant-numeric: tabular-nums; }
 .saved-grid { margin-top: 2rem; max-width: 60rem; }
+/* A saved review checked against an older Red line list (ticket 15). */
+.older-list-tag {
+  display: block; margin-top: 0.3rem; width: fit-content;
+  font: 600 0.6875rem / 1.2 var(--font-label-stack); letter-spacing: 0.06em; text-transform: uppercase;
+  /* Neutral on purpose: red, amber and blue mark Severity (DESIGN.md). */
+  color: var(--ink-2); border: 1px solid var(--rule); padding: 0.15rem 0.35rem;
+}
+.older-list { margin-top: 1.25rem; max-width: 46rem; display: grid; gap: 0.85rem; justify-items: start; }
+.older-list .form-error { margin: 0; }
 @media (max-width: 40rem) {
   .library-index .ref-col { display: none; }
 }
 /* Red lines checked (ticket 06): the list a review was checked against, each with its basis. */
 .red-lines-checked { border-top: 1.5px solid var(--rule-strong); padding: 0 1rem 1rem; display: grid; gap: 0.5rem; }
 .red-lines-checked .group-title { padding-left: 0; padding-right: 0; }
+/* A Clean result: the statement, the Red lines checked, then any Know this flags beneath. */
+.clean-statement { border-bottom: 1px solid var(--rule); }
+.clean-statement .flags-message { color: var(--ink); padding-top: 0.25rem; }
+.clean-result .group { border-top: 1.5px solid var(--rule-strong); }
 .red-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
 .red-line { display: grid; gap: 0.2rem; padding: 0.5rem 0.75rem; border: 1px solid var(--rule); background: var(--sheet); }
 .red-line-name { font-weight: 600; }

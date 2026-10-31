@@ -7,7 +7,7 @@
 -- JavaScript offsets count UTF-16 code units, Postgres length() counts characters.
 --
 -- reviews.withheld: "unreadable-amount" joins the allowed reason codes. A superset of the old list, so
--- every row stored before stays valid.
+-- every row stored before stays valid. It keeps "unsupported-number" from 20261031002200.
 
 create or replace function public.withheld_reasons_valid(withheld jsonb)
 returns boolean
@@ -22,7 +22,7 @@ as $$
        where jsonb_typeof(w.entry) <> 'object'
           or (select array_agg(k order by k) from jsonb_object_keys(w.entry) as keys(k)) is distinct from array['reason']
           or jsonb_typeof(w.entry -> 'reason') is distinct from 'string'
-          or (w.entry ->> 'reason') not in ('source-not-found', 'no-source', 'unreadable', 'unreadable-amount')
+          or (w.entry ->> 'reason') not in ('source-not-found', 'no-source', 'unreadable', 'unsupported-number', 'unreadable-amount')
      );
 $$;
 

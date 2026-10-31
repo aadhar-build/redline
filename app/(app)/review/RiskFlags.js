@@ -7,7 +7,8 @@
 import { useState } from "react";
 import { Glyph, Tick, SEVERITY_LABELS } from "../../Glyph";
 import { COPY } from "./copy";
-import MarkedText from "./MarkedText";
+import MarkedText, { isNumberMark } from "./MarkedText";
+import CounterOffer from "./CounterOffer";
 
 // Review's Severity ids, in their fixed group order, and the glyph each one uses.
 const GROUPS = [
@@ -27,7 +28,7 @@ function OwnText({ part }) {
 function Withheld({ count, withheld }) {
   if (count === 0) return null;
   const by = (reason) => withheld.filter((w) => w.reason === reason).length;
-  const reasons = ["source-not-found", "no-source", "unreadable", "unreadable-amount"].filter((r) => by(r) > 0);
+  const reasons = ["source-not-found", "unsupported-number", "no-source", "unreadable", "unreadable-amount"].filter((r) => by(r) > 0);
   return (
     <p className="withheld is-shown" data-testid="withheld">
       <Glyph kind="withheld" />
@@ -91,18 +92,28 @@ function FlagItem({ flag, kind, isOpen, onToggle }) {
             <blockquote data-testid="source-sentence">{s.text}</blockquote>
           </figure>
         ))}
+        <CounterOffer counterOffer={flag.counterOffer} number={flag.number} quiet={flag.severity === "know-this"} />
       </div>
     </li>
   );
 }
 
 // The Red lines this review was checked against, each with its basis, as the server listed them.
-function RedLinesChecked({ redLines }) {
-  if (redLines.length === 0) return null;
+// lede replaces the usual line under the title; empty is shown in place of an empty list.
+function RedLinesChecked({ redLines, lede = COPY.redLines.lede, empty = null }) {
+  if (redLines.length === 0) {
+    if (!empty) return null;
+    return (
+      <div className="red-lines-checked" data-testid="red-lines-checked">
+        <h3 className="group-title">{COPY.redLines.title}</h3>
+        <p className="basis" data-testid="no-red-lines">{empty}</p>
+      </div>
+    );
+  }
   return (
     <div className="red-lines-checked" data-testid="red-lines-checked">
       <h3 className="group-title">{COPY.redLines.title}</h3>
-      <p className="basis">{COPY.redLines.lede}</p>
+      <p className="basis">{lede}</p>
       <ol className="red-lines">
         {redLines.map((r) => (
           <li key={r.id} className="red-line" data-testid="red-line-checked" data-red-line={r.id}>
@@ -121,7 +132,54 @@ function RedLinesChecked({ redLines }) {
   );
 }
 
-export default function RiskFlags({ review }) {
+// One Severity group, in document order.
+function Group({ severity, kind, flags, closed, toggle, lede = null, empty = COPY.flags.emptyGroup }) {
+  const items = flags.filter((f) => f.severity === severity);
+  return (
+    <div className={`group sev-${kind}`} data-testid={`group-${severity}`}>
+      <h3 className="group-title">
+        <Glyph kind={kind} />
+        {SEVERITY_LABELS[kind]} <span className="count">{items.length}</span>
+      </h3>
+      {lede && items.length > 0 ? <p className="group-empty">{lede}</p> : null}
+      {items.length > 0 ? (
+        <ul className="flags">
+          {items.map((f) => (
+            <FlagItem key={f.number} flag={f} kind={kind} isOpen={!closed.has(f.number)} onToggle={() => toggle(f.number)} />
+          ))}
+        </ul>
+      ) : (
+        <p className="group-empty">{empty}</p>
+      )}
+    </div>
+  );
+}
+
+// A Clean result, as the server decided it: the plain statement, every Red line checked, then any Know
+// this flags beneath (ADR 0006). The browser never works out whether a review is a Clean result.
+function CleanResult({ review, flags, closed, toggle }) {
+  return (
+    <div className="clean-result" data-testid="clean-result">
+      <div className="clean-statement">
+        <h3 className="group-title">{COPY.clean.title}</h3>
+        <p className="flags-message" data-testid="clean-statement">{COPY.clean.statement}</p>
+      </div>
+      <RedLinesChecked redLines={review.redLinesChecked ?? []} lede={COPY.clean.checkedLede} empty={COPY.clean.noRedLines} />
+      <Group
+        severity="know-this"
+        kind="know"
+        flags={flags}
+        closed={closed}
+        toggle={toggle}
+        lede={COPY.clean.knowThisLede}
+        empty={COPY.clean.noKnowThis}
+      />
+    </div>
+  );
+}
+
+// above: shown under the pane heading, before the flags (the Owner line, ticket 22).
+export default function RiskFlags({ review, above = null }) {
   const flags = review.riskFlags ?? [];
   // Every flag starts open, so each Source sentence is on screen without a click.
   const [closed, setClosed] = useState(() => new Set());
@@ -133,7 +191,14 @@ export default function RiskFlags({ review }) {
     });
 
   const unreadable = review.riskFlagsStatus !== "checked";
-  const anyMarked = flags.some((f) => [f.title, f.says, f.judgment].some((p) => p && p.marked?.length > 0));
+  // Strictly true: anything else, including a missing value, is not a Clean result.
+  const clean = !unreadable && review.cleanResult === true;
+  const marks = flags.flatMap((f) => [f.title, f.says, f.judgment].flatMap((p) => p?.marked ?? []));
+  const anyMarked = marks.some((m) => !isNumberMark(m));
+  const anyNumber = marks.some(isNumberMark);
+  // Counter-offer marks get their own notes: a changed figure there can be a legitimate tightening.
+  const counterMarks = flags.flatMap((f) => f.counterOffer?.marked ?? []);
+  const anyCounterOffer = flags.some((f) => f.counterOffer);
 
   return (
     <section className="pane flags-pane" aria-labelledby="flags-title" data-testid="risk-flags">
@@ -141,6 +206,7 @@ export default function RiskFlags({ review }) {
         <h2 className="pane-title" id="flags-title">{COPY.flags.title}</h2>
         {!unreadable && <p className="pane-status">{COPY.flags.status(flags.length)}</p>}
       </div>
+      {above}
 
       {unreadable ? (
         <p className="flags-message" role="alert" data-testid="flags-unreadable">{COPY.flags.unreadable}</p>
@@ -163,42 +229,35 @@ export default function RiskFlags({ review }) {
             </ul>
           </div>
 
+          <p className="severity-note" data-testid="severity-note">{COPY.flags.severityNote}</p>
+
           <Withheld count={review.withheldCount ?? 0} withheld={review.withheld ?? []} />
 
-          {flags.length === 0 && review.withheldCount === 0 ? (
+          {!clean && review.cleanResultHeld === true ? (
+            <p className="flags-message" data-testid="clean-result-held">{COPY.clean.held}</p>
+          ) : null}
+
+          {clean ? (
+            <CleanResult review={review} flags={flags} closed={closed} toggle={toggle} />
+          ) : flags.length === 0 && review.withheldCount === 0 ? (
             <p className="flags-message" data-testid="no-flags">{COPY.flags.none}</p>
           ) : (
-            GROUPS.map(({ severity, kind }) => {
-              const items = flags.filter((f) => f.severity === severity);
-              return (
-                <div className={`group sev-${kind}`} key={severity} data-testid={`group-${severity}`}>
-                  <h3 className="group-title">
-                    <Glyph kind={kind} />
-                    {SEVERITY_LABELS[kind]} <span className="count">{items.length}</span>
-                  </h3>
-                  {items.length > 0 ? (
-                    <ul className="flags">
-                      {items.map((f) => (
-                        <FlagItem
-                          key={f.number}
-                          flag={f}
-                          kind={kind}
-                          isOpen={!closed.has(f.number)}
-                          onToggle={() => toggle(f.number)}
-                        />
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="group-empty">{COPY.flags.emptyGroup}</p>
-                  )}
-                </div>
-              );
-            })
+            GROUPS.map(({ severity, kind }) => (
+              <Group key={severity} severity={severity} kind={kind} flags={flags} closed={closed} toggle={toggle} />
+            ))
           )}
 
           {anyMarked && <p className="marked-note flags-note" data-testid="flags-marked-note">{COPY.markedNote}</p>}
+          {anyNumber && <p className="marked-note flags-note" data-testid="flags-number-note">{COPY.numberNote}</p>}
+          {anyCounterOffer && <p className="marked-note flags-note" data-testid="counter-offer-note">{COPY.counterOffer.note}</p>}
+          {counterMarks.some((m) => !isNumberMark(m)) && (
+            <p className="marked-note flags-note" data-testid="counter-offer-marked-note">{COPY.counterOffer.markedNote}</p>
+          )}
+          {counterMarks.some(isNumberMark) && (
+            <p className="marked-note flags-note" data-testid="counter-offer-number-note">{COPY.counterOffer.numberNote}</p>
+          )}
 
-          <RedLinesChecked redLines={review.redLinesChecked ?? []} />
+          {clean ? null : <RedLinesChecked redLines={review.redLinesChecked ?? []} />}
         </>
       )}
     </section>

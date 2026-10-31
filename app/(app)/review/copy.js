@@ -18,6 +18,22 @@ export const COPY = {
   clearFile: "Remove file",
   // Shown when a Word file has hidden text (w:vanish) with a letter or digit in it (ticket 21).
   hiddenText: "This file has text that Word hides, and Redline didn't read it.",
+  // Shown when a PDF's running headers or page numbers were left out (QUESTIONS.md 19).
+  // removed: [{ text, count }], at least one; names up to five distinct strings.
+  removedLines: (removed) => {
+    const total = removed.reduce((n, r) => n + r.count, 0);
+    const named = removed.slice(0, 5).map((r) => `"${r.text}"`);
+    const more = removed.length - named.length;
+    const list =
+      more > 0
+        ? `${named.join(", ")} and ${more} more`
+        : named.length === 1
+          ? named[0]
+          : `${named.slice(0, -1).join(", ")} and ${named[named.length - 1]}`;
+    return total === 1
+      ? `Redline left out 1 line it read as a running header or page number: ${list}.`
+      : `Redline left out ${total} lines it read as running headers or page numbers: ${list}.`;
+  },
   fieldLabel: "Contract text",
   fieldHint: "Paste the whole contract, or choose a file above.",
   submit: "Review",
@@ -26,6 +42,20 @@ export const COPY = {
   summaryNote: "This only restates what the contract says. It doesn't tell you whether to sign.",
   markedNote:
     "Redline isn't supposed to use the highlighted words, because they hedge or pass judgment the contract doesn't back up. Check those parts against the contract.",
+  // Ticket 22, ruling C(b): numbers in Redline's own text that the contract doesn't contain.
+  numberNote: "The highlighted numbers aren't in the contract. Check them against the contract before you rely on them.",
+  // Ticket 22, ruling C(a).
+  templateNote:
+    "This looks like a blank form with gaps still to fill in. Redline describes what the form provides for, not what anyone has agreed to or signed.",
+  // Ticket 22, ruling E.
+  owner: {
+    label: "Reviewed for:",
+    unknown: "Redline couldn't tell which party you're on.",
+    change: "Change",
+    pickLabel: "Which party are you?",
+    submit: "Review again",
+    cancel: "Cancel",
+  },
   emptyState: "Choose a file or paste a contract, then press Review. The summary and Risk flags appear here.",
   unavailableTitle: "Analysis is off on this site",
   unavailableBody:
@@ -55,16 +85,47 @@ export const COPY = {
         total === 1
           ? "It quoted a sentence from a scanned page where Redline couldn't make out an amount."
           : `${n} quoted sentences from scanned pages where Redline couldn't make out an amount.`,
+      "unsupported-number": (n, total) =>
+        total === 1 ? "It gave a number the contract doesn't contain." : `${n} gave a number the contract doesn't contain.`,
     },
+    severityNote: "The level on each flag is Redline's judgment, not something the contract says.",
     withheldTail: "Redline doesn't show a flag it can't trace to the contract.",
     sourceCaption: "Source sentence",
     sourceCaptionOf: (i, n) => `Source sentence ${i} of ${n}`,
-    none:
-      "No Risk flags came back for this contract, and no clause matched a Red line. This isn't a Clean result, because Redline doesn't check Outside references yet.",
+    // Shown only when no flags came back and the review is still not a Clean result.
+    none: "No Risk flags came back for this contract.",
     redLineMatchLabel: "Red line match",
     redLineMatched: (number, name) => `Red line ${number}: ${name}`,
     unreadable: "Redline couldn't read the Risk flags it got back, so it isn't showing any. Try again.",
     emptyGroup: "None at this level.",
+  },
+  // Tickets 08 and 17.
+  counterOffer: {
+    caption: "Counter-offer",
+    copy: "Copy",
+    copied: "Copied",
+    copyLabel: (n) => `Copy Counter-offer for flag ${n}`,
+    copyFailed: "Couldn't copy the wording. Select it and copy it yourself.",
+    missing: "Redline has no Counter-offer for this flag.",
+    note:
+      "A Counter-offer should only restate or tighten terms already in the contract. Redline can't check whether it adds a new term, so read it against the contract before you send it.",
+    markedNote: "Counter-offers aren't allowed to use the highlighted words, because they hedge. Reword them before you send it.",
+    numberNote:
+      "The highlighted numbers in Counter-offers aren't in the contract. Tightening a term can change a figure, so check each one is what you want to ask for.",
+  },
+  // A Clean result (ADR 0006): said plainly, with every Red line checked and any Know this flags beneath.
+  // Never "safe", "fine" or "good to sign"; a unit test runs the verdict-word check over these strings.
+  clean: {
+    title: "Clean result",
+    statement:
+      "This contract has a Clean result. No clause came back as Don't sign as written or Negotiate, and none matches a Red line on your list.",
+    checkedLede: "Redline checked the contract against each of these Red lines, and no clause matched any of them.",
+    noRedLines: "Your Red line list was empty when Redline read this contract, so there was nothing to check it against.",
+    knowThisLede: "These clauses are worth knowing about. Each one shows the sentence it came from.",
+    noKnowThis: "There are no Know this flags either.",
+    // Shown while the Clean result is held back (lib/review/clean-result-gate.js) on a review that would
+    // otherwise be one.
+    held: "Redline can't check for Outside references or Ambiguous clauses yet, so it isn't giving this contract a Clean result.",
   },
   redLines: {
     title: "Red lines checked",
@@ -88,6 +149,7 @@ export const COPY = {
     "no-script":
       "This local setup only has scripted reviews for the sample contracts in fixtures/contracts. Paste one of those.",
     busy: "Redline is already reading a contract. Try again when it's done.",
+    "bad-owner-party": "Pick one of the parties named in the contract.",
     failed: "Redline couldn't finish reading the contract. Try again.",
     network: "Couldn't reach Redline. Check your connection and try again.",
     "save-failed": "Redline couldn't save the contract to your library, so it didn't review it. Try again.",

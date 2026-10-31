@@ -1,0 +1,51 @@
+{
+  "_note": "Ticket 22. Flag 1 keeps its judgment. Flag 2's judgment claims what is typical, so it is dropped and the flag still shows. Flag 3's says gives 30 days, a number the form does not contain, so the flag is withheld as unsupported-number. Flag 4's quote leaves out its clause number (ruling B), so the shown Source sentence starts at \"4.1\".",
+  "ownerParty": "the Licensee",
+  "parties": [
+    "the Licensor",
+    "the Licensee",
+    "the Landlord"
+  ],
+  "riskFlags": [
+    {
+      "severity": "dont-sign-as-written",
+      "title": "Termination on seven days' notice",
+      "says": "The Licensor can end the licence at any time on seven days' written notice.",
+      "judgment": "No reason is needed, and no refund of the fee is stated for the rest of the month.",
+      "sourceSentences": [
+        "5. The Licensor may terminate this Agreement at any time by giving the Licensee seven days' notice in writing."
+      ],
+      "counterOffer": "5. The Licensor is entitled to terminate this Agreement only at the end of the period of eleven months."
+    },
+    {
+      "severity": "negotiate",
+      "title": "Fee due by the fifth",
+      "says": "The Licensee pays Rs. 18,000 by the fifth day of each month.",
+      "judgment": "A licensor typically allows a longer grace period.",
+      "sourceSentences": [
+        "2. The Licensee shall pay a licence fee of Rs. 18,000 per month to the Licensor on or before the fifth day of each month."
+      ],
+      "counterOffer": "2. The Licensee shall pay a licence fee of Rs. 18,000 per month to the Licensor on or before the fifth day of each month for that month."
+    },
+    {
+      "severity": "negotiate",
+      "title": "Deposit refund",
+      "says": "The deposit of Rs. 54,000 is refunded within 30 days of the end of the licence.",
+      "judgment": null,
+      "sourceSentences": [
+        "3. The Licensee shall deposit Rs. 54,000 with the Licensor as a security deposit, which the Licensor shall refund at the end of the licence."
+      ],
+      "counterOffer": "3. The Licensee shall deposit Rs. 54,000 with the Licensor as a security deposit, which the Licensor shall refund in full on the last day of the licence."
+    },
+    {
+      "severity": "know-this",
+      "title": "Uncapped indemnity",
+      "says": "The Licensee indemnifies the Licensor against all claims arising from the use of the office.",
+      "judgment": "No cap on the indemnity appears in the document.",
+      "sourceSentences": [
+        "The Licensee shall indemnify the Licensor against all claims arising from the use of the office."
+      ],
+      "counterOffer": "4.1 The Licensee shall indemnify the Licensor against claims arising from the Licensee's use of the office, up to the amount of the security deposit."
+    }
+  ]
+}

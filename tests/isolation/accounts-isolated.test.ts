@@ -407,6 +407,25 @@ describe("what the schema stores", () => {
     expect(ok.error).toBeNull();
   });
 
+  it("a withheld entry may give unsupported-number as its reason (ticket 22), and only as a bare code", async () => {
+    const insert = (row: Record<string, unknown>) =>
+      a.client.from("reviews").insert({ document_id: aRows.documents, red_lines: [], ...row }).select("id");
+    const ok = await insert({
+      withheld: [{ reason: "unsupported-number" }, { reason: "source-not-found" }],
+      withheld_count: 2,
+    });
+    expect(ok.error).toBeNull();
+    for (const bad of [
+      { withheld: [{ reason: "unsupported-number", says: "Model text with 99" }], withheld_count: 1 },
+      { withheld: [{ reason: "unsupported-numbers" }], withheld_count: 1 },
+      { withheld: [{ reason: "Unsupported-Number" }], withheld_count: 1 },
+    ]) {
+      const { data, error } = await insert(bad);
+      expect(data, JSON.stringify(bad)).toBeNull();
+      expect(error?.code, JSON.stringify(bad)).toBe("23514");
+    }
+  });
+
   it("a flag without a Source sentence is refused", async () => {
     const { error } = await a.client
       .from("reviews")

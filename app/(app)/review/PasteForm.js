@@ -29,6 +29,7 @@ export default function PasteForm({ account = "off", runToken = null }) {
   // Where OCR read the file's text (ADR 0008): [start, end] offsets, posted with the text so Review
   // can apply the unreadable-amount rule. Empty for any text that did not come from OCR.
   const [ocrRanges, setOcrRanges] = useState([]);
+  const [removedLines, setRemovedLines] = useState([]); // running lines left out of a PDF; never sent
   const [state, setState] = useState({ kind: "empty" });
   const fileInput = useRef(null);
   const reading = useRef(null); // the AbortController of the file being read
@@ -38,6 +39,7 @@ export default function PasteForm({ account = "off", runToken = null }) {
     setFileSource(null);
     setHiddenText(false);
     setOcrRanges([]);
+    setRemovedLines([]);
     setText("");
     if (fileInput.current) fileInput.current.value = "";
   }
@@ -53,6 +55,7 @@ export default function PasteForm({ account = "off", runToken = null }) {
     setFileSource(null);
     setHiddenText(false);
     setOcrRanges([]);
+    setRemovedLines([]);
     setText("");
     setState({ kind: "reading", progress: null });
     reading.current?.abort();
@@ -75,6 +78,7 @@ export default function PasteForm({ account = "off", runToken = null }) {
       setFileSource(result.source);
       setHiddenText((result.hiddenRuns ?? 0) > 0);
       setOcrRanges(result.ocrRanges ?? []);
+      setRemovedLines(Array.isArray(result.removed) ? result.removed : []);
       return setState({ kind: "empty" });
     }
     // A rejected or cancelled file: nothing is sent.
@@ -92,7 +96,12 @@ export default function PasteForm({ account = "off", runToken = null }) {
     if (checked.kind !== "text") return setState({ kind: "error", code: checked.reason });
     // The text box is read-only while a file's text is in it, so the source is the file's or a paste.
     const source = fileName !== null && fileSource ? fileSource : "paste";
+    return runReview(text, source, null);
+  }
 
+  // Sends the text for review. ownerParty set: the Reviewer chose whose side the review is for
+  // (ticket 22, "Change"), and the same text is reviewed again with that party as the Owner.
+  async function runReview(documentText, source, ownerParty) {
     setState({ kind: "busy" });
     let res;
     let data;
@@ -101,7 +110,12 @@ export default function PasteForm({ account = "off", runToken = null }) {
         method: "POST",
         headers: { "content-type": "application/json", ...(runToken ? { "x-redline-run-token": runToken } : {}) },
         // ocrRanges goes only with a file's text that OCR read; it holds offsets, never file content.
-        body: JSON.stringify(source === "pdf" && ocrRanges.length > 0 ? { text, source, ocrRanges } : { text, source }),
+        body: JSON.stringify({
+          text: documentText,
+          source,
+          ...(ownerParty ? { ownerParty } : {}),
+          ...(source === "pdf" && ocrRanges.length > 0 ? { ocrRanges } : {}),
+        }),
       });
       data = await res.json();
     } catch {
@@ -113,7 +127,8 @@ export default function PasteForm({ account = "off", runToken = null }) {
     if (summary?.status === "shown") {
       return setState({
         kind: "summary",
-        documentText: text,
+        documentText,
+        source,
         documentId: data.documentId ?? null,
         saved: data.saved ?? "signed-out",
         review: data.review,
@@ -164,6 +179,9 @@ export default function PasteForm({ account = "off", runToken = null }) {
         {fileName && hiddenText && (
           <p className="field-hint" data-testid="hidden-text-note">{COPY.hiddenText}</p>
         )}
+        {fileName && removedLines.length > 0 && (
+          <p className="field-hint" data-testid="removed-lines-note">{COPY.removedLines(removedLines)}</p>
+        )}
 
         <label className="field-label" htmlFor="contract-text">{COPY.fieldLabel}</label>
         <p className="field-hint" id="contract-text-hint">{COPY.fieldHint}</p>
@@ -196,7 +214,14 @@ export default function PasteForm({ account = "off", runToken = null }) {
       </form>
 
       {state.kind === "summary" ? (
-        <ReviewResult review={state.review} documentText={state.documentText} documentId={state.documentId} runToken={runToken}>
+        <ReviewResult
+          review={state.review}
+          documentText={state.documentText}
+          documentId={state.documentId}
+          runToken={runToken}
+          busy={busy}
+          onChangeOwner={(term) => runReview(state.documentText, state.source, term)}
+        >
           {account === "signed-in" &&
             (state.documentId ? (
               <p className="saved-note" data-testid="saved-note">

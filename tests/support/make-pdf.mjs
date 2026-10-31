@@ -4,7 +4,9 @@
 //   textPage(lines, opts?)     a page of visible text, one line per entry. opts: { top, header,
 //                              footer }: top is the first line's baseline in points from the top
 //                              edge (default 72); header and footer are lines drawn 36 points from
-//                              the top and bottom edges, where a running header or page number sits
+//                              the top and bottom edges, where a running header or page number sits;
+//                              footerAt moves the footer (points from the bottom edge), and
+//                              footerFirst draws it first, so pdf.js reads it before the body
 //   scanPage(jpeg?)            a page that is one full-page image and no text: an 8x8 grey checker,
 //                              or { data, width, height }, a JPEG (built in the browser by the e2e
 //                              tests from text drawn on a canvas, so no scan is ever committed)
@@ -28,11 +30,12 @@ const lineAt = (text, y) => `BT /F1 9 Tf 0 Tr 72 ${y} Td (${escapePdfString(text
 
 const IMAGE_DRAW = `q ${WIDTH} 0 0 ${HEIGHT} 0 0 cm /Im1 Do Q`;
 
-export const textPage = (lines, { top = 72, header, footer } = {}) => ({
+export const textPage = (lines, { top = 72, header, footer, footerAt = 36, footerFirst = false } = {}) => ({
   content: [
+    footer !== undefined && footerFirst ? lineAt(footer, footerAt) : "",
     header === undefined ? "" : lineAt(header, HEIGHT - 36),
     textOps(lines, 0, top),
-    footer === undefined ? "" : lineAt(footer, 36),
+    footer === undefined || footerFirst ? "" : lineAt(footer, footerAt),
   ].filter(Boolean).join("\n"),
   image: false,
 });

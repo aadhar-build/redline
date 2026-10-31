@@ -2,7 +2,7 @@ import { getModelAdapter } from "../../../lib/review/adapters/index.js";
 import { guardModelRun } from "../../../lib/review/local-guard.js";
 import { DEFAULT_RED_LINES } from "../../../lib/review/red-lines.js";
 import { review, ReviewInputError } from "../../../lib/review/review.js";
-import { LibraryError, saveAndReview, sourceKindFrom } from "../../../lib/library/library.js";
+import { LibraryError, rerunSaved, saveAndReview, sourceKindFrom } from "../../../lib/library/library.js";
 import { forReview, loadRedLines, RedLineError } from "../../../lib/library/red-lines.js";
 import { currentAccount } from "../../../lib/supabase/server.js";
 
@@ -12,6 +12,10 @@ import { currentAccount } from "../../../lib/supabase/server.js";
 // that stored text, against the account's own Red lines as they stand now, and is saved with the exact
 // list it was checked against (tickets 10 and 12). Signed out: the review runs on the posted text against
 // the four Default Red lines, and nothing is saved.
+//
+// With a documentId instead of text, it re-runs a saved document (ticket 15): the stored text is
+// reviewed again against the account's current Red lines and saved as a new review, keeping the old.
+// It goes through the same guard as every other model run.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -33,7 +37,19 @@ async function handle(request, adapter) {
   }
 
   try {
+    // The Owner's side, when the Reviewer chose one with "Change" (ticket 22). Review checks it.
+    const ownerParty = typeof body?.ownerParty === "string" ? body.ownerParty : null;
     const { db, user } = await currentAccount();
+    if (body?.documentId != null) {
+      // A re-run of a saved document (OQ17), asked for by the Reviewer. Its text is read from the
+      // database by id and any posted text is ignored; the Red lines are the account's current list as
+      // the server reads it. Signed out, or another account's document, reads as not found.
+      if (!user) return json({ error: "not-found" }, 404);
+      const { redLines } = await loadRedLines({ db });
+      const rerun = await rerunSaved({ db, documentId: body.documentId, redLines: forReview(redLines), adapter });
+      if (!rerun) return json({ error: "not-found" }, 404);
+      return json({ review: rerun.review, documentId: rerun.documentId, saved: rerun.saved ? "saved" : "incomplete" }, 200);
+    }
     if (user) {
       const { redLines } = await loadRedLines({ db });
       const { review: result, documentId } = await saveAndReview({
@@ -42,6 +58,7 @@ async function handle(request, adapter) {
         sourceKind: sourceKindFrom(body?.source),
         redLines: forReview(redLines),
         adapter,
+        ownerParty,
         ocrRanges: body?.ocrRanges,
       });
       return json({ review: result, documentId, saved: documentId ? "saved" : "incomplete" }, 200);
@@ -50,6 +67,7 @@ async function handle(request, adapter) {
       documentText: body?.text,
       redLines: DEFAULT_RED_LINES,
       adapter,
+      ownerParty,
       // Where OCR read the text (ADR 0008); only a PDF's text has any.
       ocrRanges: body?.source === "pdf" ? body?.ocrRanges : undefined,
     });

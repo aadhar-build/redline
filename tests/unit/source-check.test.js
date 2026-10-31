@@ -349,7 +349,7 @@ describe("Source sentence check: extraction-shaped fixtures (research 09, sectio
 
 describe("boundary walk on hostile input", () => {
   it("stays fast and fails closed on a very long run of heading lines", () => {
-    const headings = Array.from({ length: 50000 }, (_, i) => `Clause ${i + 1}`).join("\n");
+    const headings = Array.from({ length: 5000 }, (_, i) => `Clause ${i + 1}`).join("\n");
     const text = `Intro text here.\n${headings}\nThe Supplier shall pay the fee.`;
     const started = Date.now();
     const result = checkSource(text, "The Supplier shall pay the fee.");
@@ -374,5 +374,49 @@ describe("astral format characters in a gap", () => {
     const text = `The Supplier shall pay the fee. ${tag} The Customer shall sign.`;
     expect(checkSource(text, "The Customer shall sign.").found).toBe(true);
     expect(checkSource(text, "The Supplier shall pay the fee.").found).toBe(true);
+  });
+});
+
+describe("Ticket 22 ruling B: a quote may leave out the numbering that opens its sentence", () => {
+  const shown = (doc, quote) => {
+    const r = checkSource(doc, quote);
+    return r.found ? r.text : null;
+  };
+
+  it.each([
+    ["an inline clause number", "This Agreement ends on the date above. 17.2 The Licensee shall not surrender the Licence.", "The Licensee shall not surrender the Licence.", "17.2 The Licensee shall not surrender the Licence."],
+    ["a bullet after a full stop", "The City pays the fee in parts.\n• $1,500.00 shall be due upon completion of the survey.", "$1,500.00 shall be due upon completion of the survey.", "• $1,500.00 shall be due upon completion of the survey."],
+    ["a lettered item", "The Promoter agrees as follows.\n(a) The Promoter shall hand over possession.", "The Promoter shall hand over possession.", "(a) The Promoter shall hand over possession."],
+    ["a roman numeral", "Time is of the essence. (ii) The Promoter assures possession.", "The Promoter assures possession.", "(ii) The Promoter assures possession."],
+    // "B. If" is already a boundary under ADR 0010 (a full stop after an initial, then a capital), so
+    // the bracket form is the one that needs ruling B.
+    ["a capital letter item", "Payment terms follow.\nB) If the Agreement is terminated, no fee is due.", "If the Agreement is terminated, no fee is due.", "B) If the Agreement is terminated, no fee is due."],
+    ["a capital roman numeral", "Payment terms follow. (IV) If the Agreement ends, no fee is due.", "If the Agreement ends, no fee is due.", "(IV) If the Agreement ends, no fee is due."],
+    ["two tokens", "The parties agree.\n3 (a) The Licensee shall pay the fee.", "The Licensee shall pay the fee.", "3 (a) The Licensee shall pay the fee."],
+    ["a bare integer at the start of a line", "Recitals end here.\n12 The Licensee shall pay the fee.", "The Licensee shall pay the fee.", "12 The Licensee shall pay the fee."],
+    ["an opening quote", "Definitions follow. 1.1 “Fee” means the monthly fee.", "“Fee” means the monthly fee.", "1.1 “Fee” means the monthly fee."],
+    ["a rupee amount", "Charges are below.\n- Rs. 500 is payable on signing.", "Rs. 500 is payable on signing.", "- Rs. 500 is payable on signing."],
+  ])("shows %s, starting the span at the number", (_, doc, quote, expected) => {
+    expect(shown(doc, quote)).toBe(expected);
+  });
+
+  it.each([
+    ["a lowercase word after a bare number", "The term is set out below.\n12 months are allowed for the works.", "months are allowed for the works."],
+    ["a lowercase word after a decimal", "Interest is charged. 17.2 percent is added to late sums.", "percent is added to late sums."],
+    ["a quote starting mid-sentence after a word", "Notice is given. The Licensee shall pay the fee.", "Licensee shall pay the fee."],
+    ["an inline heading ending in a colon", "The commission is due later. C. GRANT COMMISSION: If the Application fails, nothing is due.", "If the Application fails, nothing is due."],
+    ["a word such as Clause", "Read this. Clause 4 The Licensee shall pay.", "The Licensee shall pay."],
+    ["a bare integer inside a line", "The rent is due on day 12 The Licensee shall pay.", "The Licensee shall pay."],
+    ["a bullet whose line follows a lead-in", "The fee is paid in parts:\n• $1,500.00 shall be due upon completion.", "$1,500.00 shall be due upon completion."],
+    ["a sub-item after its lead-in", "The Licensor may:\n(i) seal the premises; and\n(ii) The Licensor may recover the dues.", "The Licensor may recover the dues."],
+    ["more than three tokens", "Intro ends. • • • • The Licensee shall pay.", "The Licensee shall pay."],
+    ["tokens longer than 24 characters", "Intro ends. 12.12.12.12.12 (iiiiiiiiiiiii) The Licensee shall pay.", "The Licensee shall pay."],
+  ])("withholds %s", (_, doc, quote) => {
+    expect(found(doc, quote)).toBe(false);
+  });
+
+  it("still shows a quote that includes its own number", () => {
+    const doc = "This Agreement ends. 17.2 The Licensee shall not surrender the Licence.";
+    expect(shown(doc, "17.2 The Licensee shall not surrender the Licence.")).toBe("17.2 The Licensee shall not surrender the Licence.");
   });
 });

@@ -170,4 +170,18 @@ describe("upload copy", () => {
     expect(MAX_FILE_BYTES).toBe(100 * 1024 * 1024);
     expect(await extractFile(file)).toEqual({ kind: "rejected", reason: "too-large" });
   });
+
+  it("names up to five left-out running lines and the total line count", () => {
+    expect(COPY.removedLines([{ text: "Page 2", count: 1 }])).toBe(
+      'Redline left out 1 line it read as a running header or page number: "Page 2".',
+    );
+    expect(COPY.removedLines([{ text: "Acme Ltd", count: 3 }, { text: "Draft", count: 3 }])).toBe(
+      'Redline left out 6 lines it read as running headers or page numbers: "Acme Ltd" and "Draft".',
+    );
+    const eight = Array.from({ length: 8 }, (_, i) => ({ text: `Page ${i + 1}`, count: 1 }));
+    expect(COPY.removedLines(eight)).toBe(
+      'Redline left out 8 lines it read as running headers or page numbers: "Page 1", "Page 2", "Page 3", "Page 4", "Page 5" and 3 more.',
+    );
+  });
+
 });
