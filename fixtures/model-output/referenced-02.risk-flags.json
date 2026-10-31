@@ -1,0 +1,8 @@
+{
+  "ownerParty": "the Customer",
+  "parties": [
+    "the Supplier",
+    "the Customer"
+  ],
+  "riskFlags": []
+}

@@ -77,6 +77,7 @@ export default async function SavedReviewPage({ params, searchParams }) {
                 runToken={runTokenFor(adapter)}
                 canChange={Boolean(adapter)}
                 readOnly={!saved.latest}
+                reviewId={saved.reviewId}
               />
             </div>
             {saved.history.length > 1 && (

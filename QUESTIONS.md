@@ -88,14 +88,18 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 34. ~~**"as follows:-" is not a formula opener (from ticket 24 part 1).**~~ Settled by Fable advisor, 2026-10-31: (a) a lead-in colon may be ":" plus one dash (":-", ":–", ":—"), at start and end alike. Built.
 35. ~~**Two QUESTIONS 32 cases that conflict with built rules (from ticket 24 part 2).**~~ Settled by Fable advisor, 2026-10-31: (1) option (a), a lead-in word also disqualifies an all-caps word in rule D, so "LESSEE AGREES TO:\n(a) Pay…" is withheld; (2) as ADR 0010 says, "The Licensor…" is shown without the "1.". Built.
 
-## Open (from ticket 18, 2026-10-31)
+## Settled (from ticket 18, 2026-10-31)
 
 Each is built the way that claims least; numbers may need renumbering when 13b lands.
 
-36. **Outside references inside an added document.** If the document the Reviewer adds brings in yet another document, Redline lists those sentences under "References in the documents you added" and gives no Clean result. There is no way to add or mark them yet. Should they get the same add and mark flow as the contract's own references?
-37. **Changing or removing an added document.** Each reference takes one added document. Adding a second is refused ("already-added"), and there is no remove. Is a replace or remove step needed?
-38. **Marks after adding a document.** Adding a document saves a new review, like a re-run, so "marked as reviewed" statements on the earlier review aren't carried over to the new one. Should they carry over?
-39. **"As amended" and an added document.** For a reference that is only "as amended from time to time", nothing can be added. For a sentence with a named document too ("the Order Form, as amended from time to time"), the document can be added and is reviewed, but the reference stays unresolved because it matches Red line 3. Is that right?
-40. **Length cap.** The contract and every added document together must stay under 200,000 characters, the single-document limit. Is that the right cap?
-41. **Questions about an added document.** The question box answers only from the contract itself, so a question about the added document gets "not in the document". Should it answer from the added documents too, citing their sentences?
-42. **A schedule named in the added document but present in the contract.** Schedules are looked for only within each text. An added Schedule B that mentions "Schedule A", which is in the contract, lists that sentence as a reference Redline hasn't read and blocks a Clean result. Should the contract's own headings count?
+36. ~~**Outside references inside an added document.**~~ Settled by Fable advisor, 2026-10-31: yes. A reference inside an added document joins the Outside references, numbered after the contract's and titled with the document it sits in, with the same severity rules, mark, add and Remove. Every reference must be resolved for a Clean result. The separate "References in the documents you added" section is gone (ADR 0007 addendum, migration 20261031003800).
+37. ~~**Changing or removing an added document.**~~ Settled by Fable advisor, 2026-10-31: Remove on the latest review, fail closed (review again with the rest; delete only if that saves). Replace is Remove, then Add. Earlier reviews reopen with "referenced-document-removed" (migration 20261031003700; ADR 0007 addendum).
+38. ~~**Marks after adding a document.**~~ Settled by Fable advisor, 2026-10-31: yes. Marks carry over by key on Add, Remove and re-run (Change), with their original time; a mark whose reference is gone is dropped, and a carried mark never resolves a Red line 3 match.
+39. ~~**"As amended" and an added document.**~~ Settled by Fable advisor, 2026-10-31: keep as built. The reference's line now says both that the document was reviewed and that it still blocks under Red line 3.
+40. ~~**Length cap.**~~ Settled by Fable advisor, 2026-10-31: yes, one combined cap of 200,000 characters, checked on the server before anything is stored and in the browser before posting, with how many characters are left.
+41. ~~**Questions about an added document.**~~ Settled by Fable advisor, 2026-10-31: yes. The question box answers from the contract and the added documents of the review shown; each source names its text and is checked against it alone, or the whole answer is withheld.
+42. ~~**A schedule named in the added document but present in the contract.**~~ Settled by Fable advisor, 2026-10-31: the contract's headings count for schedules named in an added document, never the reverse, and added documents don't count for each other.
+
+## Open (from ticket 18b, 2026-10-31)
+
+43. **An added document's own title line.** An added Order Form whose first line is "ORDER FORM" (or a Statement of Work titled "STATEMENT OF WORK") is read as a reference to an Order Form inside that document, so it blocks a Clean result until the Reviewer marks it. Schedules are exempt because their heading counts as present. Built the way that claims least: it stays a reference. Should a heading line in an added document that names the document's own kind count as present?

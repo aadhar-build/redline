@@ -9,10 +9,13 @@ import { useRef, useState } from "react";
 import { extractFile, extractPasted, MAX_TEXT_LENGTH } from "../../../lib/extraction/index.js";
 import { COPY } from "./copy";
 
+import { charactersLeft } from "./limits";
+
 /**
- * @param {{ reference: object, number: number, documentId: string, runToken?: string | null, onReview: (review: object) => void }} props
+ * @param {{ reference: object, number: number, documentId: string, runToken?: string | null, onReview: (review: object) => void, charactersUsed?: number | null }} props
+ * charactersUsed: what the contract and its added documents use already, from the server.
  */
-export default function AddReferenced({ reference, number, documentId, runToken = null, onReview }) {
+export default function AddReferenced({ reference, number, documentId, runToken = null, onReview, charactersUsed = null }) {
   const copy = COPY.outside.add;
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
@@ -60,6 +63,8 @@ export default function AddReferenced({ reference, number, documentId, runToken 
     event.preventDefault();
     if (busy) return;
     if (text.trim().length === 0) return setState({ kind: "error", code: "empty-document" });
+    // Refused here, before anything is sent, when it would take the total over the cap.
+    if (Number.isInteger(charactersUsed) && charactersUsed + text.length > MAX_TEXT_LENGTH) return setState({ kind: "error", code: "combined-too-long" });
     if (text.length > MAX_TEXT_LENGTH) return setState({ kind: "error", code: "document-too-long" });
     const checked = extractPasted(text);
     if (checked.kind !== "text") return setState({ kind: "error", code: checked.reason });
@@ -74,6 +79,7 @@ export default function AddReferenced({ reference, number, documentId, runToken 
         body: JSON.stringify({
           documentId,
           referenceSentence: reference.sourceSentences[0].text,
+          inDocumentId: reference.referencedDocument?.id ?? null,
           text,
           source,
           ...(source === "pdf" && file.ocrRanges.length > 0 ? { ocrRanges: file.ocrRanges } : {}),
@@ -90,7 +96,14 @@ export default function AddReferenced({ reference, number, documentId, runToken 
 
   const fileId = `outside-add-file-${number}`;
   const textId = `outside-add-text-${number}`;
-  const errorText = state.kind === "error" ? (copy.errors[state.code] ?? COPY.errors[state.code] ?? copy.errors.failed) : null;
+  const errorText =
+    state.kind !== "error"
+      ? null
+      : state.code === "combined-too-long"
+        ? Number.isInteger(charactersUsed)
+          ? COPY.outside.tooLongTogether(charactersLeft(charactersUsed))
+          : COPY.errors["document-too-long"]
+        : (copy.errors[state.code] ?? COPY.errors[state.code] ?? copy.errors.failed);
   return (
     <form className="outside-add" onSubmit={submit} noValidate data-testid="outside-add">
       <p className="field-hint">{copy.hint}</p>

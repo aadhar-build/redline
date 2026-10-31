@@ -100,6 +100,9 @@ export const COPY = {
           : `${n} quoted sentences from scanned pages where Redline couldn't make out an amount or a clause number.`,
       "unsupported-number": (n, total) =>
         total === 1 ? "It gave a number the contract doesn't contain." : `${n} gave a number the contract doesn't contain.`,
+      // QUESTIONS.md 37: on an earlier review, a flag from a document the Reviewer has since removed.
+      "referenced-document-removed": (n, total) =>
+        total === 1 ? "It came from a document you later removed." : `${n} came from a document you later removed.`,
       // Ticket 13: an Outside reference Redline found but couldn't cut into whole sentences.
       "reference-not-citable": (n, total) =>
         total === 1
@@ -172,7 +175,7 @@ export const COPY = {
     outsideAdded: "You added the document for each Outside reference below, and Redline reviewed them together with this contract.",
     // Which note goes with a Clean result: the Reviewer's marks, the added documents, or both.
     outsideNote(references) {
-      const added = references.filter((r) => r.referencedDocument).length;
+      const added = references.filter((r) => r.addedDocument).length;
       if (added === 0) return this.outsideReviewed;
       return added === references.length ? this.outsideAdded : this.outsideMarkedSome;
     },
@@ -213,7 +216,7 @@ export const COPY = {
       submit: "Review them together",
       busy: "Reviewing both…",
       errors: {
-        "already-added": "You've already added a document for this reference.",
+        "already-added": "You've already added a document for this reference. Remove it first to add a different one.",
         "not-found": "Redline couldn't find this reference on your saved review. Reload the page and try again.",
         "signed-out": "Your session has ended. Sign in again to add the document.",
         incomplete: "Redline couldn't finish reviewing the two together, so it didn't keep the document. Try again.",
@@ -221,13 +224,30 @@ export const COPY = {
         failed: "Redline couldn't review the two together. Try again.",
       },
     },
+    // QUESTIONS.md 40: one cap for the contract and everything added to it.
+    tooLongTogether: (left) =>
+      `This contract and its added documents can total 200,000 characters. About ${left} are left.`,
+    // QUESTIONS.md 37: removing an added document. Replacing one is Remove, then Add.
+    remove: {
+      button: "Remove this document",
+      busy: "Removing…",
+      errors: {
+        "not-found": "Redline couldn't find that document on your saved review. Reload the page and try again.",
+        "signed-out": "Your session has ended. Sign in again to remove the document.",
+        incomplete: "Redline couldn't finish reviewing the contract without it, so it kept the document. Try again.",
+        unavailable: "Reviewing isn't available on this site, so you can't remove the document here.",
+        failed: "Redline couldn't remove the document. Try again.",
+      },
+    },
+    // QUESTIONS.md 39: a document added against an "as amended" reference that matches a Red line.
+    addedStillBlocks: (number) =>
+      `This one still stops a Clean result. The other side can change these terms after the contract is signed, which matches Red line ${number}.`,
+    // QUESTIONS.md 36: a reference inside a document the Reviewer added.
+    inAdded: (title) => (title ? `In "${title}", a document you added` : "In a document you added"),
     addedTag: "Document added",
     added: (title) =>
       `You added ${title ? `"${title}"` : "the referenced document"}. Redline reviewed it together with this contract. Any flags from it are listed with the others, each quoting its own sentence.`,
     fromReferenced: (title) => (title ? `From "${title}", the document you added` : "From the document you added"),
-    inReferencedTitle: "References in the documents you added",
-    inReferencedLede:
-      "These sentences in a document you added bring in yet another document. Redline hasn't read that one, so this contract can't get a Clean result.",
   },
   // Ticket 20: Copy all as text. Marked words are wrapped in square brackets in the copied text.
   copyAll: {

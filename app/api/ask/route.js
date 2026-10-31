@@ -35,7 +35,8 @@ async function handle(request, adapter) {
     if (body?.documentId != null) {
       const { db, user } = await currentAccount();
       if (!user) return json({ error: "not-found" }, 404);
-      const answer = await askAboutSaved({ db, documentId: body.documentId, question: body?.question, adapter });
+      // QUESTIONS.md 41: the review shown, which may be an earlier one; without it, the latest.
+      const answer = await askAboutSaved({ db, documentId: body.documentId, reviewId: body?.reviewId ?? null, question: body?.question, adapter });
       if (answer === null) return json({ error: "not-found" }, 404);
       return json({ answer }, 200);
     }

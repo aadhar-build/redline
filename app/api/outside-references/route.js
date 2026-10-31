@@ -6,7 +6,7 @@ import { currentAccount } from "../../../lib/supabase/server.js";
 // and the update to their rows. Never calls the model and never fetches the referenced address, so it
 // works the same on Vercel.
 //
-// POST { documentId, sourceSentence, referenceKey?, reviewed }: the reference is named by its key, or by
+// POST { documentId, sourceSentence, referenceKey?, inDocumentId?, reviewed }: the reference is named by its key, or by
 // any of its Source sentences. One mark covers all of its sentences. It replies with the saved review as reopened, so whether
 // it is a Clean result is decided on the server, never in the browser.
 export const runtime = "nodejs";
@@ -26,7 +26,7 @@ export async function POST(request) {
   if (typeof body?.sourceSentence !== "string" || typeof body?.reviewed !== "boolean") {
     return json({ error: "bad-request" }, 400);
   }
-  if (body.referenceKey != null && typeof body.referenceKey !== "string") {
+  if ((body.referenceKey != null && typeof body.referenceKey !== "string") || (body.inDocumentId != null && typeof body.inDocumentId !== "string")) {
     return json({ error: "bad-request" }, 400);
   }
   try {
@@ -35,6 +35,8 @@ export async function POST(request) {
       documentId: body.documentId,
       sourceSentence: body.sourceSentence,
       referenceKey: body.referenceKey ?? null,
+      // QUESTIONS.md 36: the added document the reference sits in, or null for the contract.
+      inDocumentId: body.inDocumentId ?? null,
       reviewed: body.reviewed,
     });
     if (!marked) return json({ error: "not-found" }, 404);

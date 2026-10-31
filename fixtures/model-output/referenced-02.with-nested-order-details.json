@@ -1,0 +1,24 @@
+{
+  "_note": "referenced-02 with the nested Schedule B and the order details added against its reference (QUESTIONS.md 36). One Know this flag cites the order details.",
+  "summary": "Ganga Packaging Private Limited supplies goods to Lotus Sweets each week. Schedule B sets the service levels and the Order Form sets the prices. Either party can end the agreement with thirty days' written notice. The order details say the Customer keeps the goods dry.",
+  "ownerParty": "the Customer",
+  "parties": [
+    "the Supplier",
+    "the Customer"
+  ],
+  "riskFlags": [
+    {
+      "document": "R2",
+      "severity": "know-this",
+      "title": "Storage",
+      "says": "The Customer will keep the goods dry.",
+      "judgment": null,
+      "sourceSentences": [
+        "1. The Customer will keep the goods dry."
+      ],
+      "redLine": null,
+      "readings": null,
+      "counterOffer": null
+    }
+  ]
+}

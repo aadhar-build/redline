@@ -29,7 +29,7 @@ function OwnText({ part }) {
 function Withheld({ count, withheld }) {
   if (count === 0) return null;
   const by = (reason) => withheld.filter((w) => w.reason === reason).length;
-  const reasons = ["source-not-found", "unsupported-number", "no-source", "unreadable", "unreadable-amount", "reference-not-citable"].filter((r) => by(r) > 0);
+  const reasons = ["source-not-found", "unsupported-number", "no-source", "unreadable", "unreadable-amount", "reference-not-citable", "referenced-document-removed"].filter((r) => by(r) > 0);
   return (
     <p className="withheld is-shown" data-testid="withheld">
       <Glyph kind="withheld" />
@@ -236,7 +236,7 @@ export default function RiskFlags({ review, above = null, documentId = null, onR
   // The Outside reference group, numbered after the flags so every number in the pane is unique.
   const outside = (
     <OutsideReferences references={references} firstNumber={flags.length + 1} documentId={documentId} onReview={onReview}
-      runToken={runToken} inReferenced={review.referencedOutsideReferences ?? []} />
+      runToken={runToken} charactersUsed={review.charactersUsed ?? null} />
   );
   const marks = [...flags, ...references].flatMap((f) => [f.title, f.says, f.judgment, ...(f.readings ?? [])].flatMap((p) => p?.marked ?? []));
   const anyMarked = marks.some((m) => !isNumberMark(m));

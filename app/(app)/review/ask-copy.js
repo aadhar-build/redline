@@ -13,6 +13,11 @@ export const ASK_COPY = {
   answerNote:
     "Every answer quotes the sentences it rests on. Redline checks each one against the contract word for word before showing the answer.",
   notInDocument: "The contract doesn't answer this. Redline answers only from the contract, not from general knowledge.",
+  // QUESTIONS.md 41: when the Reviewer added documents, the answer comes from those too.
+  notInAdded:
+    "It isn't in this contract or the documents you added. Redline answers only from those, not from general knowledge.",
+  sourceFromContract: "Source sentence, from the contract",
+  sourceFrom: (title) => (title ? `Source sentence, from "${title}"` : "Source sentence, from a document you added"),
   markedNote:
     "Redline isn't supposed to use the highlighted words, because they hedge or pass judgment the contract doesn't back up. Check those parts against the contract.",
   withheld: {

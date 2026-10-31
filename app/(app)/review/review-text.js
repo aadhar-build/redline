@@ -40,7 +40,7 @@ function withheldLine(review) {
   if (count === 0) return null;
   const withheld = review.withheld ?? [];
   const by = (reason) => withheld.filter((w) => w.reason === reason).length;
-  const reasons = ["source-not-found", "unsupported-number", "no-source", "unreadable", "reference-not-citable"].filter((r) => by(r) > 0);
+  const reasons = ["source-not-found", "unsupported-number", "no-source", "unreadable", "unreadable-amount", "reference-not-citable", "referenced-document-removed"].filter((r) => by(r) > 0);
   return `${COPY.flags.withheldTitle(count)} ${reasons.map((r) => COPY.flags.withheldReason[r](by(r), count)).join(" ")} ${COPY.flags.withheldTail}`;
 }
 
@@ -82,28 +82,25 @@ function referenceBlock(r, number) {
   const c = COPY.outside;
   const kind = KIND[r.severity] ?? "negotiate";
   const reviewed = r.reviewed !== null && r.reviewed !== undefined;
-  const tag = r.referencedDocument ? c.addedTag : reviewed ? c.reviewedTag : c.notReviewedTag;
-  const lines = [`${number}. ${SEVERITY_LABELS[kind]}: ${own(r.title)} (${tag})`, own(r.says)];
+  const tag = r.addedDocument ? c.addedTag : reviewed ? c.reviewedTag : c.notReviewedTag;
+  const lines = [`${number}. ${SEVERITY_LABELS[kind]}: ${own(r.title)} (${tag})`];
+  // QUESTIONS.md 36: a reference inside a document the Reviewer added says which one.
+  if (r.referencedDocument) lines.push(c.inAdded(r.referencedDocument.title));
+  lines.push(own(r.says));
   if (r.redLineMatch) lines.push(`${COPY.flags.redLineMatchLabel}: ${COPY.flags.redLineMatched(r.redLineMatch.number, r.redLineMatch.name)}`);
   if (r.judgment) lines.push(`${COPY.flags.judgmentLabel}: ${own(r.judgment)}`);
   lines.push(...sources(r.sourceSentences.slice(0, 1)), ...counterOffer(r.counterOffer ?? null));
-  if (r.referencedDocument) lines.push(c.added(r.referencedDocument.title));
+  if (r.addedDocument) lines.push(c.added(r.addedDocument.title));
   else lines.push(reviewed ? `${c.statementLabel}: ${c.statement(formatSavedAt(r.reviewed.at))}` : c.notReviewed);
-  if (r.redLineMatch) lines.push(c.stillBlocks);
+  // QUESTIONS.md 39: with a document added, the Red line match still blocks, and says why.
+  if (r.redLineMatch) lines.push(r.addedDocument ? c.addedStillBlocks(r.redLineMatch.number) : c.stillBlocks);
   return lines.join("\n");
 }
 
-function outsideSection(references, firstNumber, inReferenced = []) {
+function outsideSection(references, firstNumber) {
   const blocks = [];
   if (references.length > 0) {
     blocks.push(`${COPY.outside.title} (${references.length})\n${COPY.outside.lede}`, ...references.map((r, i) => referenceBlock(r, firstNumber + i)));
-  }
-  // Ticket 18: sentences in an added document that bring in yet another document.
-  if (inReferenced.length > 0) {
-    blocks.push(
-      `${COPY.outside.inReferencedTitle} (${inReferenced.length})\n${COPY.outside.inReferencedLede}`,
-      ...inReferenced.map((r) => [COPY.outside.fromReferenced(r.referencedDocument?.title), ...sources(r.sourceSentences.slice(0, 1))].join("\n")),
-    );
   }
   return blocks;
 }
@@ -172,7 +169,7 @@ export function reviewAsText(review, { ownerUnknownShown = false } = {}) {
   blocks.push(head.join("\n"));
 
   const clean = review.cleanResult === true;
-  const outside = outsideSection(references, flags.length + 1, review.referencedOutsideReferences ?? []);
+  const outside = outsideSection(references, flags.length + 1);
   if (clean) {
     blocks.push(`${COPY.clean.title}\n${COPY.clean.statement}`);
     blocks.push(...redLinesSection(review.redLinesChecked ?? [], { lede: COPY.clean.checkedLede, empty: COPY.clean.noRedLines }));

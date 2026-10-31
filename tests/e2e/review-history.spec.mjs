@@ -132,7 +132,10 @@ test("Change on the latest saved review saves a new review of the same document"
   const { context, page } = await signedIn(browser, baseURL);
   await page.goto(savedPath);
   await page.getByTestId("owner-change").click();
-  await page.getByLabel(COPY.owner.pickLabel).fill("the Licensee");
+  // Ticket 24 part 2: the parties are stored, so the reopened review offers them in a list.
+  await expect(page.getByTestId("owner-typed")).toHaveCount(0);
+  await expect(page.getByLabel(COPY.owner.pickLabel).locator("option")).toHaveText(["the Licensor", "the Licensee"]);
+  await page.getByLabel(COPY.owner.pickLabel).selectOption("the Licensee");
   await page.getByRole("button", { name: COPY.owner.submit }).click();
   await expect(page.getByTestId("history-row")).toHaveCount(3);
   await expect(page.getByTestId("owner-party")).toHaveText("the Licensee");
