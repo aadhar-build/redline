@@ -44,10 +44,12 @@ Every implementation ticket in `.scratch/redline-v1/issues/` has a Blocked-by li
 - [What OCR engines run in the browser and how well they read contracts](issues/23-browser-ocr-engines.md): Research: [23-browser-ocr-engines.md](research/23-browser-ocr-engines.md).
 - [What sources could ground Market standard for Indian small-business contracts](issues/25-india-market-standard-sources.md): Research: [25-india-market-standard-sources.md](research/25-india-market-standard-sources.md).
 - [What the Counter-offer for an Outside reference says](issues/26-outside-reference-counter-offer.md): The Counter-offer for an Outside reference asks that the referenced document be attached as a schedule and that its terms be fixed as at the signing date, changing only by written agreement of both parties.
+- [Draft the India Market standard table for the owner to approve](issues/28-india-market-standard-table.md): only the three statute rows approved; no lease or vendor practice rows in v1.
+- [How a statute citation is checked before it is shown](issues/29-statute-citation-check.md): a fixed approved list; the model selects by id and Redline shows the entry's own text.
 
 ## Not yet specified
 
-- **Open tickets now:** OCR engine (24, waits on the bake-off 27, which needs the owner's scans), the India Market standard table (28), and how statute citations are checked (29).
+- **Open tickets now:** OCR engine (24, waits on the bake-off 27, which needs the owner's scans) and verifying the three statute rows against India Code (30).
 
 - **Eval targets.** PRD.md section 4 "Numbers that are unset": targets for misses, false alarms, Clean result share, how many Know this flags is too many, and a method for catching unsupported claims. Becomes sharp once the model (ticket 05) and Market standard basis (ticket 19) are known and a first real run exists.
 - **What a "clear case" for Don't sign as written is**, outside Red line matches (ADR 0005). Probably falls out of ticket 19.

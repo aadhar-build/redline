@@ -12,5 +12,7 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 ## Open (2026-10-31)
 
 1. **OCR engine.** Waits on the bake-off (.scratch/spec-gaps/issues/27). Needs 3–5 real Indian contract scans from you (stamp paper, phone photos to PDF), shared locally, never committed.
-2. **India Market standard table.** A draft will need your approval row by row (.scratch/spec-gaps/issues/28).
-3. **Statute citations.** How a cited statute is checked before it is shown (.scratch/spec-gaps/issues/29). No legal point is shown until this is settled.
+2. ~~India Market standard table.~~ Answered: statute rows only (MSMED, Contract Act s.27, Registration Act).
+3. ~~Statute citations.~~ Answered: fixed approved list.
+4. **Statute wording.** Please open India Code for the three approved sections so their exact text can be recorded (.scratch/spec-gaps/issues/30); automated fetches are blocked. No legal point is shown until then.
+5. **Ticket 01's live check.** The Vercel preview is behind Vercel Authentication and the Vercel connection here can't open it. Run `! npm i -g vercel && vercel login`, then the check can use `vercel curl`.

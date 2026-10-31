@@ -1,4 +1,4 @@
-# India Market standard table: DRAFT, not approved
+# India Market standard table: approved 2026-10-31 (statute rows only)
 
 Ticket: [Draft the India Market standard table](../issues/28-india-market-standard-table.md). ADR 0009. Drafted 2026-10-31 from [research 25](../research/25-india-market-standard-sources.md).
 
@@ -19,17 +19,17 @@ No rows. The owner ruled out GeM procurement terms as a stand-in for private B2B
 
 | # | Clause type | Typical term | Source and date | Strength | Approve? |
 |---|---|---|---|---|---|
-| C2 | Payment terms, micro or small supplier | No more than 45 days after acceptance (15 days with no written agreement); late payment carries compound interest at 3x the RBI bank rate whatever the contract says | MSMED Act 2006 ss.15–16 | statute, primary snippet (India Code fetch failed; DC-MSME summary read). Applies only if the Owner is Udyam-registered micro or small | |
-| C4 | Non-compete after the contract ends | Void to the extent it restrains a lawful trade (only exception: sale of goodwill) | Indian Contract Act 1872 s.27 | statute, snippet | |
+| C2 | Payment terms, micro or small supplier | No more than 45 days after acceptance (15 days with no written agreement); late payment carries compound interest at 3x the RBI bank rate whatever the contract says | MSMED Act 2006 ss.15–16 | statute, primary snippet (India Code fetch failed; DC-MSME summary read). Applies only if the Owner is Udyam-registered micro or small | yes, after ticket 30 verifies wording |
+| C4 | Non-compete after the contract ends | Void to the extent it restrains a lawful trade (only exception: sale of goodwill) | Indian Contract Act 1872 s.27 | statute, snippet | yes, after ticket 30 verifies wording |
 
 ## Commercial leases and leave and licence
 
 | # | Clause type | Typical term | Source and date | Strength | Approve? |
 |---|---|---|---|---|---|
-| L3 | Lock-in | 3 years | Office deal reports (Aon Bengaluru, Table Space Gurugram, Bank of America Powai) | reported deals, large occupiers, not SME shops | |
-| L4 | Rent escalation | 15% every 3 years (offices) or 5% a year (malls) | Deal reports; consultant quoted in BloombergQuint | reported deals | |
-| L5 | Security deposit | 3–10 months' rent, wide spread | Broker blogs | reported deals, weak | |
-| L7 | Registration | A lease over one year must be registered; unregistered, it cannot prove the transaction | Registration Act 1908 ss.17(1)(d), 49 | statute, snippet | |
+| ~~L3~~ struck | Lock-in | 3 years | Office deal reports (Aon Bengaluru, Table Space Gurugram, Bank of America Powai) | reported deals, large occupiers, not SME shops | |
+| ~~L4~~ struck | Rent escalation | 15% every 3 years (offices) or 5% a year (malls) | Deal reports; consultant quoted in BloombergQuint | reported deals | |
+| ~~L5~~ struck | Security deposit | 3–10 months' rent, wide spread | Broker blogs | reported deals, weak | |
+| L7 | Registration | A lease over one year must be registered; unregistered, it cannot prove the transaction | Registration Act 1908 ss.17(1)(d), 49 | statute, snippet | yes, after ticket 30 verifies wording |
 
 ## Gaps the owner should know about
 
