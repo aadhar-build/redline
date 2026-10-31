@@ -183,6 +183,14 @@ export const COPY = {
       failed: "Redline couldn't save that. Try again.",
     },
   },
+  // Ticket 20: Copy all as text. Marked words are wrapped in square brackets in the copied text.
+  copyAll: {
+    button: "Copy all as text",
+    copied: "Copied",
+    status: "Copied the whole review.",
+    failed: "Couldn't copy the review. Select the text and copy it yourself.",
+    bracketKey: "Words in [square brackets] are highlighted on screen.",
+  },
   redLines: {
     title: "Red lines checked",
     lede: "Redline checked this contract against each of these. A clause that matches one is always Don't sign as written.",

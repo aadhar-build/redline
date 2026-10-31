@@ -570,3 +570,4 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .outside-review { display: grid; gap: 0.5rem; justify-items: start; }
 .basis-statement .basis-label { color: var(--ink); }
 .outside-mark { display: grid; gap: 0.5rem; justify-items: start; }
+.copy-all { display: flex; justify-content: flex-end; margin: 0 0 1rem; }
