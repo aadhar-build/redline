@@ -72,6 +72,12 @@ Fresh CLI run, Sonnet 5.5 through the Node seam, new prompt and check:
 |---|---|---|---|
 | S04 (stored OCR text) | 8 | 3 | 0 |
 | S01 (stored OCR text) | 4 | 1 | 0 |
-| T03 | 2 | 1 | 1 ("for the time being in force" after an Act with no year: Don't sign as written, Red line 3) |
+| T03 | 2 | 1 | 1 ("for the time being in force" after an Act with no year: Don't sign as written, Red line 3 at the time; Negotiate since ticket 13c) |
 
-Open: QUESTIONS.md 44 (general law "for the time being in force" now matches Red line 3 on T05).
+Ticket 13c replay (2026-10-31, QUESTIONS.md 43 and 44 built), the stored replies through the fake adapter, counts only:
+| Document | Shown | Withheld | "As amended" or "other" references | Schedules |
+|---|---|---|---|---|
+| T05 | 7 | 2 | 4: 2 Red line 3 (Don't sign as written), 2 Negotiate (was 4 Red line 3) | 2 Negotiate, unchanged |
+| T03 | 2 | 2 | 1: Negotiate, the undated Act (was Red line 3) | 0 |
+
+Shown and withheld counts are unchanged for every replayed run. The ruling expected T05 at 1 Red line 3 and 3 Negotiate; one general-law sentence has a place qualifier outside the ruled run. Open: QUESTIONS.md 45.
