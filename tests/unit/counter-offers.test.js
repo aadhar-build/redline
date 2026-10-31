@@ -80,6 +80,7 @@ describe("every flag has a Counter-offer", () => {
     "commercial-lease-01",
     "client-agreement-01",
     "licence-form-01",
+    "clean-agreement-01",
   ];
   for (const name of fixtures) {
     it(`in ${name}, at every Severity`, async () => {

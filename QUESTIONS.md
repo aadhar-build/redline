@@ -44,7 +44,7 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 
 ## Open (from ticket 22, 2026-10-31)
 
-21. **Clauses withheld after a lead-in ending ":" or ";" (from ticket 22's real re-run).** This is now the largest cause of withheld flags (T01, T05). ADR 0010 holds that a line ending ":" or ";" does not end a sentence, so a list item can't be cited without its lead-in. It also catches ordinary clauses:
+21. ~~**Clauses withheld after a lead-in ending ":" or ";" (from ticket 22's real re-run).** Thi…~~ Settled by Fable advisor, 2026-10-31: see .scratch/redline-v1/issues/24-lead-ins-form-detection-and-review-history.md.
     - clause 1 after "NOW IT IS HEREBY AGREED AS FOLLOWS:" (T02, T03, T07);
     - a clause under an inline heading ("7. COMPENSATION: A. GRANT APPLICATION GDS shall…", "3. LICENCE PERIOD; EFFECTIVE DATE 3.1 Licence period…");
     - provisos after "…as provided in the Act: Provided that…".
@@ -53,12 +53,12 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
     - (a) Leave it. Those flags stay withheld.
     - (b) Treat ":" followed by a line break and a clause number as a boundary.
     - (c) Have the prompt ask the model to quote from the lead-in when a sentence follows one.
-22. **A form that the text says was executed (from ticket 22).** Template detection fires on any blank, including a blank signature or date line. T06's preamble says "made and executed this 17th day of April 2024", but its signature blocks and closing date line are blank. In one run of two, the summary then said "the form is unsigned". Options:
+22. ~~**A form that the text says was executed (from ticket 22).** Template detection fires on a…~~ Settled by Fable advisor, 2026-10-31: see .scratch/redline-v1/issues/24-lead-ins-form-detection-and-review-history.md.
     - (a) Keep it as built.
     - (b) Drop the "never say signed/executed" line when the text itself says "executed" or "signed" with a date, and keep the template note.
     - (c) Word the fixed line as "This document contains blanks" without "unsigned".
     - Also: T01 matches on its table-of-contents dot leaders alone. Should dot leaders count?
-23. **Change when signed in, and what a reopened review keeps (from ticket 22).**
+23. ~~**Change when signed in, and what a reopened review keeps (from ticket 22).**…~~ Settled by Fable advisor, 2026-10-31: see .scratch/redline-v1/issues/24-lead-ins-form-detection-and-review-history.md.
     - Signed in, each Change saves the document again as a new library entry. Should Change instead replace the review on the same document?
     - The Owner chosen and the count of dropped judgments are not stored, so a reopened review shows neither. Store them, which needs a migration, or leave them out?
     - Should the dropped-judgment count be shown to the Reviewer at all?
