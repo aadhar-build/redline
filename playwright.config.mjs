@@ -20,7 +20,7 @@ export default defineConfig({
     { name: "fake-adapter", testMatch: /(summary|ask|risk-flags|upload)\.spec\.mjs/, use: { baseURL: DEV_URL ?? `http://localhost:${FAKE_PORT}` } },
     { name: "no-adapter", testMatch: /unavailable\.spec\.mjs/, use: { baseURL: `http://localhost:${NONE_PORT}` } },
     // Sign-in links from the local auth server return only to its site host, 127.0.0.1 (supabase/config.toml).
-    { name: "library", testMatch: /(library|red-lines)\.spec\.mjs/, use: { baseURL: `http://127.0.0.1:${FAKE_PORT}` } },
+    { name: "library", testMatch: /(library|red-lines|saved-reviews)\.spec\.mjs/, use: { baseURL: `http://127.0.0.1:${FAKE_PORT}` } },
   ],
   webServer: DEV_URL ? undefined : [
     {
