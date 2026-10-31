@@ -93,11 +93,11 @@ export const COPY = {
         total === 1 ? "It came back without a Source sentence." : `${n} came back without a Source sentence.`,
       unreadable: (n, total) =>
         total === 1 ? "It came back in a form Redline couldn't read." : `${n} came back in a form Redline couldn't read.`,
-      // spec-gaps 24: a cited OCR sentence with an amount OCR misread (lib/review/unreadable-amount.js).
+      // spec-gaps 24, research 31: a cited OCR sentence with a misread amount or clause number (lib/review/unreadable-amount.js).
       "unreadable-amount": (n, total) =>
         total === 1
-          ? "It quoted a sentence from a scanned page where Redline couldn't make out an amount."
-          : `${n} quoted sentences from scanned pages where Redline couldn't make out an amount.`,
+          ? "It quoted a sentence from a scanned page where Redline couldn't make out an amount or a clause number."
+          : `${n} quoted sentences from scanned pages where Redline couldn't make out an amount or a clause number.`,
       "unsupported-number": (n, total) =>
         total === 1 ? "It gave a number the contract doesn't contain." : `${n} gave a number the contract doesn't contain.`,
       // Ticket 13: an Outside reference Redline found but couldn't cut into whole sentences.
@@ -107,6 +107,10 @@ export const COPY = {
           : `${n} are references to other documents that Redline couldn't cite as whole sentences, such as lines in a contents list.`,
     },
     severityNote: "The level on each flag is Redline's judgment, not something the contract says.",
+    merged: (n) =>
+      n === 1
+        ? "1 flag merged into an Outside reference. It cited the same sentence for the same Red line, so Redline shows it once."
+        : `${n} flags merged into Outside references. Each cited the same sentences for the same Red line, so Redline shows each sentence once.`,
     withheldTail: "Redline doesn't show a flag it can't trace to the contract.",
     // Ticket 24 ruling 23(c).
     judgmentsDropped: (n) =>
@@ -179,6 +183,8 @@ export const COPY = {
     mark: "Mark as reviewed",
     unmark: "Undo",
     markBusy: "Saving…",
+    sourcesCaption: "Source sentences",
+    markCovers: (n) => `Marking this covers all ${n} sentences.`,
     signInToMark: "To mark this as reviewed, sign in and review the contract again. Redline only keeps that mark on a saved review.",
     errors: {
       "not-found": "Redline couldn't find this reference on your saved review. Reload the page and try again.",
@@ -209,6 +215,14 @@ export const COPY = {
     inReferencedTitle: "References in the documents you added",
     inReferencedLede:
       "These sentences in a document you added bring in yet another document. Redline hasn't read that one, so this contract can't get a Clean result.",
+  },
+  // Ticket 20: Copy all as text. Marked words are wrapped in square brackets in the copied text.
+  copyAll: {
+    button: "Copy all as text",
+    copied: "Copied",
+    status: "Copied the whole review.",
+    failed: "Couldn't copy the review. Select the text and copy it yourself.",
+    bracketKey: "Words in [square brackets] are highlighted on screen.",
   },
   redLines: {
     title: "Red lines checked",

@@ -12,6 +12,8 @@ export const RED_LINES_COPY = {
   basisLabel: "Basis",
   editedNote: (n) =>
     `You reworded Default Red line ${n}, so Redline now checks for your wording. Its basis covered the original wording only, so Redline doesn't show it here.`,
+  oneSidedChangesNote:
+    'This Red line also covers terms a contract applies "as amended from time to time" or in similar words. That part comes with the original wording: if you reword this Red line, Redline stops matching that wording to it, and those sentences show at Negotiate.',
   edit: "Edit",
   editLabel: (label) => `Edit ${label}`,
   save: "Save",

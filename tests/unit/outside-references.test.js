@@ -78,12 +78,12 @@ describe("finding Outside references", () => {
     expect(findOutsideReferences(self).found).toEqual([]);
   });
 
-  it('finds terms "as amended from time to time", and only that wording', () => {
+  it('finds terms "as amended from time to time", but not "from time to time" alone', () => {
     expect(findOutsideReferences(doc2).found.map((f) => [f.sourceSentences[0].text, f.kinds])).toEqual([
       [SOW2, ["statement-of-work"]],
       [AMENDED, ["as-amended"]],
     ]);
-    expect(findOutsideReferences("The rules apply as updated from time to time.").found).toEqual([]);
+    expect(findOutsideReferences("The Provider will review the rules from time to time.").found).toEqual([]);
   });
 
   it("finds web addresses with a scheme, www. or a bare domain, but not emails or run-together sentences", () => {
@@ -94,11 +94,11 @@ describe("finding Outside references", () => {
     expect(kinds("The fee is fixed.In the event of delay the fee stays the same.")).toEqual([]);
   });
 
-  it("makes one reference of a sentence with several kinds, with as amended first", () => {
+  it("puts a sentence naming two documents in both references, and its as amended in each", () => {
     const text = "The Customer will follow the Order Form and the rules at www.example.com, as amended from time to time.";
     const { found } = findOutsideReferences(text);
-    expect(found).toHaveLength(1);
-    expect(found[0].kinds).toEqual(["as-amended", "web-address", "order-form"]);
+    expect(found.map((f) => f.kinds)).toEqual([["as-amended", "order-form"], ["as-amended", "web-address"]]);
+    expect(found.every((f) => f.sourceSentences.length === 1 && f.sourceSentences[0].text === text)).toBe(true);
   });
 
   it("cites the whole sentence across wrapped lines, starting at its clause number", () => {
@@ -210,7 +210,7 @@ describe("a no-flags review with Outside references and the Clean result (the ga
     expect(r.cleanResultHeld).toBe(false);
 
     const row = asRow(r);
-    expect(row.outside_references.map((o) => o.source_sentence)).toEqual([SOW, WEB, ORDER, SCHEDULE_B]);
+    expect(row.outside_references.map((o) => o.source_sentences)).toEqual([[SOW], [WEB], [ORDER], [SCHEDULE_B]]);
     expect(row.outside_references.every((o) => o.reviewed === false && o.reviewed_at === null)).toBe(true);
 
     // Marking all but one still blocks.
@@ -252,10 +252,10 @@ describe("a no-flags review with Outside references and the Clean result (the ga
 });
 
 describe("saved Outside references", () => {
-  it("are stored as kinds, sentence text and the Reviewer's mark only, and rebuilt on reopen", async () => {
+  it("are stored as kinds, label, sentence texts and the Reviewer's mark only, and rebuilt on reopen", async () => {
     const r = await noFlags(doc2);
     const row = asRow(r);
-    for (const o of row.outside_references) expect(Object.keys(o).sort()).toEqual(["kinds", "reviewed", "reviewed_at", "source_sentence"]);
+    for (const o of row.outside_references) expect(Object.keys(o).sort()).toEqual(["kinds", "label", "reviewed", "reviewed_at", "source_sentences"]);
     const reopened = reopenReview({ documentText: doc2, stored: row });
     expect(reopened.outsideReferences).toEqual(r.outsideReferences);
   });
@@ -272,9 +272,9 @@ describe("saved Outside references", () => {
     const r = await noFlags(doc1);
     const row = asRow(r);
     const extra = "3.1 This Agreement runs for twelve months from the date both parties sign it.";
-    const withExtra = { ...row, outside_references: [...row.outside_references, { kinds: ["other"], source_sentence: extra, reviewed: false, reviewed_at: null }] };
+    const withExtra = { ...row, outside_references: [...row.outside_references, { kinds: ["other"], label: null, source_sentences: [extra], reviewed: false, reviewed_at: null }] };
     expect(sentences(reopenReview({ documentText: doc1, stored: withExtra }))).toContain(extra);
-    const invented = { ...row, outside_references: [...row.outside_references, { kinds: ["other"], source_sentence: "Not in the contract.", reviewed: true, reviewed_at: "2026-10-31T10:00:00.000Z" }] };
+    const invented = { ...row, outside_references: [...row.outside_references, { kinds: ["other"], label: null, source_sentences: ["Not in the contract."], reviewed: true, reviewed_at: "2026-10-31T10:00:00.000Z" }] };
     const reopened = reopenReview({ documentText: doc1, stored: invented });
     expect(reopened.withheldCount).toBe(1);
     expect(cleanResultOf(reopened)).toBe(false);
@@ -308,7 +308,9 @@ describe("cost limits (security review)", () => {
     const n = MAX_REFERENCE_MATCHES + 5;
     const text = Array.from({ length: n }, (_, i) => `${i + 1}.1 The work is in each Statement of Work.`).join("\n");
     const { found, failed } = findOutsideReferences(text);
-    expect(found.length + failed).toBe(n);
+    // The cap counts raw matches; the ones within it are one reference with every sentence.
+    expect(found).toHaveLength(1);
+    expect(found[0].sourceSentences.length + failed).toBe(n);
     expect(failed).toBeGreaterThanOrEqual(5);
   });
 });

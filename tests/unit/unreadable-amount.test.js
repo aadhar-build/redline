@@ -71,6 +71,35 @@ describe("findUnreadableAmounts", () => {
   });
 });
 
+// The post-check (research 31) for PP-OCRv6 small, which leaves the ₹ out instead of misreading it,
+// and for damaged clause numbers. Shapes only; every word and digit is made up.
+describe("findUnreadableAmounts: post-check shapes", () => {
+  it.each([
+    ["a bare full stop where the sign was", "a sum of . 86,24,75,000/- is due"],
+    ["a bare full stop with no space", "a sum of .4,50,000 is due"],
+    ["a bare full stop in brackets", "the cost (. 4,50,000) is fixed"],
+    ["empty roman-numeral brackets", "as set out in sub-clause () above"],
+    ["a roman numeral with a trailing space", "as set out in sub-clause (ii ) above"],
+    ["a roman numeral with a leading space", "as set out in sub-clause ( iv) above"],
+    ["a heading with no number", "ARTICLE : Term of the agreement"],
+    ["a clause heading with no number on a later line", "Recitals\nClause. Payment terms"],
+  ])("finds %s", (_, text) => {
+    expect(findUnreadableAmounts(text)).toHaveLength(1);
+  });
+
+  it.each([
+    ["a full stop after a word", "the sum is fixed. 4,50,000 is the cap"],
+    ["a decimal amount", "a fee of 0.50 per unit"],
+    ["a whole roman numeral", "as set out in sub-clause (ii) above"],
+    ["a numbered heading", "ARTICLE 4: Term of the agreement"],
+    ["a numbered clause heading", "Clause 12. Payment terms"],
+    ["a heading word inside a sentence", "as provided in this Clause. The Party shall pay"],
+    ["Section mid-line with a colon", "see this Section: it applies"],
+  ])("does not flag %s", (_, text) => {
+    expect(findUnreadableAmounts(text)).toEqual([]);
+  });
+});
+
 describe("readOcrRanges", () => {
   it("accepts ordered, separate integer pairs inside the text", () => {
     expect(readOcrRanges([[0, 4], [6, 10]], 10)).toEqual([[0, 4], [6, 10]]);

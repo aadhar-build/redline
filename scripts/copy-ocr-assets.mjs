@@ -6,9 +6,10 @@
 //  - ONNX Runtime Web: ort-wasm-simd-threaded.wasm and its .mjs glue, copied from the installed
 //    onnxruntime-web into public/ocr/ort/<version>/. Only the plain WASM build is used (no JSEP or
 //    WebGPU): next.config.mjs aliases "onnxruntime-web" to "onnxruntime-web/wasm".
-//  - The PP-OCRv5 English mobile models and dictionary (ppu-paddle-ocr's V5_EN_MOBILE_MODEL), into
-//    public/ocr/models/pp-ocrv5-en-mobile/. They are not in any npm package and are never committed
-//    (the repo is public, and they are 12.9 MB). They are downloaded once, at install or build time,
+//  - The PP-OCRv6 small detection and recognition models and ppocrv6_dict.txt (the files of
+//    ppu-paddle-ocr's V6_SMALL_MODEL preset, research 31), into public/ocr/models/pp-ocrv6-small/.
+//    PaddlePaddle's official models, Apache-2.0, via ppu's Apache-2.0 mirror. They are not in any npm
+//    package and are never committed (the repo is public, and they are 31.3 MB). They are downloaded once, at install or build time,
 //    from the Hugging Face repo ppu-paddle-ocr points at, pinned to one commit, and each file's SHA-256
 //    is checked: a mismatch fails the build. Downloads are cached in node_modules/.cache/redline-ocr/
 //    so a dev start does not download them again.
@@ -22,25 +23,26 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-// Hugging Face snowfluke/ppu-paddle-ocr-models, commit of 2026-08-25. Hashes match the files the OCR
-// validation run (ticket 27, prototype/ocr-bake-off) measured.
+// Hugging Face snowfluke/ppu-paddle-ocr-models (Apache-2.0), commit of 2026-08-25. Hashes match the
+// files OCR engine round 2 (research 31) measured.
 const MODEL_REVISION = "bf1d5edb0335d3262be7caf13f766ba274b4cadd";
 const MODEL_BASE = `https://huggingface.co/snowfluke/ppu-paddle-ocr-models/resolve/${MODEL_REVISION}`;
+export const MODEL_FOLDER = "pp-ocrv6-small";
 export const MODELS = [
   {
     name: "det.ort",
-    url: `${MODEL_BASE}/detection/PP-OCRv5_mobile_det_infer.ort`,
-    sha256: "30acfc4e21f2a23669d01a75aaeb92190f96874613108a0f7086bed264420abc",
+    url: `${MODEL_BASE}/detection/ort/PP-OCRv6_small_det.ort`,
+    sha256: "c21be8d8268f0f45e2693b1d52432a290a56d008f6c1ff28b4baa7c35bab250e",
   },
   {
     name: "rec.ort",
-    url: `${MODEL_BASE}/recognition/multi/en/v5/en_PP-OCRv5_mobile_rec_infer.ort`,
-    sha256: "74ff9e508379375b5149a3c7764221fa9ba7680b7e2f2e458f26b7c7993a89b0",
+    url: `${MODEL_BASE}/recognition/ort/PP-OCRv6_small_rec.ort`,
+    sha256: "40bccd9fa3ae2d14d724bf9d020c8f0edfc801489477b92f7449162a538366df",
   },
   {
     name: "dict.txt",
-    url: `${MODEL_BASE}/recognition/multi/en/v5/ppocrv5_en_dict.txt`,
-    sha256: "c60d46e9e01d500ed6388fe8681051eac9cf6692e0d57238315be171927a0a1b",
+    url: `${MODEL_BASE}/recognition/ppocrv6_dict.txt`,
+    sha256: "41557512862dfe31970cf22407742b629725461dd84c0d8771bde9c87c2202c8",
   },
 ];
 
@@ -60,8 +62,8 @@ async function main() {
   const { version } = JSON.parse(fs.readFileSync(path.join(ortDir, "package.json"), "utf8"));
   const outRoot = path.join(root, "public/ocr");
   const ortOut = path.join(outRoot, "ort", version);
-  const modelsOut = path.join(outRoot, "models/pp-ocrv5-en-mobile");
-  const cache = path.join(root, "node_modules/.cache/redline-ocr");
+  const modelsOut = path.join(outRoot, "models", MODEL_FOLDER);
+  const cache = path.join(root, "node_modules/.cache/redline-ocr", MODEL_FOLDER);
   const localDir = process.env.REDLINE_OCR_MODELS_DIR;
 
   fs.mkdirSync(cache, { recursive: true });
@@ -83,7 +85,7 @@ async function main() {
     fs.copyFileSync(path.join(ortDir, "dist", f), path.join(ortOut, f));
   }
   for (const m of MODELS) fs.copyFileSync(path.join(cache, m.name), path.join(modelsOut, m.name));
-  console.log(`OCR assets copied to public/ocr/ (onnxruntime-web ${version}, PP-OCRv5 English mobile)`);
+  console.log(`OCR assets copied to public/ocr/ (onnxruntime-web ${version}, PP-OCRv6 small)`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

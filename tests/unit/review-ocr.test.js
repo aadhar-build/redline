@@ -75,3 +75,33 @@ describe("Review: unreadable-amount", () => {
     expect(reopened.withheld).toEqual([{ reason: "unreadable-amount" }]);
   });
 });
+
+// Research 31: PP-OCRv6 small leaves the ₹ out (". 31,42,00,000/-") and can damage a clause number.
+describe("Review: post-check shapes from PP-OCRv6 small", () => {
+  const scanned6 = [
+    "5. The Customer shall pay . 31,42,00,000/- to the Supplier within 7 days.",
+    "",
+    "6. The fee is fixed as set out in sub-clause (ii ) above.",
+  ].join("\n");
+  const text6 = `${typed}\n${scanned6}`;
+  const reply6 = JSON.stringify({
+    summary: "The Customer pays the Supplier a fixed fee.",
+    riskFlags: [
+      flag(["5. The Customer shall pay . 31,42,00,000/- to the Supplier within 7 days."], "Missing sign"),
+      flag(["6. The fee is fixed as set out in sub-clause (ii ) above."], "Broken clause"),
+      flag(["1. The Customer pays Rs. 4,50,000 on signing."], "Typed amount"),
+    ],
+  });
+
+  it("withholds flags citing a left-out ₹ or a damaged clause number, and counts them", async () => {
+    const result = await review({
+      documentText: text6,
+      redLines: [],
+      adapter: createFakeAdapter({ responses: [reply6] }),
+      ocrRanges: [[typed.length + 1, text6.length]],
+    });
+    expect(result.riskFlags.map((f) => f.title.text)).toEqual(["Typed amount"]);
+    expect(result.withheld).toEqual([{ reason: "unreadable-amount" }, { reason: "unreadable-amount" }]);
+    expect(result.withheldCount).toBe(2);
+  });
+});

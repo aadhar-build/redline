@@ -73,16 +73,13 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 25. ~~**A flag that comes back without a Counter-offer.** As built, the flag still shows, becaus…~~ Settled by Fable advisor, 2026-10-31, as built (see lib/review/counter-offer.js header).
 26. ~~**A Counter-offer that copies a document sentence containing "may".** As built, the hedge-…~~ Settled by Fable advisor, 2026-10-31, as built (see lib/review/counter-offer.js header).
 
-## Open (from ticket 13, 2026-10-31)
+## Settled (from ticket 13, 2026-10-31)
 
-27. **A statute "as amended from time to time" (from ticket 13's run over the sample PDFs).** Redline's patterns treat every "as amended from time to time" as an Outside reference matching Default Red line 3, so it is Don't sign as written and never stops blocking a Clean result (spec-gaps 12). In T01 (3 of 5 hits) and T05 (1 of 2) the phrase follows an Act ("the Public Premises (Eviction of Unauthorised Occupants) Act 1971, as amended from time to time"). Parliament amends those, not the Counterparty. Built as decided: they are flagged. Options:
-    - (a) Keep it.
-    - (b) Exclude the phrase when it follows an Act, Rules or Regulations, so it is neither an Outside reference nor a Red line 3 match.
-    - (c) Keep them as Outside references at Negotiate, but not as a Red line 3 match.
-28. **Other wordings of "as amended" (from ticket 13).** Only the exact phrase "as amended from time to time" is matched. Should "as updated from time to time", "as revised from time to time", "as amended or replaced from time to time" and similar also count, with the same Red line 3 match?
-29. **A reworded or removed Red line 3 (from ticket 13).** An "as amended" reference is a Red line 3 match only when Red line 3 (id default-one-sided-changes) is on the list the review used. Removed, the reference is Negotiate. Reworded by the Reviewer, it keeps its id, so it still matches, even if the new wording no longer covers terms changed later. Is that right?
-30. **One Outside reference per sentence, every sentence (from ticket 13).** A master agreement names "Statement of Work" in many sentences, and each one becomes its own reference to mark reviewed. Keep it, or raise one reference per referenced document?
-31. **The same sentence flagged twice (from ticket 13).** In vendor-agreement-03 the model's Red line 3 flag and Redline's Outside reference both cite the "as amended from time to time" sentence, so it shows twice: once in Don't sign as written, once under Outside references. Merge them, or keep both?
+27. ~~**A statute "as amended from time to time" (from ticket 13's run over the sample PDFs).**~~ Settled by Fable advisor, 2026-10-31: option (b), built fail-closed after the security review as option (c): a statute or its rules with a year, then "as amended", in any wording, stays an Outside reference at Negotiate without the Red line 3 match. No year, a possessive or a party term in the name keeps the match (ADR 0007 addendum).
+28. ~~**Other wordings of "as amended" (from ticket 13).**~~ Settled by Fable advisor, 2026-10-31: yes, as a bounded list of wordings (the verb synonyms, "as in force/effect", "as published by X", and "then-current"/"current version" beside a named document, terms or policy), quoted in the copy (lib/review/outside-references.js).
+29. ~~**A reworded or removed Red line 3 (from ticket 13).**~~ Settled by Fable advisor, 2026-10-31: no. Red line 3 matches only in its original wording (with its catches); reworded or removed, the reference is Negotiate and marking resolves it. The Red lines page says so.
+30. ~~**One Outside reference per sentence, every sentence (from ticket 13).**~~ Settled by Fable advisor, 2026-10-31: one reference per referenced document, with all its sentences and one mark (ADR 0007 addendum, migration 20261031003100).
+31. ~~**The same sentence flagged twice (from ticket 13).**~~ Settled by Fable advisor, 2026-10-31: merge. A model flag on the same Red line citing only the reference's sentences is dropped (not withheld, not stored) and counted in mergedCount.
 
 ## Open (from ticket 24 part 1, 2026-10-31)
 

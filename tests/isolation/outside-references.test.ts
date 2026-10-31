@@ -5,6 +5,7 @@
 // - marking every Statement of Work, web address and Order Form reference reviewed makes the rule give
 //   a Clean result (held back by the gate until ticket 07), and an "as amended" reference never does;
 // - another account can neither read nor change the references or marks, in the database itself;
+// - one reference per referenced document, with all its sentences and one mark (QUESTIONS.md 30);
 // - the database refuses an entry of any other shape, so no prose is stored with a reference.
 
 import fs from "node:fs";
@@ -16,6 +17,7 @@ import { adminClient, anonClient } from "./local-supabase";
 import { markOutsideReference, openSaved, saveAndReview } from "../../lib/library/library.js";
 import { forReview, loadRedLines } from "../../lib/library/red-lines.js";
 import { createLocalFakeAdapter } from "../../lib/review/adapters/index.js";
+import { createFakeAdapter } from "../../lib/review/adapters/fake.js";
 import { cleanResultOf } from "../../lib/review/review.js";
 
 const root = path.resolve(__dirname, "../..");
@@ -45,9 +47,9 @@ async function account(label: string): Promise<Account> {
   return { email, password, client: await signIn(email, password) };
 }
 
-async function saved(a: Account, text: string) {
+async function saved(a: Account, text: string, adapter: any = createLocalFakeAdapter({ root })) {
   const redLines = forReview((await loadRedLines({ db: a.client })).redLines);
-  const { review, documentId } = await saveAndReview({ db: a.client, text, redLines, adapter: createLocalFakeAdapter({ root }) });
+  const { review, documentId } = await saveAndReview({ db: a.client, text, redLines, adapter });
   expect(documentId).toBeTruthy();
   return { review, documentId: documentId as string };
 }
@@ -122,7 +124,7 @@ describe("Outside references on a saved review", () => {
     const { data: seen } = await b.client.from("reviews").select("outside_references").eq("document_id", documentId);
     expect(seen).toEqual([]);
     // A direct update with B's session reaches no row.
-    const forged = [{ kinds: ["statement-of-work"], source_sentence: sentence, reviewed: true, reviewed_at: "2026-10-31T00:00:00.000Z" }];
+    const forged = [{ kinds: ["statement-of-work"], label: "Statement of Work", source_sentences: [sentence], reviewed: true, reviewed_at: "2026-10-31T00:00:00.000Z" }];
     const upd = await b.client.from("reviews").update({ outside_references: forged }).eq("document_id", documentId).select("id");
     expect(upd.error).toBeNull();
     expect(upd.data).toEqual([]);
@@ -131,14 +133,50 @@ describe("Outside references on a saved review", () => {
     expect(still![0].outside_references.every((o: any) => o.reviewed === false)).toBe(true);
   });
 
+  it("keeps one reference per document with every sentence, and one mark for the group that no other account can change", async () => {
+    const a = await account("group-a");
+    const b = await account("group-b");
+    const lines = [1, 2, 3, 4, 5].map((i) => `${i}.1 The Supplier will deliver item ${i} as set out in the Statement of Work.`);
+    const reply = JSON.stringify({ summary: "The Supplier delivers five items.", riskFlags: [] });
+    const { review, documentId } = await saved(a, lines.join("\n"), createFakeAdapter({ responses: [reply] }));
+    expect(review.outsideReferences).toHaveLength(1);
+    const ref = review.outsideReferences[0];
+    expect(ref.sourceSentences.map((s: any) => s.text)).toEqual(lines);
+
+    const { data: rows } = await a.client.from("reviews").select("outside_references").eq("document_id", documentId);
+    expect(rows![0].outside_references).toEqual([
+      { kinds: ["statement-of-work"], label: "Statement of Work", source_sentences: lines, reviewed: false, reviewed_at: null },
+    ]);
+
+    // B names the group by its key and by a sentence: neither reaches A's row.
+    expect(await markOutsideReference({ db: b.client, documentId, sourceSentence: lines[3], referenceKey: ref.key, reviewed: true })).toBeNull();
+    const forged = [{ ...rows![0].outside_references[0], reviewed: true, reviewed_at: "2026-10-31T00:00:00.000Z" }];
+    const upd = await b.client.from("reviews").update({ outside_references: forged }).eq("document_id", documentId).select("id");
+    expect(upd.data).toEqual([]);
+    const { data: still } = await admin.from("reviews").select("outside_references").eq("document_id", documentId);
+    expect(still![0].outside_references[0].reviewed).toBe(false);
+
+    // A marks it once, by any of its sentences, and the whole group is resolved.
+    const marked = await markOutsideReference({ db: a.client, documentId, sourceSentence: lines[3], reviewed: true });
+    expect(marked!.review.outsideReferences).toHaveLength(1);
+    expect(marked!.review.outsideReferences[0].resolved).toBe(true);
+    expect(cleanResultOf(marked!.review)).toBe(true);
+  });
+
   it.each([
-    ["model prose in an entry", { kinds: ["order-form"], source_sentence: "x", reviewed: false, reviewed_at: null, says: "anything" }],
-    ["an unknown kind", { kinds: ["master-agreement"], source_sentence: "x", reviewed: false, reviewed_at: null }],
-    ["no kinds", { kinds: [], source_sentence: "x", reviewed: false, reviewed_at: null }],
-    ["an empty sentence", { kinds: ["order-form"], source_sentence: " ", reviewed: false, reviewed_at: null }],
-    ["reviewed with no time", { kinds: ["order-form"], source_sentence: "x", reviewed: true, reviewed_at: null }],
-    ["a time with no mark", { kinds: ["order-form"], source_sentence: "x", reviewed: false, reviewed_at: "2026-10-31T00:00:00.000Z" }],
-    ["a mark that is not true or false", { kinds: ["order-form"], source_sentence: "x", reviewed: "yes", reviewed_at: null }],
+    ["the old one-sentence shape", { kinds: ["order-form"], source_sentence: "x", reviewed: false, reviewed_at: null }],
+    ["model prose in an entry", { kinds: ["order-form"], label: null, source_sentences: ["x"], reviewed: false, reviewed_at: null, says: "anything" }],
+    ["an unknown kind", { kinds: ["master-agreement"], label: null, source_sentences: ["x"], reviewed: false, reviewed_at: null }],
+    ["no kinds", { kinds: [], label: null, source_sentences: ["x"], reviewed: false, reviewed_at: null }],
+    ["no sentences", { kinds: ["order-form"], label: null, source_sentences: [], reviewed: false, reviewed_at: null }],
+    ["sentences that are not a list", { kinds: ["order-form"], label: null, source_sentences: "x", reviewed: false, reviewed_at: null }],
+    ["an empty sentence", { kinds: ["order-form"], label: null, source_sentences: ["x", " "], reviewed: false, reviewed_at: null }],
+    ["a sentence that is not text", { kinds: ["order-form"], label: null, source_sentences: [3], reviewed: false, reviewed_at: null }],
+    ["an empty label", { kinds: ["order-form"], label: " ", source_sentences: ["x"], reviewed: false, reviewed_at: null }],
+    ["a label that is not text", { kinds: ["order-form"], label: 7, source_sentences: ["x"], reviewed: false, reviewed_at: null }],
+    ["reviewed with no time", { kinds: ["order-form"], label: null, source_sentences: ["x"], reviewed: true, reviewed_at: null }],
+    ["a time with no mark", { kinds: ["order-form"], label: null, source_sentences: ["x"], reviewed: false, reviewed_at: "2026-10-31T00:00:00.000Z" }],
+    ["a mark that is not true or false", { kinds: ["order-form"], label: null, source_sentences: ["x"], reviewed: "yes", reviewed_at: null }],
   ])("refuses %s", async (_, entry) => {
     const a = await account(`shape-${randomUUID().slice(0, 4)}`);
     const { documentId } = await saved(a, doc1);

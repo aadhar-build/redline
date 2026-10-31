@@ -42,7 +42,7 @@ function MarkControl({ reference, documentId, onReview }) {
       res = await fetch("/api/outside-references", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ documentId, sourceSentence: reference.sourceSentences[0].text, reviewed: !reviewed }),
+        body: JSON.stringify({ documentId, sourceSentence: reference.sourceSentences[0].text, referenceKey: reference.key ?? null, reviewed: !reviewed }),
       });
       data = await res.json();
     } catch {
@@ -113,8 +113,10 @@ function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onRevi
           </p>
         ) : null}
         <figure className="source">
-          <figcaption>{COPY.flags.sourceCaption}</figcaption>
-          <blockquote data-testid="source-sentence">{reference.sourceSentences[0].text}</blockquote>
+          <figcaption>{reference.sourceSentences.length > 1 ? copy.sourcesCaption : COPY.flags.sourceCaption}</figcaption>
+          {reference.sourceSentences.map((s) => (
+            <blockquote key={s.start} data-testid="source-sentence">{s.text}</blockquote>
+          ))}
         </figure>
         <CounterOffer counterOffer={reference.counterOffer ?? null} number={number} />
         <div className="outside-review" data-testid="outside-review">
@@ -130,6 +132,9 @@ function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onRevi
             <p className="basis" data-testid="outside-not-reviewed">{copy.notReviewed}</p>
           )}
           {reference.redLineMatch ? <p className="basis" data-testid="outside-still-blocks">{copy.stillBlocks}</p> : null}
+          {reference.sourceSentences.length > 1 ? (
+            <p className="basis" data-testid="outside-mark-covers">{copy.markCovers(reference.sourceSentences.length)}</p>
+          ) : null}
           {reference.referencedDocument ? null : <MarkControl reference={reference} documentId={documentId} onReview={onReview} />}
           {documentId && onReview && !reference.referencedDocument && reference.kinds.some((k) => k !== "as-amended") ? (
             <AddReferenced reference={reference} number={number} documentId={documentId} runToken={runToken} onReview={onReview} />
@@ -166,7 +171,7 @@ export default function OutsideReferences({ references, firstNumber, documentId 
           const number = firstNumber + i;
           return (
             <ReferenceItem
-              key={r.sourceSentences[0].start}
+              key={r.key ?? r.sourceSentences[0].start}
               reference={r}
               number={number}
               isOpen={!closed.has(number)}

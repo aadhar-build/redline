@@ -75,6 +75,9 @@ function RedLineItem({ redLine, busy, onSave, onRemove }) {
           {redLine.edited ? (
             <span className="red-line-catches" data-testid="red-line-edited">{COPY.editedNote(redLine.defaultNumber)}</span>
           ) : null}
+          {redLine.defaultNumber === 3 ? (
+            <span className="red-line-catches" data-testid="red-line-as-amended-note">{COPY.oneSidedChangesNote}</span>
+          ) : null}
           <div className="red-line-actions">
             <button
               type="button"
