@@ -6,6 +6,8 @@
 // in this browser; a mixed PDF keeps its typed page's text and OCRs the other; progress is shown and
 // the Reviewer can stop it; every request stays on Redline's own origin, the models and runtime come
 // from /ocr/, and only the extracted text, its source and the OCR ranges are posted.
+import fs from "node:fs";
+import path from "node:path";
 import { expect, test } from "@playwright/test";
 import { COPY } from "../../app/(app)/review/copy.js";
 import { makePdf, scanPage, textPage } from "../support/make-pdf.mjs";
@@ -43,6 +45,18 @@ async function scanJpeg(page, lines, tilt = 1.2) {
     { lines, tilt },
   );
   return { data: Uint8Array.from(bytes), width: 1224, height: 1584 };
+}
+
+// The fake adapter only has scripted reviews for the fixture contracts, and OCR output varies, so to
+// see the scanned note the posted text is swapped for a fixture on its way to the server. The page
+// numbers the browser posted (ocrPages, pageCount) go through untouched; the request the browser
+// sent is still what recordRequests sees.
+const FIXTURE = fs.readFileSync(path.join(process.cwd(), "fixtures/contracts/vendor-agreement-01.txt"), "utf8");
+async function reviewAsFixture(page) {
+  await page.route("**/api/review", (route) => {
+    const body = JSON.parse(route.request().postData());
+    route.continue({ postData: JSON.stringify({ ...body, text: FIXTURE, ocrRanges: [[0, FIXTURE.length]] }) });
+  });
 }
 
 function recordRequests(page) {
@@ -98,6 +112,7 @@ test("an image-only PDF is read by OCR in the browser, and only its text and OCR
   expect(wordRecall(SCAN_LINES.join(" "), text)).toBeGreaterThanOrEqual(0.9);
   await page.screenshot({ path: test.info().outputPath("ocr-scan.png"), fullPage: true });
 
+  await reviewAsFixture(page);
   await page.getByRole("button", { name: COPY.submit }).click();
   await expect.poll(() => requests.filter((q) => q.method === "POST").length).toBe(1);
   const body = postedBody(requests);
@@ -107,7 +122,7 @@ test("an image-only PDF is read by OCR in the browser, and only its text and OCR
   expect(body.ocrRanges).toEqual([[0, text.length]]);
   expect(body.ocrPages).toEqual([1]);
   expect(body.pageCount).toBe(1);
-  await expect(page.getByTestId("scanned-note")).toHaveText(COPY.scannedNote({ pages: 1, pageCount: 1 }), { timeout: 150_000 });
+  await expect(page.getByTestId("scanned-note")).toHaveText(COPY.scannedNote({ pages: 1, pageCount: 1 }));
   expectOwnOrigin(requests, baseURL);
 });
 
@@ -124,13 +139,14 @@ test("a PDF with text on some pages only keeps the typed page and OCRs the scann
   expect(text.startsWith(`${typed[0]}\n`)).toBe(true);
   expect(wordRecall(SCAN_LINES.join(" "), text.slice(typed[0].length + 1))).toBeGreaterThanOrEqual(0.9);
 
+  await reviewAsFixture(page);
   await page.getByRole("button", { name: COPY.submit }).click();
   await expect.poll(() => requests.filter((q) => q.method === "POST").length).toBe(1);
   const body = postedBody(requests);
   expect(body.ocrRanges).toEqual([[typed[0].length + 1, text.length]]);
   expect(body.ocrPages).toEqual([2]);
   expect(body.pageCount).toBe(2);
-  await expect(page.getByTestId("scanned-note")).toHaveText(COPY.scannedNote({ pages: 1, pageCount: 2 }), { timeout: 150_000 });
+  await expect(page.getByTestId("scanned-note")).toHaveText(COPY.scannedNote({ pages: 1, pageCount: 2 }));
   expectOwnOrigin(requests, baseURL);
 });
 
