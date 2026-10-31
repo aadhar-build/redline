@@ -29,3 +29,8 @@
   10. "Notices shall be sent to A. K. Sharma at the registered office." / "Sharma at the registered office." and "K. Sharma at the registered office." / not found
   11. "The fee is set out in Schedule A. The Company shall pay within 30 days." / "The Company shall pay within 30 days." / found
   12. "The Consultant shall be paid Rs. 1,50,000.00 on signing." / "00 on signing." / not found; whole sentence / found
+
+## Ticket 14c, 2026-10-31: boundary allowances and two Outside reference bugs
+- Built ADR 0010 addendum (ticket 14c): lowercase roman list markers i-xx at a line start, page-footer lines skipped for boundaries, "&" in heading lines; prompt line to quote the stored text exactly. Tests: tests/unit/boundary-allowances.test.js.
+- Bug 3: "for the time being in force" added to the "as amended" wordings; bug 2: government e-stamp and registration verification hosts are not Outside references (ADR 0007 addendum). Tests: tests/unit/outside-reference-14c.test.js.
+- Re-measure (counts only, research 32): S04 replays 24 withheld before, 6 after over three reruns; S01 and the six text contracts unchanged. Fresh CLI run: S04 8 shown, 3 withheld; S01 4 shown, 1 withheld; T03 2 shown, 1 withheld.

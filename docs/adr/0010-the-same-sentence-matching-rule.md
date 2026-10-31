@@ -51,3 +51,15 @@ Settled by Fable advisor, 2026-10-31 (QUESTIONS.md 21; medium-high confidence on
 - **Lead-in colon with a dash** (QUESTIONS.md 34). Wherever these rules read a lead-in ":", it may be written ":" followed by exactly one hyphen-minus or one DASH character (":-", ":–", ":—"), in the stored NFC text: for B, C and A at a quote's start, and for the rule that a span never ends at ":" or ";". Two dashes, or a space before the dash, do not count. D is unchanged by the dash rule.
 
 Built in ticket 24 parts 1 and 2; the tests are in tests/unit/source-check.test.js. Rule D also rejects an all-caps word that is a lead-in word, so "LESSEE AGREES TO:" is never a skipped prefix (QUESTIONS.md 35).
+
+## Addendum, 2026-10-31: three boundary allowances (ticket 14c)
+
+From research 32 (.scratch/spec-gaps/research/32-ocr-withheld-rate.md). These are general boundary rules, not OCR-only: a text PDF with the same list style meets the same rules.
+
+- **(i) Lowercase roman list markers.** At the start of a line, a lowercase roman numeral from i to xx, optionally followed by "." or ")", then exactly one space and a capital letter, is a sentence start, provided the gap before the line is otherwise a boundary (a sentence end, a blank line, or a heading line's break under rule 1). It lifts only the rule 2 lowercase-next backstop and the rule 1 "followed by a capital" test for that marker. The shown span includes the marker; a quote that leaves out a bare marker or one ending ")" is shown from the marker, as under ticket 22 ruling B ("vi." ends in a full stop, so the gap after it is already a boundary). Not a sentence start: any other lowercase word on a new line ("in the event"), a numeral past xx, a marker not at a line start, a marker followed by a lowercase word or by two spaces, and a marker after a lead-in ending ":" or after an unfinished line.
+- **(ii) Page-footer lines.** A line that holds only a page footer, "<digits>IPage", "<digits>|Page" (a space allowed either side of the "I" or "|"), "Page <n>" or "Page <n> of <m>", any case, is looked past by heading and boundary detection, before and after a gap. The stored text keeps it, and a span may run across it. Two single line breaks around a footer never add up to a blank line. Lines of other shapes are unchanged by this rule.
+- **(iii) "&" in headings.** A lone "&" passes the rule 1 heading word test ("9. TERM & TERMINATION").
+
+Accepted cost of (i): "v." or "v" wrapping onto a new line in a case citation ("Union of India\nv. State of Punjab held…") is a sentence start when the line before passes the heading test and starts on a boundary, so a quote may drop the first party's name. It never drops an operative word, the same kind of cost as rule 1's.
+
+The tests are in tests/unit/boundary-allowances.test.js.
