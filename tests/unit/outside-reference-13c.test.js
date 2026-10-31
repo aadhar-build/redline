@@ -181,3 +181,73 @@ describe("43: an added document's own title line", () => {
     expect(performance.now() - t).toBeLessThan(100);
   });
 });
+
+describe("security review of 43/44: the exemptions fail closed", () => {
+  it.each([
+    "1. The Customer will follow the Provider's policies and applicable laws for the time being in force.",
+    "1. The Customer will follow the Provider's rules or any law for the time being in force.",
+    "1. The Customer will follow the Supplier Handbook and laws for the time being in force.",
+    "1. The Customer will follow Provider Group Policy and all applicable laws as amended from time to time.",
+  ])("general law joined to another noun keeps Red line 3: %s", (text) => {
+    expect(findOutsideReferences(text).found.map((f) => f.kinds)).toEqual([["as-amended"]]);
+  });
+
+  it("general law may still use and/or after its first modifier", () => {
+    expect(findOutsideReferences("1. Each party will follow any and all laws for the time being in force.").found.map((f) => f.kinds)).toEqual([["other"]]);
+  });
+
+  it.each([
+    "1. The Customer will follow the Acme Services Act for the time being in force.",
+    "1. The Customer will follow the Platform Usage Act as amended from time to time.",
+    "1. The Customer will follow the Shops Act for the time being in force.",
+  ])("an undated Act not on the list keeps Red line 3: %s", (text) => {
+    expect(findOutsideReferences(text).found.map((f) => f.kinds)).toEqual([["as-amended"]]);
+  });
+
+  it.each([
+    "1. The tenant will follow the Maharashtra Rent Control Act for the time being in force.",
+    "1. Each party will follow the Indian Contract Act as amended from time to time.",
+    "1. Tax is payable under the Central Goods and Services Tax Act for the time being in force.",
+    "1. Each party will follow the Micro, Small and Medium Enterprises Development Act as amended from time to time.",
+    "1. Each party will follow the Arbitration and Conciliation Act for the time being in force.",
+  ])("a known undated Act, with a state or other prefix, is exempt: %s", (text) => {
+    expect(findOutsideReferences(text).found.map((f) => f.kinds)).toEqual([["other"]]);
+  });
+
+  it("a known Act name with a party possessive before it keeps Red line 3", () => {
+    expect(findOutsideReferences("1. The Customer will follow the Provider's Companies Act for the time being in force.").found.map((f) => f.kinds)).toEqual([["as-amended"]]);
+  });
+
+  const CONTRACT = "SUPPLY AGREEMENT\n\n1. The prices are set out in the Order Form.\n";
+  const OF_REF = "1. The prices are set out in the Order Form.";
+
+  it("accepts a self-title only from the title block", async () => {
+    const late = "PRICE LIST\n\n1. The Customer will pay monthly.\n2. The Customer will keep the goods dry.\n3. The fees are fixed.\n\nORDER FORM\n\n4. The Order Form sets the dates.\n";
+    const r = await run(CONTRACT, { referencedDocuments: [added(late, OF_REF)] });
+    expect(inR(r, R1_ID).map((o) => o.kinds)).toEqual([["order-form"]]);
+    expect(selfTitled(late.split("\n"), "order-form")).toBe(false);
+  });
+
+  it("still raises a mention of another numbered Order Form", async () => {
+    const text = "ORDER FORM No. 3\n\n1. This form follows Order Form No. 3 and the Order Form above.\n2. The discount in Order Form No. 5 applies.\n";
+    const r = await run(CONTRACT, { referencedDocuments: [added(text, OF_REF)] });
+    const refs = inR(r, R1_ID);
+    expect(refs.map((o) => o.kinds)).toEqual([["order-form"]]);
+    expect(refs[0].sourceSentences.map((s) => s.text)).toEqual(["2. The discount in Order Form No. 5 applies."]);
+  });
+
+  it("raises a numbered mention under an unnumbered heading", async () => {
+    const text = "ORDER FORM\n\n1. The discount in Order Form No. 5 applies.\n";
+    const r = await run(CONTRACT, { referencedDocuments: [added(text, OF_REF)] });
+    expect(inR(r, R1_ID).map((o) => o.kinds)).toEqual([["order-form"]]);
+  });
+
+  it("stays fast on a long adversarial run before an Act", () => {
+    for (const filler of ["Maharashtra ".repeat(5000), "Rent Control ".repeat(5000), "and applicable ".repeat(5000)]) {
+      const t = performance.now();
+      findOutsideReferences(`${filler}Act for the time being in force.`);
+      expect(performance.now() - t).toBeLessThan(200);
+    }
+  });
+});
+

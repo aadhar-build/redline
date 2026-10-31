@@ -81,3 +81,5 @@ Ticket 13c replay (2026-10-31, QUESTIONS.md 43 and 44 built), the stored replies
 | T03 | 2 | 2 | 1: Negotiate, the undated Act (was Red line 3) | 0 |
 
 Shown and withheld counts are unchanged for every replayed run. The ruling expected T05 at 1 Red line 3 and 3 Negotiate; one general-law sentence has a place qualifier outside the ruled run. Open: QUESTIONS.md 45.
+
+Ticket 13d replay (2026-10-31, security fixes and schedule heading case): T05 and T03 counts unchanged from ticket 13c (T05: 2 Red line 3, 2 Negotiate, 2 schedules Negotiate; T03: 1 Negotiate). QUESTIONS.md 45 stays open.
