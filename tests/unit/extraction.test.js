@@ -172,6 +172,19 @@ describe("scanned-page copy", () => {
     expect(await extractFile(file)).toEqual({ kind: "rejected", reason: "too-large" });
   });
 
+  it("names up to five left-out running lines and the total line count", () => {
+    expect(COPY.removedLines([{ text: "Page 2", count: 1 }])).toBe(
+      'Redline left out 1 line it read as a running header or page number: "Page 2".',
+    );
+    expect(COPY.removedLines([{ text: "Acme Ltd", count: 3 }, { text: "Draft", count: 3 }])).toBe(
+      'Redline left out 6 lines it read as running headers or page numbers: "Acme Ltd" and "Draft".',
+    );
+    const eight = Array.from({ length: 8 }, (_, i) => ({ text: `Page ${i + 1}`, count: 1 }));
+    expect(COPY.removedLines(eight)).toBe(
+      'Redline left out 8 lines it read as running headers or page numbers: "Page 1", "Page 2", "Page 3", "Page 4", "Page 5" and 3 more.',
+    );
+  });
+
   it("builds the scanned-pages message", () => {
     expect(COPY.scannedPages([3])).toMatch(/^Page 3 of this file is scanned/);
     expect(COPY.scannedPages([1, 2])).toMatch(/^Pages 1 and 2 of this file are scanned/);

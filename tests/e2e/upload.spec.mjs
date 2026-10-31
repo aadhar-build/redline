@@ -70,12 +70,42 @@ for (const [kind, name, mimeType, build] of [
 
     const sent = expectOnlyTextLeft(requests, baseURL, file, kind.toLowerCase());
     expect(sent).toBe(extracted);
+    // Nothing was left out, so there is no note about it.
+    await expect(page.getByTestId("removed-lines-note")).toHaveCount(0);
     if (kind === "PDF") {
       expect(requests.some((q) => /\/pdfjs\/[\d.]+\/pdf\.worker\.min\.mjs$/.test(new URL(q.url).pathname))).toBe(true);
     }
     await page.screenshot({ path: test.info().outputPath(`${kind.toLowerCase()}-summary.png`), fullPage: true });
   });
 }
+
+test("running lines left out of a PDF are named at upload and never sent", async ({ page, baseURL }) => {
+  const lines = wrap(fixtureText);
+  const third = Math.ceil(lines.length / 3);
+  const file = makePdf(
+    [0, 1, 2].map((i) =>
+      textPage(lines.slice(i * third, (i + 1) * third), { top: 100, header: "Kesari Vendor Agreement", footer: "Confidential" }),
+    ),
+  );
+  const requests = recordRequests(page);
+  await page.goto("/review");
+  await choose(page, "headed.pdf", PDF, file);
+  await expect(page.getByTestId("file-loaded")).toBeVisible();
+  const removed = [
+    { text: "Kesari Vendor Agreement", count: 3 },
+    { text: "Confidential", count: 3 },
+  ];
+  await expect(page.getByTestId("removed-lines-note")).toHaveText(COPY.removedLines(removed));
+  await expect(page.getByTestId("removed-lines-note")).toContainText('"Kesari Vendor Agreement" and "Confidential"');
+  await expect(page.getByTestId("removed-lines-note")).toContainText("6 lines");
+  const extracted = await page.getByLabel(COPY.fieldLabel).inputValue();
+  expect(extracted).not.toContain("Confidential");
+
+  await page.getByRole("button", { name: COPY.submit }).click();
+  await expect(page.getByTestId("summary")).toHaveText(fixtureSummary);
+  // The posted body is still only the text and its source: the removed lines stay in the browser.
+  expect(expectOnlyTextLeft(requests, baseURL, file, "pdf")).toBe(extracted);
+});
 
 test("the DOCX reader keeps clause numbers, takes the accepted view and never glues words", async ({ page }) => {
   const body = [
