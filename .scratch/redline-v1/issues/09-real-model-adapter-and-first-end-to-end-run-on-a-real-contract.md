@@ -8,7 +8,7 @@
 
 **Needs approval for:** None (uses the existing CLI, adds no package)
 
-**Status:** built on feature/09-cli-adapter; real runs recorded below; two trust problems open (QUESTIONS.md 13, 14)
+**Status:** merged into `development` (2026-10-31). Real runs found trust bugs fixed in tickets 21 and 22
 
 - [x] Existing Review seam tests keep working when only the adapter is swapped (spec story 69).
 - [x] The adapter is unavailable outside the local machine, and ticket 01's deployed-build check still shows no path to Claude (PRD criterion 16).
