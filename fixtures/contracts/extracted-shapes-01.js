@@ -60,7 +60,8 @@ export const PDF_SHAPED_01_WITHHELD = {
   "a sentence put back together across two columns": "The Client may audit the Supplier's records once a year.",
   "a sentence put back together across a page footer":
     "The Supplier's total liability under this Agreement is capped at the fees paid in the three months before the claim.",
-  "the second half of a wrapped sentence": "days of each invoice, unless the Client disputes the invoice in writing.",
+  "the second half of a sentence, after a page footer": "three months before the claim.",
+  "the second half of a wrapped sentence":"days of each invoice, unless the Client disputes the invoice in writing.",
   "30 changed to 60":
     "The Client shall pay the Supplier Rs. 75,000 per month within 60 days of each invoice, unless the Client disputes the invoice in writing.",
   '"shall" changed to "may"':
