@@ -4,6 +4,7 @@ import { supabaseConfig } from "../../../lib/supabase/config.js";
 import { currentAccount } from "../../../lib/supabase/server.js";
 import { formatSavedAt } from "./format";
 import { LIBRARY_COPY } from "./library-copy";
+import { currentRedLinesOrNull } from "./current-red-lines";
 
 // The Reviewer's saved documents, read with their own session: Row Level Security returns only this
 // account's rows. Works without a model adapter, so it is the same on Vercel.
@@ -25,7 +26,7 @@ export default async function LibraryPage() {
   }
   const { db, user } = await currentAccount();
   if (!user) redirect("/sign-in");
-  const documents = await listDocuments({ db });
+  const documents = await listDocuments({ db, currentRedLines: await currentRedLinesOrNull(db) });
 
   return (
     <section className="sheet app-page">
@@ -53,6 +54,9 @@ export default async function LibraryPage() {
                   <td className="ref-col">L-{documents.length - i}</td>
                   <td>
                     <a href={`/library/${d.id}`} data-testid="library-link">{d.title || copy.untitled}</a>
+                    {d.olderRedLines && (
+                      <span className="older-list-tag" data-testid="library-older-list">{copy.olderList}</span>
+                    )}
                   </td>
                   <td>{formatSavedAt(d.savedAt)}</td>
                   <td className="num-col">{copy.flagCount(d.flagCount)}</td>

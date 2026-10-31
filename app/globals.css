@@ -424,6 +424,15 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 /* A word Redline's wording rules ban: wavy graphite underline on the reference wash, so it never relies on colour. */
 .banned-word { background: var(--blue-wash); color: var(--ink); text-decoration: underline wavy var(--ink); text-underline-offset: 0.2em; padding-inline: 0.1em; }
 .marked-note { font-size: 0.875rem; color: var(--ink); border-left: 3px solid var(--ink); padding: 0.2rem 0 0.2rem 0.65rem; }
+/* A number the contract doesn't contain (ticket 22): double underline, so it reads apart from a banned word without colour. */
+.unsupported-number { background: var(--blue-wash); color: var(--ink); text-decoration: underline double var(--ink); text-underline-offset: 0.2em; padding-inline: 0.1em; }
+.template-note { font-size: 0.875rem; color: var(--ink); border-left: 3px solid var(--ink-2); padding: 0.2rem 0 0.2rem 0.65rem; }
+/* Whose side the review is for (ticket 22), above the Risk flags. */
+.owner-line { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; font-size: 0.9375rem; color: var(--ink); }
+.owner-line .owner-label { color: var(--ink-2); }
+.owner-line button { font: inherit; font-size: 0.875rem; background: none; border: 1px solid var(--rule); color: var(--ink); padding: 0.15rem 0.6rem; cursor: pointer; }
+.owner-line select { font: inherit; font-size: 0.9375rem; padding: 0.15rem 0.4rem; }
+.severity-note { font-size: 0.8125rem; color: var(--ink-2); margin: 0 1rem; }
 
 /* ---------- App: the question box, under the summary ---------- */
 .question-box { border-top: 1px solid var(--rule); padding-top: 1rem; display: grid; gap: 0.85rem; }
@@ -496,6 +505,15 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .saved-fields dt { font: 600 0.75rem / 1.2 var(--font-label-stack); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-2); }
 .saved-fields dd { margin: 0.2rem 0 0; font-variant-numeric: tabular-nums; }
 .saved-grid { margin-top: 2rem; max-width: 60rem; }
+/* A saved review checked against an older Red line list (ticket 15). */
+.older-list-tag {
+  display: block; margin-top: 0.3rem; width: fit-content;
+  font: 600 0.6875rem / 1.2 var(--font-label-stack); letter-spacing: 0.06em; text-transform: uppercase;
+  /* Neutral on purpose: red, amber and blue mark Severity (DESIGN.md). */
+  color: var(--ink-2); border: 1px solid var(--rule); padding: 0.15rem 0.35rem;
+}
+.older-list { margin-top: 1.25rem; max-width: 46rem; display: grid; gap: 0.85rem; justify-items: start; }
+.older-list .form-error { margin: 0; }
 @media (max-width: 40rem) {
   .library-index .ref-col { display: none; }
 }

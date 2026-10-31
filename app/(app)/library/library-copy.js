@@ -26,7 +26,8 @@ export const LIBRARY_COPY = {
   },
   library: {
     pageTitle: "Library",
-    lede: "Every contract you reviewed while signed in, newest first. Opening one shows the review as it was saved. Redline doesn't read the contract again.",
+    lede: "Every contract you reviewed while signed in, newest first. Opening one shows the review as it was saved. Redline doesn't read the contract again unless you ask it to.",
+    olderList: "Checked against an older list of Red lines",
     empty: "Your library is empty. Review a contract while you're signed in and it shows up here.",
     emptyAction: "Paste a contract",
     columns: { document: "Document", saved: "Saved", flags: "Risk flags" },
@@ -41,6 +42,16 @@ export const LIBRARY_COPY = {
     noReview: "There's no saved review for this contract.",
     askOff: "Questions are switched off on this site. For now Redline only reads contracts on one test machine.",
     back: "Back to the library",
+    olderList:
+      "You've changed your Red lines since this review was saved, so it was checked against an older list. Review it again to check the saved text against your current list. Redline keeps this review as well.",
+    rerun: "Review again with my current Red lines",
+    rerunBusy: "Reviewing again…",
+    rerunOff: "Reviewing again is switched off on this site. For now Redline only reads contracts on one test machine.",
+    rerunErrors: {
+      incomplete: "Redline couldn't read part of the new review, so it didn't save it. The review below is still the one in your library.",
+      "save-failed": "Redline reviewed the contract again but couldn't save the new review. Try again.",
+      "not-found": "Redline can't find that contract in your library any more.",
+    },
     notFoundTitle: "Not in your library",
     notFound: "Redline can't find that contract in your library.",
   },
