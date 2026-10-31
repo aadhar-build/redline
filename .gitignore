@@ -106,3 +106,6 @@ Thumbs.db
 .impeccable/questions/
 .impeccable/review/
 .playwright-mcp/
+
+# ---- pdf.js assets copied from node_modules at build time ----
+public/pdfjs/

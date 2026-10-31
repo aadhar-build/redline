@@ -452,3 +452,10 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .group-empty { padding-top: 0; font-size: 0.875rem; }
 .flags-pane .flag-title .basis-label { margin: 0 0 0 0.35rem; color: var(--ink); }
 .flags-note { margin: 0.25rem 1rem 1rem; }
+
+/* Choosing a file: the native control, set in the form's type. */
+.file-field { font: 400 0.9375rem / 1.4 var(--font-text-stack); color: var(--ink); margin-block: 0.25rem 0.75rem; }
+.file-field:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.file-loaded { font-size: 0.875rem; color: var(--ink); border-left: 3px solid var(--blue); padding: 0.2rem 0 0.2rem 0.65rem; margin-bottom: 0.5rem; }
+.link-button { font: inherit; color: var(--blue); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
+.paste-field[readonly] { background: var(--sheet); }

@@ -108,6 +108,14 @@ describe("Review seam: summary", () => {
     );
     await expect(review({ documentText: fixtureText, redLines: [] })).rejects.toMatchObject({ code: "no-adapter" });
   });
+
+  it("rejects a document that is not in English without calling the model (ADR 0009)", async () => {
+    let calls = 0;
+    const adapter = { complete: async () => (calls++, fixtureReply) };
+    const hindi = "यह अनुबंध पुणे में दिनांक 1 नवंबर 2026 को किया गया। विक्रेता हर रात ग्राहक की रसोई की सफाई करेगा।";
+    await expect(review({ documentText: hindi, redLines: [], adapter })).rejects.toMatchObject({ code: "not-english" });
+    expect(calls).toBe(0);
+  });
 });
 
 describe("Which adapter a server gets", () => {
