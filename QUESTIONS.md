@@ -90,3 +90,13 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 33. ~~**The operative-word guard also catches plain all-caps headings (from ticket 24 part 1).**~~ Settled by Fable advisor, 2026-10-31: (a) keep the guard on every heading line; a real heading with NO or NOT cannot start a quote, and that sentence is withheld and counted.
 34. ~~**"as follows:-" is not a formula opener (from ticket 24 part 1).**~~ Settled by Fable advisor, 2026-10-31: (a) a lead-in colon may be ":" plus one dash (":-", ":–", ":—"), at start and end alike. Built.
 35. ~~**Two QUESTIONS 32 cases that conflict with built rules (from ticket 24 part 2).**~~ Settled by Fable advisor, 2026-10-31: (1) option (a), a lead-in word also disqualifies an all-caps word in rule D, so "LESSEE AGREES TO:\n(a) Pay…" is withheld; (2) as ADR 0010 says, "The Licensor…" is shown without the "1.". Built.
+
+## Open (from ticket 18, 2026-10-31)
+
+Each is built the way that claims least; numbers may need renumbering when 13b lands.
+
+36. **Outside references inside an added document.** If the document the Reviewer adds brings in yet another document, Redline lists those sentences under "References in the documents you added" and gives no Clean result. There is no way to add or mark them yet. Should they get the same add and mark flow as the contract's own references?
+37. **Changing or removing an added document.** Each reference takes one added document. Adding a second is refused ("already-added"), and there is no remove. Is a replace or remove step needed?
+38. **Marks after adding a document.** Adding a document saves a new review, like a re-run, so "marked as reviewed" statements on the earlier review aren't carried over to the new one. Should they carry over?
+39. **"As amended" and an added document.** For a reference that is only "as amended from time to time", nothing can be added. For a sentence with a named document too ("the Order Form, as amended from time to time"), the document can be added and is reviewed, but the reference stays unresolved because it matches Red line 3. Is that right?
+40. **Length cap.** The contract and every added document together must stay under 200,000 characters, the single-document limit. Is that the right cap?
