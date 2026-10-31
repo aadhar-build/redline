@@ -1,5 +1,6 @@
 import { getModelAdapter } from "../../../lib/review/adapters/index.js";
 import { ask } from "../../../lib/review/ask.js";
+import { guardModelRun } from "../../../lib/review/local-guard.js";
 import { ReviewInputError } from "../../../lib/review/review.js";
 
 // Server-side only. The browser posts the document text and a question here; it never sees or calls
@@ -12,7 +13,11 @@ const json = (body, status) => Response.json(body, { status });
 export async function POST(request) {
   const adapter = getModelAdapter();
   if (!adapter) return json({ error: "unavailable" }, 503);
+  // With the Claude Code CLI adapter, only same-origin requests to localhost run, one at a time.
+  return guardModelRun(request, adapter, () => handle(request, adapter));
+}
 
+async function handle(request, adapter) {
   let body;
   try {
     body = await request.json();
