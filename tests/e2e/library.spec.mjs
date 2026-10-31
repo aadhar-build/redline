@@ -12,6 +12,7 @@ import { createClient } from "@supabase/supabase-js";
 import { COPY } from "../../app/(app)/review/copy.js";
 import { ASK_COPY } from "../../app/(app)/review/ask-copy.js";
 import { LIBRARY_COPY } from "../../app/(app)/library/library-copy.js";
+import { makeDocx, p } from "../support/make-docx.mjs";
 
 const root = path.resolve(import.meta.dirname, "../..");
 const vendorText = fs.readFileSync(path.join(root, "fixtures/contracts/vendor-agreement-01.txt"), "utf8");
@@ -103,6 +104,8 @@ test("a signed-in review is saved with its withheld count and reopens from the l
   const shownSources = await sources(page);
   expect(titles).toHaveLength(6);
   await expect(page.getByTestId("withheld-count")).toHaveText(COPY.flags.withheldTitle(5));
+  const withheldLine = await page.getByTestId("withheld").textContent();
+  expect(withheldLine).toContain(COPY.flags.withheldReason["source-not-found"](5, 5));
 
   // Reopening reads from the database; the model is not called again.
   const reviewCalls = [];
@@ -120,6 +123,8 @@ test("a signed-in review is saved with its withheld count and reopens from the l
   expect(await sources(page)).toEqual(shownSources);
   for (const s of await sources(page)) expect(vendorText).toContain(s);
   await expect(page.getByTestId("withheld-count")).toHaveText(COPY.flags.withheldTitle(5));
+  // The withheld line reads exactly as it did fresh, reasons included.
+  await expect(page.getByTestId("withheld")).toHaveText(withheldLine);
 
   await page.goto("/library");
   await expect(page.getByTestId("library-item")).toHaveCount(1);
@@ -164,6 +169,30 @@ test("the question box on a saved review sends only the document id, and the ser
   // An id that is not in this account's library never falls back to the posted text.
   const unknown = await page.request.post("/api/ask", { data: { documentId: randomUUID(), text: vendorText, question: QUESTION } });
   expect(unknown.status()).toBe(404);
+  await context.close();
+});
+
+test("an uploaded DOCX is saved as a DOCX file, from its extracted text only", async ({ browser, baseURL }) => {
+  const { context, page } = await asA(browser, baseURL);
+  const docx = Buffer.from(
+    await makeDocx({ body: vendorText.split("\n").filter((l) => l.trim()).map((l) => p(l)).join("") }),
+  );
+  await page.goto("/review");
+  await page.getByLabel(COPY.fileLabel).setInputFiles({
+    name: "vendor-agreement.docx",
+    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    buffer: docx,
+  });
+  await expect(page.getByTestId("file-loaded")).toBeVisible();
+  const posted = page.waitForRequest((q) => q.url().endsWith("/api/review") && q.method() === "POST");
+  await page.getByRole("button", { name: COPY.submit }).click();
+  expect((await posted).postDataJSON().source).toBe("docx");
+  await expect(page.getByTestId("saved-note")).toBeVisible();
+
+  await page.getByRole("link", { name: LIBRARY_COPY.paste.savedLink }).click();
+  await expect(page.locator(".saved-fields")).toContainText(LIBRARY_COPY.saved.sourceKinds.docx);
+  await page.goto("/library");
+  await expect(page.getByTestId("library-item")).toHaveCount(2);
   await context.close();
 });
 

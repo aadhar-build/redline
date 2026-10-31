@@ -1,9 +1,11 @@
 // The redirect target after sign-in comes from the request, so it must never leave the site.
 
 import { describe, expect, it } from "vitest";
-import { safeNextPath } from "../../lib/supabase/origin.js";
+import { safeNextPath, safeRedirectUrl } from "../../lib/supabase/origin.js";
 
 const origin = "http://127.0.0.1:3101";
+// Percent-encoded separators stay inside the path; they never change the host.
+const ENCODED = ["/%5Cevil.com", "/%2F/evil.com"];
 
 describe("safeNextPath", () => {
   it("keeps a path on this site, with its query and hash", () => {
@@ -20,6 +22,12 @@ describe("safeNextPath", () => {
     "/\nevil.com",
     "/\\/evil.com",
     "\\\\evil.com",
+    "/.//evil.com",
+    "/a/..//evil.com",
+    "/./\\evil.com",
+    "/%2F/evil.com",
+    "/..//evil.com",
+    "/././/evil.com",
     "evil.com",
     "",
     null,
@@ -28,11 +36,17 @@ describe("safeNextPath", () => {
     it(`never leaves the site for ${JSON.stringify(bad)}`, () => {
       const out = safeNextPath(bad, origin);
       expect(new URL(out, origin).origin).toBe(origin);
-      if (bad !== "/%5Cevil.com") expect(out).toBe("/library");
+      expect(out.startsWith("//")).toBe(false);
+      expect(safeRedirectUrl(bad, origin).origin).toBe(origin);
+      if (!ENCODED.includes(bad)) expect(out).toBe("/library");
     });
   }
 
-  it("treats an encoded backslash as part of a path on this site", () => {
-    expect(safeNextPath("/%5Cevil.com", origin)).toBe("/%5Cevil.com");
+  it("treats an encoded slash or backslash as part of a path on this site", () => {
+    for (const p of ENCODED) expect(safeNextPath(p, origin)).toBe(p);
+  });
+
+  it("builds a full URL on this origin", () => {
+    expect(safeRedirectUrl("/library?x=1", origin).href).toBe(`${origin}/library?x=1`);
   });
 });

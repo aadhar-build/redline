@@ -84,6 +84,7 @@ beforeAll(async () => {
         },
       ],
       withheld_count: 2,
+      withheld: [{ reason: "source-not-found" }, { reason: "no-source" }],
     })
     .select("id")
     .single();
@@ -351,13 +352,34 @@ describe("what the schema stores", () => {
   it("a review keeps several Source sentences per flag, the withheld count and its Red line list", async () => {
     const { data, error } = await a.client
       .from("reviews")
-      .select("flags, withheld_count, red_lines")
+      .select("flags, withheld_count, withheld, red_lines")
       .eq("id", aRows.reviews)
       .single();
     expect(error).toBeNull();
     expect(data!.flags[0].source_sentences).toHaveLength(2);
     expect(data!.withheld_count).toBe(2);
+    expect(data!.withheld).toEqual([{ reason: "source-not-found" }, { reason: "no-source" }]);
     expect(data!.red_lines).toEqual([{ text: "A's own Red line", default_number: 1 }]);
+  });
+
+  it("a withheld entry holds a reason code and nothing else, and the count matches the entries", async () => {
+    const insert = (row: Record<string, unknown>) =>
+      a.client.from("reviews").insert({ document_id: aRows.documents, red_lines: [], ...row }).select("id");
+    for (const bad of [
+      { withheld: [{ reason: "source-not-found", title: "Model text" }], withheld_count: 1 },
+      { withheld: [{ reason: "made-up" }], withheld_count: 1 },
+      { withheld: ["source-not-found"], withheld_count: 1 },
+      { withheld: [{}], withheld_count: 1 },
+      { withheld: { reason: "no-source" }, withheld_count: 1 },
+      { withheld: [{ reason: "no-source" }], withheld_count: 2 },
+      { withheld: [], withheld_count: 1 },
+    ]) {
+      const { data, error } = await insert(bad);
+      expect(data, JSON.stringify(bad)).toBeNull();
+      expect(error?.code, JSON.stringify(bad)).toBe("23514");
+    }
+    const ok = await insert({ withheld: [{ reason: "unreadable" }], withheld_count: 1 });
+    expect(ok.error).toBeNull();
   });
 
   it("a flag without a Source sentence is refused", async () => {

@@ -15,7 +15,8 @@
 
 Notes:
 - Signed out, the paste flow still works, unsaved (the simpler choice; the existing e2e specs are unchanged).
-- Only a complete review is saved (summary shown and Risk flags read). Otherwise the document row is removed again, so "no flags" and "unreadable flags" never look alike in the library.
-- No migration: withheld reasons are not stored, so a reopened review shows the withheld count without the breakdown by reason.
+- Only a complete review is saved (summary shown and Risk flags read; settled by Fable advisor, 2026-10-31). Otherwise the document row is removed again and the Reviewer is told.
+- Migration 20261031000200 adds reviews.withheld: reason codes only ({"reason": code}, enforced by a CHECK), with withheld_count equal to its length. A reopened review shows the same withheld line as a fresh one.
+- The source kind from ticket 05 Extraction (pdf, docx, paste) is posted with the text and stored as documents.source_kind.
 - Local sign-in links return only to the site_url host (127.0.0.1), so the library e2e project runs on 127.0.0.1:3101.
 - Owner follow-up (map.md): add the Vercel preview URLs as auth redirect URLs on the hosted project.

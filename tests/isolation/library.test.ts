@@ -11,7 +11,7 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { adminClient, anonClient } from "./local-supabase";
-import { askAboutSaved, listDocuments, openSaved, saveAndReview } from "../../lib/library/library.js";
+import { askAboutSaved, listDocuments, openSaved, saveAndReview, sourceKindFrom } from "../../lib/library/library.js";
 import { createLocalFakeAdapter } from "../../lib/review/adapters/index.js";
 import { createFakeAdapter } from "../../lib/review/adapters/fake.js";
 
@@ -79,14 +79,30 @@ describe("saving a review", () => {
   });
 
   it("stores the review with its withheld count, its shown flags and the Red line list it was checked against", async () => {
-    const { data, error } = await a.from("reviews").select("summary, flags, withheld_count, red_lines").eq("document_id", savedId);
+    const { data, error } = await a.from("reviews").select("summary, flags, withheld_count, withheld, red_lines").eq("document_id", savedId);
     expect(error).toBeNull();
     expect(data).toHaveLength(1);
     expect(data![0].withheld_count).toBe(5);
     expect(data![0].withheld_count).toBe(firstReview.withheldCount);
+    expect(data![0].withheld).toEqual(firstReview.withheld);
     expect(data![0].summary).toBe(firstReview.summary.text);
     expect(data![0].flags).toHaveLength(firstReview.riskFlags.length);
     expect(data![0].red_lines).toEqual([]);
+  });
+
+  it("stores where the text came from: an uploaded PDF or DOCX, or pasted text", async () => {
+    for (const [source, expected] of [["pdf", "pdf"], ["docx", "docx"], ["paste", "pasted"], ["exe", "pasted"]]) {
+      const saved = await saveAndReview({
+        db: a,
+        text: vendorText,
+        sourceKind: sourceKindFrom(source),
+        adapter: createLocalFakeAdapter({ root }),
+      });
+      const { data } = await a.from("documents").select("source_kind").eq("id", saved.documentId).single();
+      expect(data!.source_kind).toBe(expected);
+      const reopened = await openSaved({ db: a, documentId: saved.documentId });
+      expect(reopened!.document.sourceKind).toBe(expected);
+    }
   });
 
   it("does not keep a document whose review could not be read in full", async () => {
@@ -160,6 +176,7 @@ describe("reopening a saved document", () => {
     expect(reopened!.review!.summary).toEqual(firstReview.summary);
     expect(reopened!.review!.riskFlags).toEqual(firstReview.riskFlags);
     expect(reopened!.review!.withheldCount).toBe(firstReview.withheldCount);
+    expect(reopened!.review!.withheld).toEqual(firstReview.withheld);
     const { count } = await a.from("reviews").select("id", { count: "exact", head: true }).eq("document_id", savedId);
     expect(count).toBe(1);
   });

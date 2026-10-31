@@ -8,6 +8,7 @@ import { review } from "../../lib/review/review.js";
 import { createFakeAdapter } from "../../lib/review/adapters/fake.js";
 import { createLocalFakeAdapter } from "../../lib/review/adapters/index.js";
 import { isSavable, reopenReview, toStoredReview } from "../../lib/review/saved.js";
+import { sourceKindFrom } from "../../lib/library/library.js";
 
 const root = path.resolve(__dirname, "../..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
@@ -19,12 +20,24 @@ const reviewOf = (documentText) => review({ documentText, redLines: [], adapter:
 // What a reviews row comes back as: the columns, through JSON, as Postgres jsonb returns them.
 const asRow = (review) => JSON.parse(JSON.stringify(toStoredReview(review)));
 
+describe("where the text came from", () => {
+  it("maps Extraction's source to the stored source kind, and anything else to pasted text", () => {
+    expect(sourceKindFrom("pdf")).toBe("pdf");
+    expect(sourceKindFrom("docx")).toBe("docx");
+    expect(sourceKindFrom("paste")).toBe("pasted");
+    for (const other of [undefined, null, "", "PDF", "exe", 1, {}]) expect(sourceKindFrom(other)).toBe("pasted");
+  });
+});
+
 describe("storing a review", () => {
   it("keeps the summary, each flag with the exact text of its Source sentences, and the withheld count", async () => {
     const result = await reviewOf(vendorText);
     const row = asRow(result);
     expect(row.summary).toBe(result.summary.text);
     expect(row.withheld_count).toBe(5);
+    expect(row.withheld).toEqual(result.withheld);
+    // Reason codes only: no model text goes into the stored entries.
+    for (const w of row.withheld) expect(Object.keys(w)).toEqual(["reason"]);
     expect(row.red_lines).toEqual([]);
     expect(row.flags).toHaveLength(result.riskFlags.length);
     for (const f of row.flags) {
@@ -55,6 +68,7 @@ describe("reopening a saved review", () => {
       expect(reopened.summary).toEqual(result.summary);
       expect(reopened.riskFlags).toEqual(result.riskFlags);
       expect(reopened.withheldCount).toBe(result.withheldCount);
+      expect(reopened.withheld).toEqual(result.withheld);
       expect(reopened.riskFlagsStatus).toBe("checked");
       expect(reopened.cleanResult).toBeNull();
     }
@@ -72,7 +86,7 @@ describe("reopening a saved review", () => {
     const reopened = reopenReview({ documentText: vendorText, stored: row });
     expect(reopened.riskFlags).toHaveLength(result.riskFlags.length - 1);
     expect(reopened.withheldCount).toBe(result.withheldCount + 1);
-    expect(reopened.withheld).toEqual([{ reason: "source-not-found" }]);
+    expect(reopened.withheld).toEqual([...result.withheld, { reason: "source-not-found" }]);
     for (const f of reopened.riskFlags) {
       for (const s of f.sourceSentences) expect(vendorText.slice(s.start, s.end)).toBe(s.text);
     }
@@ -89,7 +103,7 @@ describe("reopening a saved review", () => {
     expect(reopenReview.length).toBe(1);
     const reopened = reopenReview({
       documentText: "The fee is due monthly.",
-      stored: { summary: "The fee is due monthly.", flags: [], withheld_count: 0, red_lines: [] },
+      stored: { summary: "The fee is due monthly.", flags: [], withheld_count: 0, withheld: [], red_lines: [] },
     });
     expect(reopened.summary.status).toBe("shown");
   });

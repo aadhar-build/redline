@@ -1,6 +1,6 @@
 import { getModelAdapter } from "../../../lib/review/adapters/index.js";
 import { review, ReviewInputError } from "../../../lib/review/review.js";
-import { LibraryError, saveAndReview } from "../../../lib/library/library.js";
+import { LibraryError, saveAndReview, sourceKindFrom } from "../../../lib/library/library.js";
 import { currentAccount } from "../../../lib/supabase/server.js";
 
 // Server-side only. The browser posts extracted text here; it never sees or calls the model adapter.
@@ -27,7 +27,12 @@ export async function POST(request) {
   try {
     const { db, user } = await currentAccount();
     if (user) {
-      const { review: result, documentId } = await saveAndReview({ db, text: body?.text, adapter });
+      const { review: result, documentId } = await saveAndReview({
+        db,
+        text: body?.text,
+        sourceKind: sourceKindFrom(body?.source),
+        adapter,
+      });
       return json({ review: result, documentId, saved: documentId ? "saved" : "incomplete" }, 200);
     }
     const result = await review({ documentText: body?.text, redLines: [], adapter });

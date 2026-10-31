@@ -11,6 +11,14 @@ import {
   PASTED_LEASE_01_ALTERED,
   PASTED_LEASE_01_FOUND,
 } from "../../fixtures/contracts/pasted-lease-01.js";
+import {
+  DOCX_SHAPED_01,
+  DOCX_SHAPED_01_FOUND,
+  DOCX_SHAPED_01_WITHHELD,
+  PDF_SHAPED_01,
+  PDF_SHAPED_01_FOUND,
+  PDF_SHAPED_01_WITHHELD,
+} from "../../fixtures/contracts/extracted-shapes-01.js";
 
 const root = path.resolve(__dirname, "../..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
@@ -172,6 +180,40 @@ describe("Review seam: the Source sentence check on pasted text", () => {
     const result = await run(PASTED_LEASE_01, [flag(["Every name in this document is made up for testing Redline."])]);
     expect(result.withheldCount).toBe(0);
   });
+});
+
+describe("Review seam: the matching rule on PDF- and DOCX-shaped text (ticket 14)", () => {
+  const sets = [
+    ["PDF", PDF_SHAPED_01, PDF_SHAPED_01_FOUND, PDF_SHAPED_01_WITHHELD],
+    ["DOCX", DOCX_SHAPED_01, DOCX_SHAPED_01_FOUND, DOCX_SHAPED_01_WITHHELD],
+  ];
+
+  for (const [kind, doc, foundSet, withheldSet] of sets) {
+    it(`${kind}: shows every flag whose quote the rule finds, each as a span of the stored text`, async () => {
+      const quotes = Object.values(foundSet);
+      const result = await run(doc, quotes.map((q) => flag([q])));
+      expect(result.withheldCount).toBe(0);
+      expect(result.riskFlags).toHaveLength(quotes.length);
+      expectEverySourceInDocument(result, doc);
+    });
+
+    it(`${kind}: withholds every altered or invented quote and counts each one`, async () => {
+      const quotes = Object.values(withheldSet);
+      const result = await run(doc, quotes.map((q) => flag([q])));
+      expect(result.riskFlags).toEqual([]);
+      expect(result.withheldCount).toBe(quotes.length);
+      expect(result.withheld.every((w) => w.reason === "source-not-found")).toBe(true);
+    });
+
+    it(`${kind}: shows only the good flags when good and altered quotes arrive together`, async () => {
+      const good = Object.values(foundSet);
+      const bad = Object.values(withheldSet);
+      const result = await run(doc, [...bad, ...good].map((q) => flag([q])));
+      expect(result.riskFlags).toHaveLength(good.length);
+      expect(result.withheldCount).toBe(bad.length);
+      expectEverySourceInDocument(result, doc);
+    });
+  }
 });
 
 describe("Review seam: flags the model got wrong", () => {

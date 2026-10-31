@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requestOrigin, safeNextPath } from "../../../lib/supabase/origin.js";
+import { requestOrigin, safeRedirectUrl } from "../../../lib/supabase/origin.js";
 import { supabaseForRequest } from "../../../lib/supabase/server.js";
 
 // Where the emailed sign-in link lands. It swaps the one-time code for a session (stored in cookies by
@@ -11,11 +11,11 @@ export async function GET(request) {
   const url = new URL(request.url);
   const origin = requestOrigin(request);
   const code = url.searchParams.get("code");
-  const next = safeNextPath(url.searchParams.get("next"), origin);
+  const next = safeRedirectUrl(url.searchParams.get("next"), origin);
   const db = await supabaseForRequest();
   if (db && code) {
     const { error } = await db.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(new URL(next, origin));
+    if (!error) return NextResponse.redirect(next);
   }
   return NextResponse.redirect(new URL("/sign-in?link=failed", origin));
 }
