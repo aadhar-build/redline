@@ -62,3 +62,7 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
     - Signed in, each Change saves the document again as a new library entry. Should Change instead replace the review on the same document?
     - The Owner chosen and the count of dropped judgments are not stored, so a reopened review shows neither. Store them, which needs a migration, or leave them out?
     - Should the dropped-judgment count be shown to the Reviewer at all?
+
+## Open (from ticket 24 part 1, 2026-10-31)
+
+25. **"NOW IT IS AGREED THAT:" against ruling 21 A.** Ruling 21 lists "NOW IT IS AGREED THAT:\n…" as withheld, but its rule A reads that line as a heading: five capitalised words, no operative word, a trailing ":". So a quote starting at clause 1 after it is shown (when the next line starts with a capital). Built as A is written; the test is skipped. Options: (a) add "that" to the operative words (it would also block title-case headings containing "That"); (b) require a heading line ending ":" to have no formula verb such as AGREED; (c) drop the case. None of the six sample texts has this line; T01 has "BY AND BETWEEN:" and T01 and T05 have "WHEREAS:", which A also reads as headings.
