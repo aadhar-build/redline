@@ -1,0 +1,92 @@
+{
+  "_note": "Scripted Risk flags for vendor-agreement-01. Listed out of document order on purpose. The first six quote the document exactly and are shown. The last five must be withheld: ninety changed to sixty, an invented sentence, two sentences with one invented, two clauses spliced with an ellipsis, and a sentence cut off before its end.",
+  "riskFlags": [
+    {
+      "severity": "know-this",
+      "title": "Late payment interest",
+      "says": "Any amount not paid on time carries interest at 2% a month.",
+      "judgment": null,
+      "sourceSentences": ["Customer will pay interest at 2% per month on any amount not paid on time."]
+    },
+    {
+      "severity": "dont-sign-as-written",
+      "title": "Paying out the rest of the term to leave early",
+      "says": "If Tulsi Tiffin House ends the agreement before a term is over, it pays the monthly fee for every month left in that term.",
+      "judgment": "Paying out the whole remaining term is a larger exit cost than a cleaning contract usually carries.",
+      "sourceSentences": [
+        "If Customer ends this Agreement before the end of a term, Customer will pay Vendor the monthly fee for every month left in that term."
+      ]
+    },
+    {
+      "severity": "negotiate",
+      "title": "Indemnity for the condition of the premises",
+      "says": "Tulsi Tiffin House covers Kesari against all claims arising from the condition of its premises.",
+      "judgment": null,
+      "sourceSentences": ["Customer will indemnify Vendor against all claims arising from the condition of Customer's premises."]
+    },
+    {
+      "severity": "negotiate",
+      "title": "Two-year renewal unless notice is given ninety days ahead",
+      "says": "The agreement runs for two years and then renews for two more unless Tulsi Tiffin House gives written notice at least ninety days before the term ends.",
+      "judgment": null,
+      "sourceSentences": [
+        "This Agreement starts on 1 December 2026 and runs for two years.",
+        "It renews automatically for further two-year terms unless Customer gives written notice at least ninety days before the end of a term."
+      ]
+    },
+    {
+      "severity": "dont-sign-as-written",
+      "title": "Liability capped at one month's fee",
+      "says": "Kesari's total liability under the agreement is capped at one month's fee.",
+      "judgment": "A cap this low is not standard for a contract that runs two years.",
+      "sourceSentences": ["Vendor's total liability under this Agreement will not exceed one month's fee."]
+    },
+    {
+      "severity": "know-this",
+      "title": "Fee rises at each renewal",
+      "says": "Kesari can raise the monthly fee by up to 10% at each renewal.",
+      "judgment": null,
+      "sourceSentences": ["Vendor may increase the monthly fee by up to 10% at each renewal."]
+    },
+    {
+      "severity": "negotiate",
+      "title": "Sixty-day renewal notice",
+      "says": "Tulsi Tiffin House has to give notice sixty days before the term ends.",
+      "judgment": null,
+      "sourceSentences": [
+        "It renews automatically for further two-year terms unless Customer gives written notice at least sixty days before the end of a term."
+      ]
+    },
+    {
+      "severity": "dont-sign-as-written",
+      "title": "Personal guarantee",
+      "says": "Tulsi Tiffin House's partners personally guarantee every payment.",
+      "judgment": null,
+      "sourceSentences": ["Customer personally guarantees all payments due under this Agreement."]
+    },
+    {
+      "severity": "negotiate",
+      "title": "Services stop over an unpaid invoice",
+      "says": "Each invoice is due in seven days, and Kesari stops cleaning while one is unpaid.",
+      "judgment": null,
+      "sourceSentences": [
+        "Customer will pay each invoice within seven days of the invoice date.",
+        "Vendor may suspend the Services if any invoice is unpaid."
+      ]
+    },
+    {
+      "severity": "know-this",
+      "title": "Fee and increases",
+      "says": "The fee is Rs. 18,000 a month and rises by up to 10% at each renewal.",
+      "judgment": null,
+      "sourceSentences": ["Customer will pay Vendor Rs. 18,000 per month ... at each renewal."]
+    },
+    {
+      "severity": "know-this",
+      "title": "Automatic renewal",
+      "says": "The agreement renews by itself for further two-year terms.",
+      "judgment": null,
+      "sourceSentences": ["It renews automatically for further two-year terms"]
+    }
+  ]
+}

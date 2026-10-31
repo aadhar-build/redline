@@ -26,12 +26,14 @@ describe("Review seam: summary", () => {
   });
 
   it("returns the rest of the review shape, uncomputed, and never claims a Clean result", async () => {
+    // This reply carries a summary and no Risk flags list, so the flags are unreadable, not zero.
     const result = await review({
       documentText: fixtureText,
       redLines: [],
       adapter: createFakeAdapter({ responses: [fixtureReply] }),
     });
 
+    expect(result.riskFlagsStatus).toBe("unreadable-output");
     expect(result.riskFlags).toEqual([]);
     expect(result.outsideReferences).toEqual([]);
     expect(result.ambiguousClauses).toEqual([]);
