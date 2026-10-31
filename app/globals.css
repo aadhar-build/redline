@@ -505,6 +505,15 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .saved-fields dt { font: 600 0.75rem / 1.2 var(--font-label-stack); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-2); }
 .saved-fields dd { margin: 0.2rem 0 0; font-variant-numeric: tabular-nums; }
 .saved-grid { margin-top: 2rem; max-width: 60rem; }
+/* A saved review checked against an older Red line list (ticket 15). */
+.older-list-tag {
+  display: block; margin-top: 0.3rem; width: fit-content;
+  font: 600 0.6875rem / 1.2 var(--font-label-stack); letter-spacing: 0.06em; text-transform: uppercase;
+  /* Neutral on purpose: red, amber and blue mark Severity (DESIGN.md). */
+  color: var(--ink-2); border: 1px solid var(--rule); padding: 0.15rem 0.35rem;
+}
+.older-list { margin-top: 1.25rem; max-width: 46rem; display: grid; gap: 0.85rem; justify-items: start; }
+.older-list .form-error { margin: 0; }
 @media (max-width: 40rem) {
   .library-index .ref-col { display: none; }
 }
