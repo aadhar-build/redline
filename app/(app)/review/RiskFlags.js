@@ -73,6 +73,12 @@ function FlagItem({ flag, kind, isOpen, onToggle }) {
             <OwnText part={flag.says} />
           </p>
         )}
+        {flag.redLineMatch ? (
+          <p className="basis basis-redline" data-testid="flag-red-line">
+            <span className="basis-label">{COPY.flags.redLineMatchLabel}</span>
+            {COPY.flags.redLineMatched(flag.redLineMatch.number, flag.redLineMatch.name)}
+          </p>
+        ) : null}
         {flag.judgment ? (
           <p className="basis basis-judgment" data-testid="flag-judgment">
             <JudgmentLabel />
@@ -87,6 +93,31 @@ function FlagItem({ flag, kind, isOpen, onToggle }) {
         ))}
       </div>
     </li>
+  );
+}
+
+// The Red lines this review was checked against, each with its basis, as the server listed them.
+function RedLinesChecked({ redLines }) {
+  if (redLines.length === 0) return null;
+  return (
+    <div className="red-lines-checked" data-testid="red-lines-checked">
+      <h3 className="group-title">{COPY.redLines.title}</h3>
+      <p className="basis">{COPY.redLines.lede}</p>
+      <ol className="red-lines">
+        {redLines.map((r) => (
+          <li key={r.id} className="red-line" data-testid="red-line-checked" data-red-line={r.id}>
+            <span className="red-line-name"><span className="flag-no">{r.number}</span> {r.name}</span>
+            {r.catches ? <span className="red-line-catches">{r.catches}</span> : null}
+            {r.basis ? (
+              <span className="basis red-line-basis" data-testid="red-line-basis">
+                <span className="basis-label">{COPY.redLines.basisLabel}</span>
+                <strong data-testid="red-line-basis-label">{r.basis.label}.</strong> {r.basis.note}
+              </span>
+            ) : null}
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
 
@@ -166,6 +197,8 @@ export default function RiskFlags({ review }) {
           )}
 
           {anyMarked && <p className="marked-note flags-note" data-testid="flags-marked-note">{COPY.markedNote}</p>}
+
+          <RedLinesChecked redLines={review.redLinesChecked ?? []} />
         </>
       )}
     </section>

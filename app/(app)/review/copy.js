@@ -65,9 +65,16 @@ export const COPY = {
     sourceCaption: "Source sentence",
     sourceCaptionOf: (i, n) => `Source sentence ${i} of ${n}`,
     none:
-      "No Risk flags came back for this contract. This isn't a Clean result, because Redline doesn't check your Red lines or Outside references yet.",
+      "No Risk flags came back for this contract, and no clause matched a Red line. This isn't a Clean result, because Redline doesn't check Outside references yet.",
+    redLineMatchLabel: "Red line match",
+    redLineMatched: (number, name) => `Red line ${number}: ${name}`,
     unreadable: "Redline couldn't read the Risk flags it got back, so it isn't showing any. Try again.",
     emptyGroup: "None at this level.",
+  },
+  redLines: {
+    title: "Red lines checked",
+    lede: "Redline checked this contract against each of these. A clause that matches one is always Don't sign as written.",
+    basisLabel: "Basis",
   },
   errors: {
     "empty-document": "Paste the contract text first.",

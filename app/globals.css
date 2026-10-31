@@ -459,3 +459,13 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .file-loaded { font-size: 0.875rem; color: var(--ink); border-left: 3px solid var(--blue); padding: 0.2rem 0 0.2rem 0.65rem; margin-bottom: 0.5rem; }
 .link-button { font: inherit; color: var(--blue); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
 .paste-field[readonly] { background: var(--sheet); }
+
+/* Red lines checked (ticket 06): the list a review was checked against, each with its basis. */
+.red-lines-checked { border-top: 1.5px solid var(--rule-strong); padding: 0 1rem 1rem; display: grid; gap: 0.5rem; }
+.red-lines-checked .group-title { padding-left: 0; padding-right: 0; }
+.red-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; }
+.red-line { display: grid; gap: 0.2rem; padding: 0.5rem 0.75rem; border: 1px solid var(--rule); background: var(--sheet); }
+.red-line-name { font-weight: 600; }
+.red-line-name .flag-no { margin-right: 0.35rem; }
+.red-line-catches { font-size: 0.9375rem; }
+.red-line-basis .basis-label { color: var(--ink); }
