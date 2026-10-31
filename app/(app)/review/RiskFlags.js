@@ -86,6 +86,22 @@ function FlagItem({ flag, kind, isOpen, onToggle }) {
             <OwnText part={flag.judgment} />
           </p>
         ) : null}
+        {flag.readings ? (
+          <div className="basis readings" data-testid="flag-readings">
+            <p>
+              <span className="basis-label" data-testid="ambiguous-label">{COPY.ambiguous.label}</span>
+              {COPY.ambiguous.lede}
+            </p>
+            <ul className="reading-list">
+              {flag.readings.map((r, i) => (
+                <li key={i} data-testid="flag-reading">
+                  <span className="basis-label">{COPY.ambiguous.readingCaption(i + 1, flag.readings.length)}</span>
+                  <OwnText part={r} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         {flag.sourceSentences.map((s, i) => (
           <figure className="source" key={s.start}>
             <figcaption>{total === 1 ? COPY.flags.sourceCaption : COPY.flags.sourceCaptionOf(i + 1, total)}</figcaption>
@@ -193,7 +209,7 @@ export default function RiskFlags({ review, above = null }) {
   const unreadable = review.riskFlagsStatus !== "checked";
   // Strictly true: anything else, including a missing value, is not a Clean result.
   const clean = !unreadable && review.cleanResult === true;
-  const marks = flags.flatMap((f) => [f.title, f.says, f.judgment].flatMap((p) => p?.marked ?? []));
+  const marks = flags.flatMap((f) => [f.title, f.says, f.judgment, ...(f.readings ?? [])].flatMap((p) => p?.marked ?? []));
   const anyMarked = marks.some((m) => !isNumberMark(m));
   const anyNumber = marks.some(isNumberMark);
   // Counter-offer marks get their own notes: a changed figure there can be a legitimate tightening.
