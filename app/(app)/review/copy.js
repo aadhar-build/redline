@@ -160,6 +160,15 @@ export const COPY = {
     // Under a Clean result whose Outside references the Reviewer marked as reviewed.
     outsideReviewed:
       "You marked each Outside reference below as reviewed. That's your own statement. Redline hasn't read the documents they point to.",
+    outsideMarkedSome:
+      "Redline reviewed the documents you added together with this contract. You marked the other Outside references below as reviewed yourself, and Redline hasn't read the documents they point to.",
+    outsideAdded: "You added the document for each Outside reference below, and Redline reviewed them together with this contract.",
+    // Which note goes with a Clean result: the Reviewer's marks, the added documents, or both.
+    outsideNote(references) {
+      const added = references.filter((r) => r.referencedDocument).length;
+      if (added === 0) return this.outsideReviewed;
+      return added === references.length ? this.outsideAdded : this.outsideMarkedSome;
+    },
   },
   // Outside references (ticket 13, ADR 0007). Marking one as reviewed is the Reviewer's statement, never
   // something Redline checked, and every line here says so.
@@ -188,6 +197,30 @@ export const COPY = {
       "signed-out": "Your session has ended. Sign in again to mark this as reviewed.",
       failed: "Redline couldn't save that. Try again.",
     },
+    // Ticket 18: adding the document a reference brings in.
+    add: {
+      open: "Add the referenced document",
+      hint: "Upload the PDF or Word file, or paste its text. Redline reads the file here in your browser and sends only the text, then reviews it together with this contract.",
+      fileLabel: "File",
+      pasteLabel: "Or paste its text",
+      submit: "Review them together",
+      busy: "Reviewing both…",
+      errors: {
+        "already-added": "You've already added a document for this reference.",
+        "not-found": "Redline couldn't find this reference on your saved review. Reload the page and try again.",
+        "signed-out": "Your session has ended. Sign in again to add the document.",
+        incomplete: "Redline couldn't finish reviewing the two together, so it didn't keep the document. Try again.",
+        unavailable: "Reviewing isn't available on this site, so you can't add the document here.",
+        failed: "Redline couldn't review the two together. Try again.",
+      },
+    },
+    addedTag: "Document added",
+    added: (title) =>
+      `You added ${title ? `"${title}"` : "the referenced document"}. Redline reviewed it together with this contract. Any flags from it are listed with the others, each quoting its own sentence.`,
+    fromReferenced: (title) => (title ? `From "${title}", the document you added` : "From the document you added"),
+    inReferencedTitle: "References in the documents you added",
+    inReferencedLede:
+      "These sentences in a document you added bring in yet another document. Redline hasn't read that one, so this contract can't get a Clean result.",
   },
   // Ticket 20: Copy all as text. Marked words are wrapped in square brackets in the copied text.
   copyAll: {

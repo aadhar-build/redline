@@ -446,7 +446,7 @@ describe("what the schema stores", () => {
       .filter(Boolean);
 
     const tables = new Set(rows.map((r) => r.split(".")[0]));
-    expect([...tables].sort()).toEqual(["account_settings", "documents", "red_lines", "reviews"]);
+    expect([...tables].sort()).toEqual(["account_settings", "documents", "red_lines", "referenced_documents", "reviews"]);
 
     for (const row of rows) {
       const [, rest] = row.split(".");
@@ -473,6 +473,7 @@ describe("what the schema stores", () => {
       "account_settings:true:true",
       "documents:true:true",
       "red_lines:true:true",
+      "referenced_documents:true:true",
       "reviews:true:true",
     ]);
 

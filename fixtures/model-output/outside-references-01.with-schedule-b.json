@@ -1,0 +1,16 @@
+{
+  "summary": "Brightline Software Private Limited provides software services to Kaveri Textiles for twelve months from the date both parties sign. The services and user seats are set out in a Statement of Work and an Order Form, and the acceptable use policy is at a web address. Schedule B sets the service levels: the services are available for 95 percent of each calendar month, the only remedy for a miss is a credit of two percent of that month's fee, and the Supplier can suspend the services for maintenance without notice. The Customer pays the fees in Schedule A within thirty days of each invoice.",
+  "riskFlags": [
+    {
+      "document": "R1",
+      "severity": "negotiate",
+      "title": "Maintenance suspension without notice",
+      "says": "The Supplier can suspend the services for maintenance at any time without notice.",
+      "judgment": null,
+      "sourceSentences": ["3. The Supplier can suspend the services for maintenance at any time without notice."],
+      "redLine": null,
+      "readings": null,
+      "counterOffer": "The Supplier can suspend the services for maintenance only after giving the Customer written notice."
+    }
+  ]
+}
