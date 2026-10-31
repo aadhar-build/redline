@@ -5,6 +5,7 @@ import { looksEnglish } from "../../lib/extraction/language.js";
 import { pageNeedsOcr, summariseOperators } from "../../lib/extraction/pdf-pages.js";
 import { createNumberer, formatNumber } from "../../lib/extraction/docx-numbering.js";
 import { pageList, COPY } from "../../app/(app)/review/copy.js";
+import { MAX_FILE_BYTES } from "../../lib/extraction/result.js";
 import { hiddenOcrPage, makePdf, scanPage, textPage, wrap } from "../support/make-pdf.mjs";
 
 const root = path.resolve(import.meta.dirname, "../..");
@@ -138,11 +139,21 @@ describe("Word list numbering", () => {
 });
 
 describe("scanned-page copy", () => {
-  it("names the pages", () => {
+  it("names the pages, with ranges for long runs", () => {
     expect(pageList([3])).toBe("Page 3");
     expect(pageList([2, 5])).toBe("Pages 2 and 5");
     expect(pageList([1, 2, 4])).toBe("Pages 1, 2 and 4");
+    expect(pageList([1, 2, 3])).toBe("Pages 1 to 3");
+    expect(pageList([2, 5, 6, 7, 8, 12])).toBe("Pages 2, 5 to 8 and 12");
+  });
+
+  it("states the same file size limit the code applies", () => {
+    expect(COPY.errors["too-large"]).toContain(`${MAX_FILE_BYTES / 1024 / 1024} MB`);
+  });
+
+  it("builds the scanned-pages message", () => {
     expect(COPY.scannedPages([3])).toMatch(/^Page 3 of this file is scanned/);
     expect(COPY.scannedPages([1, 2])).toMatch(/^Pages 1 and 2 of this file are scanned/);
+    expect(COPY.scannedPages(Array.from({ length: 304 }, (_, i) => i + 1))).toMatch(/^Pages 1 to 304 of this file are scanned/);
   });
 });

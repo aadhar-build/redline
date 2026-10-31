@@ -1,10 +1,19 @@
 // Every string the Reviewer reads on the paste-and-summarise screen. Run through the humanizer skill
 // before commit (CLAUDE.md). Safe to import from client code: it holds text only.
 
-// "Page 3", "Pages 2 and 5", "Pages 1, 2 and 4".
+// "Page 3", "Pages 2 and 5", "Pages 1, 2 and 4", "Pages 1 to 40 and 52". Runs of three or more
+// consecutive pages become a range, so a long scan does not produce a list of hundreds of numbers.
 export function pageList(pages) {
-  if (pages.length === 1) return `Page ${pages[0]}`;
-  return `Pages ${pages.slice(0, -1).join(", ")} and ${pages[pages.length - 1]}`;
+  const parts = [];
+  for (let i = 0; i < pages.length; ) {
+    let j = i;
+    while (j + 1 < pages.length && pages[j + 1] === pages[j] + 1) j++;
+    if (j - i >= 2) parts.push(`${pages[i]} to ${pages[j]}`);
+    else for (let k = i; k <= j; k++) parts.push(String(pages[k]));
+    i = j + 1;
+  }
+  if (pages.length === 1) return `Page ${parts[0]}`;
+  return parts.length === 1 ? `Pages ${parts[0]}` : `Pages ${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}`;
 }
 
 export const COPY = {
@@ -18,6 +27,7 @@ export const COPY = {
   clearFile: "Remove file",
   fieldLabel: "Contract text",
   fieldHint: "Paste the whole contract, or choose a file above.",
+  // pages: 1-based page numbers, at least one.
   // pages: 1-based page numbers, at least one.
   scannedPages: (pages) =>
     `${pageList(pages)} of this file ${pages.length === 1 ? "is" : "are"} scanned, and Redline can't read scanned pages yet, so it hasn't sent anything. If you have a copy where you can select the text, use that, or paste the text in.`,
@@ -37,7 +47,7 @@ export const COPY = {
       "Redline only reads contracts written in English for now, and this one doesn't look like English. It hasn't sent anything.",
     "unsupported-type":
       "Redline reads PDF and Word .docx files. If it's an older .doc file, save it as .docx in Word first, or paste the text in.",
-    "too-large": "That file is over 50 MB, too big to read here.",
+    "too-large": "That file is over 100 MB, too big to read here.",
     password: "This file is locked with a password. Save a copy without the password and use that.",
     unreadable: "Redline couldn't open this file. It might be damaged. Try saving it again, or paste the text in.",
     "no-text": "This file has no text for Redline to read.",
