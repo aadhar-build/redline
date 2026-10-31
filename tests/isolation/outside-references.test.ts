@@ -145,7 +145,7 @@ describe("Outside references on a saved review", () => {
 
     const { data: rows } = await a.client.from("reviews").select("outside_references").eq("document_id", documentId);
     expect(rows![0].outside_references).toEqual([
-      { kinds: ["statement-of-work"], label: "Statement of Work", source_sentences: lines, reviewed: false, reviewed_at: null },
+      { kinds: ["statement-of-work"], label: "Statement of Work", source_sentences: lines, reviewed: false, reviewed_at: null, referenced_document_id: null },
     ]);
 
     // B names the group by its key and by a sentence: neither reaches A's row.
@@ -171,6 +171,9 @@ describe("Outside references on a saved review", () => {
     ["no sentences", { kinds: ["order-form"], label: null, source_sentences: [], reviewed: false, reviewed_at: null }],
     ["sentences that are not a list", { kinds: ["order-form"], label: null, source_sentences: "x", reviewed: false, reviewed_at: null }],
     ["an empty sentence", { kinds: ["order-form"], label: null, source_sentences: ["x", " "], reviewed: false, reviewed_at: null }],
+    // QUESTIONS.md 36: the added document a reference sits in is an id or null, nothing else.
+    ["a text id that is not an id", { kinds: ["order-form"], label: null, source_sentences: ["x"], reviewed: false, reviewed_at: null, referenced_document_id: "R1" }],
+    ["a text id that is not text", { kinds: ["order-form"], label: null, source_sentences: ["x"], reviewed: false, reviewed_at: null, referenced_document_id: 1 }],
     ["a sentence that is not text", { kinds: ["order-form"], label: null, source_sentences: [3], reviewed: false, reviewed_at: null }],
     ["an empty label", { kinds: ["order-form"], label: " ", source_sentences: ["x"], reviewed: false, reviewed_at: null }],
     ["a label that is not text", { kinds: ["order-form"], label: 7, source_sentences: ["x"], reviewed: false, reviewed_at: null }],

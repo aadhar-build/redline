@@ -1,0 +1,24 @@
+{
+  "_note": "referenced-02 with the wrong document added (QUESTIONS.md 37): one flag from it, removed with it.",
+  "summary": "Ganga Packaging Private Limited supplies goods to Lotus Sweets each week. Schedule B sets the service levels and the Order Form sets the prices. Either party can end the agreement with thirty days' written notice. The price list says each crate costs the amount on the latest invoice.",
+  "ownerParty": "the Customer",
+  "parties": [
+    "the Supplier",
+    "the Customer"
+  ],
+  "riskFlags": [
+    {
+      "document": "R1",
+      "severity": "negotiate",
+      "title": "Prices set by invoice",
+      "says": "Each crate costs the amount on the latest invoice.",
+      "judgment": null,
+      "sourceSentences": [
+        "1. Each crate costs the amount on the latest invoice."
+      ],
+      "redLine": null,
+      "readings": null,
+      "counterOffer": "Each crate costs the amount set out in this agreement."
+    }
+  ]
+}

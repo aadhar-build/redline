@@ -29,6 +29,8 @@
 - [x] A real re-run of the six contracts after part 1, before/after recorded here.
 - [x] New copy through the humanizer.
 
+**Parties (settled by Fable advisor, 2026-10-31, medium).** Store the list: reviews.parties text[] not null default '{}' (migration 20261031003600), written by toStoredReview. On reopen keep the stored terms the stored text still uses (case-insensitive, the same partyTermIn rule as a fresh review), each once, with the Owner first if missing; older rows reopen with the Owner alone. OwnerLine is a dropdown with 2 or more parties, otherwise typed; the server's partyTermIn guard stays. Built on feature/18b-referenced-rulings: tests/unit/referenced-rulings.test.js, tests/isolation/referenced-rulings.test.ts, e2e in tests/e2e/review-history.spec.mjs.
+
 ## Comments
 
 - 2026-10-31, part 1 built (feature/24a-lead-ins-and-forms):

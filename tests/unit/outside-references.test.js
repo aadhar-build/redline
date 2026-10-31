@@ -255,7 +255,7 @@ describe("saved Outside references", () => {
   it("are stored as kinds, label, sentence texts and the Reviewer's mark only, and rebuilt on reopen", async () => {
     const r = await noFlags(doc2);
     const row = asRow(r);
-    for (const o of row.outside_references) expect(Object.keys(o).sort()).toEqual(["kinds", "label", "reviewed", "reviewed_at", "source_sentences"]);
+    for (const o of row.outside_references) expect(Object.keys(o).sort()).toEqual(["kinds", "label", "referenced_document_id", "reviewed", "reviewed_at", "source_sentences"]);
     const reopened = reopenReview({ documentText: doc2, stored: row });
     expect(reopened.outsideReferences).toEqual(r.outsideReferences);
   });
