@@ -11,7 +11,7 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 
 ## Open (2026-10-31)
 
-1. **OCR engine.** Waits on the bake-off (.scratch/spec-gaps/issues/27). Needs 3–5 real Indian contract scans from you (stamp paper, phone photos to PDF), shared locally, never committed.
+1. ~~OCR engine.~~ Chosen 2026-10-31 on your instruction: ppu-paddle-ocr (reads ₹). Validation run on public scans in progress.
 2. ~~India Market standard table.~~ Answered: statute rows only (MSMED, Contract Act s.27, Registration Act).
 3. ~~Statute citations.~~ Answered: fixed approved list.
 4. **Statute wording.** Please open India Code for the three approved sections so their exact text can be recorded (.scratch/spec-gaps/issues/30); automated fetches are blocked. No legal point is shown until then.

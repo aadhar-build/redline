@@ -24,7 +24,7 @@ Build these capabilities and stop there:
 ## Settled decisions (not open for reinterpretation)
 - Next.js, Supabase for auth and database, deployed on Vercel.
 - The uploaded file is parsed in the browser. Only the extracted text is sent and stored; the original file never leaves the browser.
-- Accept PDF, DOCX and pasted text. PDF pages with a real text layer use their embedded text; image-only pages and scans with a hidden OCR layer are read by in-browser OCR, and that text is treated like any other (ADR 0008). The OCR engine is not chosen yet; it waits on a bake-off.
+- Accept PDF, DOCX and pasted text. PDF pages with a real text layer use their embedded text; image-only pages and scans with a hidden OCR layer are read by in-browser OCR, and that text is treated like any other (ADR 0008). OCR engine: ppu-paddle-ocr with self-hosted PP-OCRv5 English models (.scratch/spec-gaps/issues/24).
 - Parsers: pdfjs-dist for PDF, JSZip with our own document.xml reader for DOCX.
 - English-language Indian small-business contracts. Other languages are rejected with a clear message. Market standard comes from a curated, dated table (ADR 0009).
 - For now, analysis runs only on the product owner's machine: server-side code calls the unmodified Claude Code CLI, signed in to the product owner's own Claude subscription, for the product owner's own testing. Never from the browser.
@@ -44,7 +44,7 @@ Build these capabilities and stop there:
 - Keep credentials in .env.local, which is gitignored. Never commit a secret: a key is public the moment it is pushed and has to be rotated.
 - The GitHub repo (aadhar-build/redline) is public. Check the staged diff for keys and tokens before every commit. Never commit a real contract or scan.
 - Work on a feature branch and push as you go. Never push to main.
-- Ask before adding a dependency. Approved so far: Vitest, @supabase/supabase-js, @supabase/ssr and the Supabase CLI, @playwright/test, pdfjs-dist, JSZip, and tesseract.js plus one PaddleOCR browser port for the OCR bake-off only.
+- Ask before adding a dependency. Approved so far: Vitest, @supabase/supabase-js, @supabase/ssr and the Supabase CLI, @playwright/test, pdfjs-dist, JSZip, and ppu-paddle-ocr (OCR, chosen 2026-10-31).
 - All copy a Reviewer reads in this product, meaning the landing page, UI labels, error messages and empty states, has to be run through the humanizer skill before it is committed. Copy that reads as though a model wrote it is a defect, not a matter of taste.
 
 ## Working while unattended
