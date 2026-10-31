@@ -103,8 +103,9 @@ describe("a referenced document", () => {
     expect(named.error).toBeNull();
     const opened = await openSaved({ db: b, documentId: bDoc.data!.id });
     expect(opened!.review!.riskFlags).toHaveLength(0);
-    expect(opened!.review!.withheld.map((w: any) => w.reason)).toContain("source-not-found");
-    expect(opened!.review!.outsideReferences.every((r: any) => r.resolved === false && r.referencedDocument === null)).toBe(true);
+    // The row lists the id but B can't read it back, so its flag is withheld as from a document no longer there.
+    expect(opened!.review!.withheld.map((w: any) => w.reason)).toEqual(["referenced-document-removed"]);
+    expect(opened!.review!.outsideReferences.every((r: any) => r.resolved === false && r.addedDocument === null && r.referencedDocument === null)).toBe(true);
     expect(JSON.stringify(opened!.review)).not.toContain("suspend the services");
   });
 

@@ -234,7 +234,7 @@ export const COPY = {
     },
     // QUESTIONS.md 39: a document added against an "as amended" reference that matches a Red line.
     addedStillBlocks: (number) =>
-      `This one still stops a Clean result. The terms can change after the contract is signed, which matches Red line ${number}, so the version you added isn't fixed.`,
+      `This one still stops a Clean result. The other side can change these terms after the contract is signed, which matches Red line ${number}.`,
     // QUESTIONS.md 36: a reference inside a document the Reviewer added.
     inAdded: (title) => (title ? `In "${title}", a document you added` : "In a document you added"),
     addedTag: "Document added",
