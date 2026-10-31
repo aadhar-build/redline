@@ -136,8 +136,34 @@ describe("editing the list", () => {
     await expect(editRedLine({ db: a.client, rowId: redLines[0].rowId, text: "x".repeat(301) })).rejects.toMatchObject({
       code: "red-line-too-long",
     });
-    const direct = await a.client.from("red_lines").insert({ text: "x".repeat(501) }).select("id");
+    // The database holds the same 300-character limit the page states.
+    const direct = await a.client.from("red_lines").insert({ text: "x".repeat(301) }).select("id");
     expect(direct.error?.code).toBe("23514");
+    const atLimit = await a.client.from("red_lines").insert({ text: "x".repeat(300) }).select("id");
+    expect(atLimit.error).toBeNull();
+  });
+
+  it("stops adding at 30, but a longer list written straight to the database still loads and is reviewed in full", async () => {
+    const a = await account("over-30");
+    await loadRedLines({ db: a.client });
+    const extra = Array.from({ length: 31 }, (_, i) => ({ text: `Written directly, Red line ${i + 1}` }));
+    const inserted = await a.client.from("red_lines").insert(extra).select("id");
+    expect(inserted.error).toBeNull();
+
+    const { redLines } = await loadRedLines({ db: await newSession(a) });
+    expect(redLines).toHaveLength(35);
+    await expect(addRedLine({ db: a.client, text: "One more" })).rejects.toMatchObject({ code: "too-many-red-lines" });
+
+    const adapter = spyAdapter();
+    const { review, documentId } = await saveAndReview({
+      db: a.client,
+      text: read("fixtures/contracts/vendor-agreement-02.txt"),
+      redLines: forReview(redLines),
+      adapter,
+    });
+    expect(documentId).toBeTruthy();
+    expect(review.redLinesChecked).toHaveLength(35);
+    expect(adapter.prompts[0]).toContain("Written directly, Red line 31.");
   });
 });
 

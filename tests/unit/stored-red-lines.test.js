@@ -43,6 +43,17 @@ describe("a stored Red line row", () => {
     expect(r.name).toBe("Any personal guarantee from Henry");
   });
 
+  it("a trailing space or full stop on a Default Red line is not a rewording, so its basis stays", () => {
+    DEFAULT_RED_LINES.forEach((d, i) => {
+      for (const text of [`${d.name} `, `${d.name}.`, ` ${d.name}. `, d.name.replace(/ /g, "  ")]) {
+        const r = redLineFromRow({ id: ROW, text, default_number: i + 1 });
+        expect(r, JSON.stringify(text)).toMatchObject({ edited: false, name: d.name, catches: d.catches, basis: { ...d.basis } });
+      }
+      // What the editor saves for the original wording, after cleaning, is the original too.
+      expect(redLineFromRow({ id: ROW, text: cleanRedLineText(`${d.name}.\n`), default_number: i + 1 }).edited).toBe(false);
+    });
+  });
+
   it("a Red line the Reviewer added gets an id of its own", () => {
     const r = redLineFromRow({ id: ROW, text: "Payment later than 30 days", default_number: null });
     expect(r).toEqual({
