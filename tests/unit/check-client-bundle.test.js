@@ -34,7 +34,7 @@ describe("Client bundle check", () => {
     ["process-spawn", "execFileSync(cmd)"],
     ["model-adapter", 'name:"redline-model-adapter:fake"'],
     ["review-module", '"redline-review:server: no model adapter configured"'],
-    ["review-prompt", '"You are summarising a contract for the person"'],
+    ["review-prompt", '"You are reviewing a contract for the person"'],
     ["anthropic-api-host", 'fetch("https://api.anthropic.com/v1/messages")'],
     ["anthropic-sdk", 'from "@anthropic-ai/sdk"'],
     ["claude-cli-call", 'x("claude", ["-p", prompt])'],
@@ -50,6 +50,14 @@ describe("Client bundle check", () => {
       "server/chunks/x.js": 'spawn("claude", ["-p", prompt])',
     });
     expect(rules(dir)).toEqual(["server:claude-cli-call"]);
+  });
+
+  it("fails when the Claude Code CLI adapter is compiled into server output", () => {
+    // The adapter is kept out of the build; if it were ever imported statically, this is what the
+    // check would see.
+    const src = fs.readFileSync(path.join(import.meta.dirname, "../../lib/review/adapters/claude-cli.mjs"), "utf8");
+    const dir = fakeBuild({ "static/chunks/a.js": harmless, "server/chunks/x.js": src });
+    expect(rules(dir)).toContain("server:claude-cli-call");
   });
 
   it("refuses to pass when there is no build to check", () => {

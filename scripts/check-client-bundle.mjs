@@ -41,7 +41,7 @@ const CLIENT_RULES = [
   { id: "process-spawn", re: /(?<![\w$])(spawn|spawnSync|execFile|execFileSync|execSync)\s*\(/ },
   { id: "model-adapter", re: /redline-model-adapter/ },
   { id: "review-module", re: /redline-review:server/ },
-  { id: "review-prompt", re: /You are summarising a contract/ },
+  { id: "review-prompt", re: /You are reviewing a contract/ },
   ...CLAUDE_CALL_RULES,
 ];
 
