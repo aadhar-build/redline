@@ -421,3 +421,6 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .summary-text { font: 400 1.0625rem / 1.65 var(--font-text-stack); max-width: 68ch; white-space: pre-line; }
 .summary-note, .summary-empty { font-size: 0.875rem; color: var(--ink-2); }
 .unavailable { margin-top: 2rem; max-width: 36rem; display: grid; gap: 0.5rem; }
+/* A word Redline's wording rules ban: wavy graphite underline on the reference wash, so it never relies on colour. */
+.banned-word { background: var(--blue-wash); color: var(--ink); text-decoration: underline wavy var(--ink); text-underline-offset: 0.2em; padding-inline: 0.1em; }
+.marked-note { font-size: 0.875rem; color: var(--ink); border-left: 3px solid var(--ink); padding: 0.2rem 0 0.2rem 0.65rem; }

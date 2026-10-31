@@ -86,3 +86,37 @@ describe("Exclusion of text reproduced word for word from the document", () => {
     expect(phrases('Clause 3 says "Vendor may increase the monthly fee".')).toEqual(["may"]);
   });
 });
+
+describe("Exemptions by context (product owner, 2026-10-31)", () => {
+  it.each([
+    "Late payment carries a fine of Rs. 5,000.",
+    "Late payment carries a fine of Rs 5,000.",
+    "A \u20B9500 fine applies to each late day.",
+    "The fine of INR 2,000 is charged monthly.",
+    "Each breach costs a 1,000 rupees fine.",
+    "Fine of \u20B9750 per missed visit.",
+  ])("allows \"fine\" next to an amount: %s", (text) => {
+    expect(phrases(text)).toEqual([]);
+  });
+
+  it.each(["Rent is due from 1 May.", "The term starts on 1st May.", "Notice is due by May 1.", "It ends in May 2026.", "Signed on May, 2026."])(
+    "allows \"May\" the month: %s",
+    (text) => {
+      expect(phrases(text)).toEqual([]);
+    },
+  );
+
+  it.each([
+    ["That is fine.", ["fine"]],
+    ["The fine print says nothing about refunds.", ["fine"]],
+    ["A fine applies, of an amount the contract leaves open.", ["fine"]],
+    ["The terms are fine, and the fee is Rs. 5,000.", ["fine"]],
+    ["Customer may be charged more.", ["may"]],
+    ["May be charged more at renewal.", ["may"]],
+    ["Rent is due on may 1.", ["may"]],
+    ["Vendor may 10% raise.", ["may"]],
+    ["In May, the fee rises.", ["may"]],
+  ])("still flags near-misses: %s", (text, expected) => {
+    expect(phrases(text)).toEqual(expected);
+  });
+});

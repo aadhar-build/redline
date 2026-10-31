@@ -21,7 +21,7 @@ describe("Review seam: summary", () => {
       adapter: createFakeAdapter({ responses: [fixtureReply] }),
     });
 
-    expect(result.summary).toEqual({ status: "shown", text: fixtureSummary });
+    expect(result.summary).toEqual({ status: "shown", text: fixtureSummary, marked: [] });
     expect(findBannedWording(result.summary.text, { documentText: fixtureText })).toEqual([]);
   });
 
@@ -40,28 +40,38 @@ describe("Review seam: summary", () => {
     expect(result.redLinesChecked).toEqual([]);
   });
 
-  it("withholds a summary that uses a hedge word in Redline's own words", async () => {
+  it("shows a summary that uses a hedge word in Redline's own words, with the word marked", async () => {
+    const text = "Customer may owe a large fee for leaving early.";
     const result = await review({
       documentText: fixtureText,
       redLines: [],
-      adapter: createFakeAdapter({ responses: [reply("Customer may owe a large fee for leaving early.")] }),
+      adapter: createFakeAdapter({ responses: [reply(text)] }),
     });
 
-    expect(result.summary.status).toBe("withheld");
-    expect(result.summary.reason).toBe("banned-wording");
-    expect(result.summary.bannedWording.map((h) => h.phrase)).toEqual(["may"]);
-    expect(result.summary).not.toHaveProperty("text");
+    expect(result.summary).toEqual({ status: "shown", text, marked: [{ phrase: "may", start: 9, end: 12 }] });
   });
 
-  it("withholds a summary that uses a verdict word", async () => {
+  it("marks every verdict word, in text order", async () => {
+    const text = "The payment terms are fine and it is good to sign.";
     const result = await review({
       documentText: fixtureText,
       redLines: [],
-      adapter: createFakeAdapter({ responses: [reply("The payment terms are fine and it is good to sign.")] }),
+      adapter: createFakeAdapter({ responses: [reply(text)] }),
     });
 
-    expect(result.summary.status).toBe("withheld");
-    expect(result.summary.bannedWording.map((h) => h.phrase)).toEqual(["fine", "good to sign"]);
+    expect(result.summary.marked.map((m) => text.slice(m.start, m.end))).toEqual(["fine", "good to sign"]);
+    expect(result.summary.marked.map((m) => m.phrase)).toEqual(["fine", "good to sign"]);
+  });
+
+  it("marks nothing for a fine with an amount or May the month", async () => {
+    const text = "Late delivery carries a fine of Rs. 5,000, and the term starts on 1 May 2027.";
+    const result = await review({
+      documentText: fixtureText,
+      redLines: [],
+      adapter: createFakeAdapter({ responses: [reply(text)] }),
+    });
+
+    expect(result.summary).toEqual({ status: "shown", text, marked: [] });
   });
 
   it("shows a summary whose only hedge word sits in a sentence quoted word for word from the document", async () => {
@@ -72,7 +82,7 @@ describe("Review seam: summary", () => {
       adapter: createFakeAdapter({ responses: [reply(summary)] }),
     });
 
-    expect(result.summary).toEqual({ status: "shown", text: summary });
+    expect(result.summary).toEqual({ status: "shown", text: summary, marked: [] });
   });
 
   it("withholds output that is not the expected JSON", async () => {
@@ -122,7 +132,7 @@ describe("Local fake adapter through Review", () => {
   it("summarises the pasted fixture, whatever its surrounding whitespace", async () => {
     const pasted = `\n\n  ${fixtureText.replace(/\n/g, "\r\n")}  \n`;
     const result = await review({ documentText: pasted, redLines: [], adapter: createLocalFakeAdapter({ root }) });
-    expect(result.summary).toEqual({ status: "shown", text: fixtureSummary });
+    expect(result.summary).toEqual({ status: "shown", text: fixtureSummary, marked: [] });
   });
 
   it("refuses text it has no script for instead of returning a summary written for another document", async () => {

@@ -38,7 +38,7 @@ describe("Client bundle check", () => {
     ["anthropic-api-host", 'fetch("https://api.anthropic.com/v1/messages")'],
     ["anthropic-sdk", 'from "@anthropic-ai/sdk"'],
     ["claude-cli-call", 'x("claude", ["-p", prompt])'],
-    ["fake-scripted-reply-1", '"Kesari Cleaning Services will clean Tulsi Tiffin House\'s kitchen"'],
+    ["fake-scripted-reply:vendor-agreement-01.summary.json", '"Kesari Cleaning Services will clean Tulsi Tiffin House\'s kitchen"'],
   ])("fails when %s is planted in a client bundle", (rule, planted) => {
     const dir = fakeBuild({ "static/chunks/a.js": harmless, "static/chunks/b.js": planted });
     expect(rules(dir)).toContain(`client:${rule}`);

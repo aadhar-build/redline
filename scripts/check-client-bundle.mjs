@@ -31,9 +31,9 @@ function scriptedReplies() {
   return fs
     .readdirSync(dir)
     .filter((f) => f.endsWith(".json"))
-    .map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")).summary)
-    .filter((s) => typeof s === "string" && s.length >= 40)
-    .map((s, i) => ({ id: `fake-scripted-reply-${i + 1}`, literal: s.slice(0, 40) }));
+    .map((f) => ({ f, s: JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")).summary }))
+    .filter(({ s }) => typeof s === "string" && s.length >= 40)
+    .map(({ f, s }) => ({ id: `fake-scripted-reply:${f}`, literal: s.slice(0, 40) }));
 }
 
 const CLIENT_RULES = [

@@ -10,6 +10,8 @@ export const COPY = {
   submitBusy: "Reading the contract…",
   summaryCaption: "Plain-English summary",
   summaryNote: "This only restates what the contract says. It doesn't tell you whether to sign.",
+  markedNote:
+    "Redline isn't supposed to use the highlighted words, because they hedge or pass judgment the contract doesn't back up. Check those parts against the contract.",
   emptyState: "Paste a contract and press Summarise. The summary appears here.",
   unavailableTitle: "Analysis is off on this site",
   unavailableBody:
@@ -17,8 +19,6 @@ export const COPY = {
   errors: {
     "empty-document": "Paste the contract text first.",
     "document-too-long": "That's too much text to read in one go. The limit is 200,000 characters.",
-    "banned-wording":
-      'Redline held this summary back because it used words Redline doesn\'t allow, such as "may" or "safe". Try again.',
     "unreadable-output": "Redline couldn't read the summary it got back. Try again.",
     "no-script":
       "This local setup only has a scripted summary for the sample contract in fixtures/contracts. Paste that one.",
