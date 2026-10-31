@@ -103,3 +103,7 @@ Each is built the way that claims least; numbers may need renumbering when 13b l
 ## Open (from ticket 18b, 2026-10-31)
 
 43. **An added document's own title line.** An added Order Form whose first line is "ORDER FORM" (or a Statement of Work titled "STATEMENT OF WORK") is read as a reference to an Order Form inside that document, so it blocks a Clean result until the Reviewer marks it. Schedules are exempt because their heading counts as present. Built the way that claims least: it stays a reference. Should a heading line in an added document that names the document's own kind count as present?
+
+## Open (from ticket 14c, 2026-10-31)
+
+44. **General law "for the time being in force".** Ticket 14c added "for the time being in force" to the "as amended" wordings, with the QUESTIONS 27 statute rule unchanged. On a replay of the stored T05 reply, T05's Red line 3 Outside references (Don't sign as written) went from 1 to 4. All three new ones are general-law wordings ("any law for the time being in force", "any other law for the time being in force", "applicable laws ... for the time being in force", one split across a line break). T03's "Revenue Recovery Act for the time being in force" has no year, so it is also a Red line 3 match, not Negotiate. Built as specified, which flags more, not less. Should "law" or "laws" just before the phrase, or an Act named without a year, be exempt the way a dated statute is?

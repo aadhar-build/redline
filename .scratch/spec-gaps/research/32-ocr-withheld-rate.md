@@ -52,3 +52,26 @@ OCR-only one: text PDFs with the same list style would hit the same rule. Skip (
 4. Add (a): tell the model to keep list markers and punctuation exactly as stored (+3 together with step 1).
 Expected S04 withheld rate falls from about 77% to about 10-20%. Re-measure on S04 and S01 after the change.
 Not checked against the scan images: whether the bare markers are printed that way or are brackets OCR dropped.
+
+## Re-measure after ticket 14c (2026-10-31)
+Allowances (i), (ii) and (iii) and the exact-quote prompt line built (ADR 0010 addendum, ticket 14c). Counts only.
+
+Replay of the stored replies through the new check (base 6b4867b, then branch feature/14c-boundaries-and-references):
+| Run | Withheld before | Withheld after | Shown before | Shown after |
+|---|---|---|---|---|
+| S04 rerun a | 8 | 3 | 1 | 6 |
+| S04 rerun b | 7 | 1 | 2 | 8 |
+| S04 rerun c | 9 | 2 | 3 | 10 |
+| S01 reruns a, b, c | 1, 1, 1 | 1, 1, 1 | 1, 5, 4 | 1, 5, 4 |
+| T01, T02, T03, T05, T06, T07 | 6, 0, 2, 2, 2, 1 | 6, 0, 2, 2, 2, 1 | unchanged | unchanged |
+
+S04 across the three reruns: 24 withheld before, 6 after (about 77% to 18% of flags). Rerun c counts 9 here against 10 in the table above; the earlier count was taken on an earlier code base. The text contracts do not change: none of their withheld quotes hit these three rules. The S04 Outside reference to the e-stamp provider's address is gone in every replay (bug 2).
+
+Fresh CLI run, Sonnet 5.5 through the Node seam, new prompt and check:
+| Document | Shown | Withheld | Outside references |
+|---|---|---|---|
+| S04 (stored OCR text) | 8 | 3 | 0 |
+| S01 (stored OCR text) | 4 | 1 | 0 |
+| T03 | 2 | 1 | 1 ("for the time being in force" after an Act with no year: Don't sign as written, Red line 3) |
+
+Open: QUESTIONS.md 44 (general law "for the time being in force" now matches Red line 3 on T05).
