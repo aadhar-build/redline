@@ -15,7 +15,8 @@ import { currentAccount } from "../../../lib/supabase/server.js";
 //
 // With a documentId instead of text, it re-runs a saved document (ticket 15): the stored text is
 // reviewed again against the account's current Red lines and saved as a new review, keeping the old.
-// It goes through the same guard as every other model run.
+// It goes through the same guard as every other model run. With an ownerParty too, it is Change on a
+// saved document (ticket 24): the same document is reviewed for that party and a new review saved.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -46,7 +47,7 @@ async function handle(request, adapter) {
       // the server reads it. Signed out, or another account's document, reads as not found.
       if (!user) return json({ error: "not-found" }, 404);
       const { redLines } = await loadRedLines({ db });
-      const rerun = await rerunSaved({ db, documentId: body.documentId, redLines: forReview(redLines), adapter });
+      const rerun = await rerunSaved({ db, documentId: body.documentId, redLines: forReview(redLines), adapter, ownerParty });
       if (!rerun) return json({ error: "not-found" }, 404);
       return json({ review: rerun.review, documentId: rerun.documentId, saved: rerun.saved ? "saved" : "incomplete" }, 200);
     }
@@ -59,10 +60,22 @@ async function handle(request, adapter) {
         redLines: forReview(redLines),
         adapter,
         ownerParty,
+        ocrRanges: body?.ocrRanges,
+        ocrPages: body?.ocrPages,
+        pageCount: body?.pageCount,
       });
       return json({ review: result, documentId, saved: documentId ? "saved" : "incomplete" }, 200);
     }
-    const result = await review({ documentText: body?.text, redLines: DEFAULT_RED_LINES, adapter, ownerParty });
+    const result = await review({
+      documentText: body?.text,
+      redLines: DEFAULT_RED_LINES,
+      adapter,
+      ownerParty,
+      // Where OCR read the text (ADR 0008); only a PDF's text has any.
+      ocrRanges: body?.source === "pdf" ? body?.ocrRanges : undefined,
+      ocrPages: body?.source === "pdf" ? body?.ocrPages : undefined,
+      pageCount: body?.source === "pdf" ? body?.pageCount : undefined,
+    });
     return json({ review: result, documentId: null, saved: "signed-out" }, 200);
   } catch (err) {
     if (err instanceof ReviewInputError) return json({ error: err.code }, 400);

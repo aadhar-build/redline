@@ -16,7 +16,9 @@ import {
   buildOutsideReference,
   findOutsideReferences,
   mergeIntoOutsideReferences,
+  MAX_REFERENCE_MATCHES,
   ONE_SIDED_CHANGES_ID,
+  rawReferenceMatches,
   storedWithMark,
   webAddressKey,
 } from "../../lib/review/outside-references.js";
@@ -105,15 +107,33 @@ describe("29: Default Red line 3 matches only in its original wording", () => {
   });
 });
 
-describe("27: a statute as amended is not a reference", () => {
+describe("27: a statute as amended is no Red line 3 match, and fails closed", () => {
   it.each([
     "1. The Licensee will vacate under the Public Premises (Eviction of Unauthorised Occupants) Act 1971, as amended from time to time.",
     "2. This Agreement is governed by the Indian Contract Act, 1872 (as amended from time to time).",
     "3. Each party will follow the Information Technology Rules, 2011, as amended from time to time.",
     '4. The Arbitration and Conciliation Act, 1996 (the "Act"), as amended from time to time, applies.',
     "5. The Shops and Establishments Act of 1948, as amended from time to time, applies.",
-  ])("excludes %s", (text) => {
-    expect(findOutsideReferences(text)).toEqual({ found: [], failed: 0 });
+  ])("keeps %s as a Negotiate reference without the Red line 3 match", async (text) => {
+    expect(kindsOf(text)).toEqual([["other"]]);
+    const r = await withFlags(text);
+    expect(r.outsideReferences.map((o) => [o.severity, o.redLineMatch])).toEqual([["negotiate", null]]);
+    // It still blocks a Clean result until the Reviewer marks it.
+    expect(cleanResultOf(r)).toBe(false);
+    const { reopened } = mark(text, asRow(r), text);
+    expect(cleanResultOf(reopened)).toBe(true);
+  });
+
+  it.each([
+    "1. The Customer will follow the Provider's Service Code, 2024, as amended from time to time.",
+    "2. The Customer will follow the Provider Service Code, 2024, as amended from time to time.",
+    "3. The Customer will follow the Supplier Conduct Rules 2023, as amended from time to time.",
+    "4. The Merchant will follow the Sanchay Merchant Code, 2024, as amended from time to time.",
+  ])("never exempts a Counterparty's own code: %s", async (text) => {
+    const reply = JSON.stringify({ summary: "A summary.", parties: ["Sanchay", "Merchant"], riskFlags: [] });
+    const r = await review({ documentText: text, redLines: DEFAULT_RED_LINES, adapter: createFakeAdapter({ responses: [reply] }) });
+    expect(r.outsideReferences.map((o) => [o.kinds, o.severity])).toEqual([[["as-amended"], "dont-sign-as-written"]]);
+    expect(r.outsideReferences[0].redLineMatch).toMatchObject({ id: ONE_SIDED_CHANGES_ID });
   });
 
   it.each([
@@ -128,7 +148,7 @@ describe("27: a statute as amended is not a reference", () => {
     const text = "1. The Customer will follow the Companies Act, 2013, as amended from time to time, and the Provider's rules, as amended from time to time.";
     const { found } = findOutsideReferences(text);
     expect(found).toHaveLength(1);
-    expect(found[0].kinds).toEqual(["as-amended"]);
+    expect(found[0].kinds).toEqual(["as-amended", "other"]);
   });
 });
 
@@ -175,10 +195,32 @@ describe("28: other wordings of as amended", () => {
     for (const t of [ref.title.text, ref.says.text, ref.counterOffer.text]) expect(findBannedWording(outsideQuote(t))).toEqual([]);
   });
 
-  it("the statute exclusion covers every form", () => {
-    expect(findOutsideReferences("1. The Companies Act, 2013, as updated from time to time, applies.").found).toEqual([]);
-    expect(findOutsideReferences("1. The Companies Act, 2013 as in force from time to time applies.").found).toEqual([]);
+  it("the statute rule covers every form", () => {
+    expect(kindsOf("1. The Companies Act, 2013, as updated from time to time, applies.")).toEqual([["other"]]);
+    expect(kindsOf("1. The Companies Act, 2013 as in force from time to time applies.")).toEqual([["other"]]);
   });
+
+  it("thousands of then-current occurrences stop at the cap, are withheld, and finish quickly", async () => {
+    const text = Array.from({ length: 5000 }, (_, i) => `${i + 1}. The then-current terms apply.`).join("\n");
+    const one = `1. The ${"then-current ".repeat(5000)}terms apply.`;
+    for (const t of [text, one]) {
+      // The raw matching stops at the cap and counts the rest.
+      const t0 = performance.now();
+      const raw = rawReferenceMatches(t);
+      expect(performance.now() - t0).toBeLessThan(200);
+      expect(raw).toEqual({ matched: MAX_REFERENCE_MATCHES, overflow: 5000 - MAX_REFERENCE_MATCHES });
+      // The whole pass (300 Source sentence checks at most) stays bounded too.
+      const t1 = performance.now();
+      const { found, failed } = findOutsideReferences(t);
+      expect(performance.now() - t1).toBeLessThan(1000);
+      expect(found.reduce((n, f) => n + f.sourceSentences.length, 0) + failed).toBeGreaterThanOrEqual(5000 - MAX_REFERENCE_MATCHES);
+      expect(failed).toBeGreaterThanOrEqual(5000 - MAX_REFERENCE_MATCHES);
+    }
+    const r = await withFlags(text);
+    expect(r.withheldCount).toBeGreaterThanOrEqual(5000 - MAX_REFERENCE_MATCHES);
+    expect(cleanResultOf(r)).toBe(false);
+  });
+
 });
 
 describe("30: one reference per referenced document", () => {

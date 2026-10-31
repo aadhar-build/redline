@@ -111,3 +111,45 @@ describe("reopening a saved review", () => {
     expect(reopened.summary.status).toBe("shown");
   });
 });
+
+// Ticket 24 ruling 23(b): a saved review keeps whose side it was for and how many judgments were dropped.
+describe("the Owner and dropped judgments on a saved review", () => {
+  it("stores the Owner, whether the Reviewer fixed it, and the dropped count", async () => {
+    const result = await reviewOf(vendorText);
+    const row = asRow({ ...result, ownerParty: { term: result.parties[0] ?? "the Vendor", fixed: true }, judgmentsDropped: 2 });
+    expect(row.owner_party).toBe(result.parties[0] ?? "the Vendor");
+    expect(row.owner_fixed).toBe(true);
+    expect(row.judgments_dropped).toBe(2);
+    const none = asRow({ ...result, ownerParty: null, judgmentsDropped: 0 });
+    expect(none.owner_party).toBeNull();
+    expect(none.owner_fixed).toBe(false);
+    expect(none.judgments_dropped).toBe(0);
+  });
+
+  it("reopens with the stored Owner, and the stored count plus any dropped again on reopen", async () => {
+    const term = vendorText.match(/\b(Vendor|Company|Client|Supplier|Customer)\b/)[0];
+    const row = { ...asRow(await reviewOf(vendorText)), owner_party: term, owner_fixed: true, judgments_dropped: 2 };
+    let reopened = reopenReview({ documentText: vendorText, stored: row });
+    expect(reopened.ownerParty).toEqual({ term, fixed: true });
+    expect(reopened.parties).toEqual([term]);
+    expect(reopened.judgmentsDropped).toBe(2);
+
+    // A stored judgment that now claims what is usual is dropped on reopen and counted too.
+    row.flags[0] = { ...row.flags[0], judgment: "This is market standard." };
+    reopened = reopenReview({ documentText: vendorText, stored: row });
+    expect(reopened.judgmentsDropped).toBe(3);
+  });
+
+  it("reopens a row saved before ticket 24 with no Owner and nothing dropped", async () => {
+    const { owner_party, owner_fixed, judgments_dropped, ...old } = asRow(await reviewOf(vendorText));
+    const reopened = reopenReview({ documentText: vendorText, stored: old });
+    expect(reopened.ownerParty).toBeNull();
+    expect(reopened.parties).toEqual([]);
+    expect(reopened.judgmentsDropped).toBe(0);
+  });
+
+  it("does not show a stored Owner the stored text doesn't name", async () => {
+    const row = { ...asRow(await reviewOf(vendorText)), owner_party: "the Zebra Party", owner_fixed: true };
+    expect(reopenReview({ documentText: vendorText, stored: row }).ownerParty).toBeNull();
+  });
+});

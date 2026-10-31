@@ -29,7 +29,7 @@ function OwnText({ part }) {
 function Withheld({ count, withheld }) {
   if (count === 0) return null;
   const by = (reason) => withheld.filter((w) => w.reason === reason).length;
-  const reasons = ["source-not-found", "unsupported-number", "no-source", "unreadable", "reference-not-citable"].filter((r) => by(r) > 0);
+  const reasons = ["source-not-found", "unsupported-number", "no-source", "unreadable", "unreadable-amount", "reference-not-citable"].filter((r) => by(r) > 0);
   return (
     <p className="withheld is-shown" data-testid="withheld">
       <Glyph kind="withheld" />
@@ -37,6 +37,17 @@ function Withheld({ count, withheld }) {
         <strong data-testid="withheld-count">{COPY.flags.withheldTitle(count)}</strong>{" "}
         {reasons.map((r) => COPY.flags.withheldReason[r](by(r), count)).join(" ")} {COPY.flags.withheldTail}
       </span>
+    </p>
+  );
+}
+
+// Ticket 24 ruling 23(c): judgments left out because they claimed what is usual. Hidden when none.
+function JudgmentsDropped({ count }) {
+  if (!Number.isInteger(count) || count <= 0) return null;
+  return (
+    <p className="withheld is-shown" data-testid="judgments-dropped">
+      <Glyph kind="withheld" />
+      <span>{COPY.flags.judgmentsDropped(count)}</span>
     </p>
   );
 }
@@ -266,6 +277,7 @@ export default function RiskFlags({ review, above = null, documentId = null, onR
           <p className="severity-note" data-testid="severity-note">{COPY.flags.severityNote}</p>
 
           <Withheld count={review.withheldCount ?? 0} withheld={review.withheld ?? []} />
+          <JudgmentsDropped count={review.judgmentsDropped ?? 0} />
           {(review.mergedCount ?? 0) > 0 ? (
             <p className="flags-message" data-testid="merged-count">{COPY.flags.merged(review.mergedCount)}</p>
           ) : null}

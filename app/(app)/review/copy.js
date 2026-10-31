@@ -1,28 +1,19 @@
 // Every string the Reviewer reads on the paste-and-summarise screen. Run through the humanizer skill
 // before commit (CLAUDE.md). Safe to import from client code: it holds text only.
 
-// "Page 3", "Pages 2 and 5", "Pages 1, 2 and 4", "Pages 1 to 40 and 52". Runs of three or more
-// consecutive pages become a range, so a long scan does not produce a list of hundreds of numbers.
-export function pageList(pages) {
-  const parts = [];
-  for (let i = 0; i < pages.length; ) {
-    let j = i;
-    while (j + 1 < pages.length && pages[j + 1] === pages[j] + 1) j++;
-    if (j - i >= 2) parts.push(`${pages[i]} to ${pages[j]}`);
-    else for (let k = i; k <= j; k++) parts.push(String(pages[k]));
-    i = j + 1;
-  }
-  if (pages.length === 1) return `Page ${parts[0]}`;
-  return parts.length === 1 ? `Pages ${parts[0]}` : `Pages ${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}`;
-}
-
 export const COPY = {
   pageTitle: "Upload or paste a contract",
   pageLede:
     "Choose a PDF or Word file, or paste the text. Your browser pulls the text out of the file. Redline writes a plain-English summary and flags the clauses to raise, each one next to the sentence it came from.",
   fileLabel: "Contract file",
-  fileHint: "A PDF or Word (.docx) file. Your browser reads the text out of it, and the file never leaves this browser.",
+  fileHint:
+    "A PDF or Word (.docx) file. Your browser reads the text out of it, including scanned pages, and the file never leaves this browser.",
   fileReading: "Reading the file…",
+  // While OCR reads the pages without a text layer (ADR 0008). done: pages finished, total: OCR pages.
+  ocrProgress: (done, total) =>
+    total === 1 ? "Reading the scanned page…" : `Reading scanned page ${Math.min(done + 1, total)} of ${total}…`,
+  ocrCancel: "Stop",
+  ocrCancelled: "Reading stopped. Redline hasn't sent anything.",
   fileLoaded: (name) => `Text from ${name}. Check it, then press Review.`,
   clearFile: "Remove file",
   // Shown when a Word file has hidden text (w:vanish) with a letter or digit in it (ticket 21).
@@ -45,9 +36,6 @@ export const COPY = {
   },
   fieldLabel: "Contract text",
   fieldHint: "Paste the whole contract, or choose a file above.",
-  // pages: 1-based page numbers, at least one.
-  scannedPages: (pages) =>
-    `${pageList(pages)} of this file ${pages.length === 1 ? "is" : "are"} scanned, and Redline can't read scanned pages yet, so it hasn't sent anything. If you have a copy where you can select the text, use that, or paste the text in.`,
   submit: "Review",
   submitBusy: "Reading the contract…",
   summaryCaption: "Plain-English summary",
@@ -56,9 +44,22 @@ export const COPY = {
     "Redline isn't supposed to use the highlighted words, because they hedge or pass judgment the contract doesn't back up. Check those parts against the contract.",
   // Ticket 22, ruling C(b): numbers in Redline's own text that the contract doesn't contain.
   numberNote: "The highlighted numbers aren't in the contract. Check them against the contract before you rely on them.",
-  // Ticket 22, ruling C(a).
+  // QUESTIONS 18 (decided 2026-10-31): shown on any review whose document OCR read, in whole or part.
+  // scanned: { pages, pageCount } from the review; pages or pageCount may be null (unknown).
+  scannedNote: ({ pages, pageCount }) => {
+    const tail = "Redline can misread a scan, so check any word or number you rely on against the original.";
+    if (pages == null) return `Redline read part of this document from a scan. ${tail}`;
+    if (pageCount != null && pages === pageCount) {
+      return pages === 1
+        ? `Redline read this one-page document from a scan. ${tail}`
+        : `Redline read all ${pages} pages of this document from a scan. ${tail}`;
+    }
+    if (pageCount != null) return `Redline read ${pages} of this document's ${pageCount} pages from a scan. ${tail}`;
+    return `Redline read ${pages} ${pages === 1 ? "page" : "pages"} of this document from a scan. ${tail}`;
+  },
+  // Ticket 22, ruling C(a), worded by ticket 24 ruling 22: blanks, never "an unsigned form".
   templateNote:
-    "This looks like a blank form with gaps still to fill in. Redline describes what the form provides for, not what anyone has agreed to or signed.",
+    "This document has blanks that haven't been filled in. Redline calls it signed or dated only where the document itself says so.",
   // Ticket 22, ruling E.
   owner: {
     label: "Reviewed for:",
@@ -92,6 +93,11 @@ export const COPY = {
         total === 1 ? "It came back without a Source sentence." : `${n} came back without a Source sentence.`,
       unreadable: (n, total) =>
         total === 1 ? "It came back in a form Redline couldn't read." : `${n} came back in a form Redline couldn't read.`,
+      // spec-gaps 24: a cited OCR sentence with an amount OCR misread (lib/review/unreadable-amount.js).
+      "unreadable-amount": (n, total) =>
+        total === 1
+          ? "It quoted a sentence from a scanned page where Redline couldn't make out an amount."
+          : `${n} quoted sentences from scanned pages where Redline couldn't make out an amount.`,
       "unsupported-number": (n, total) =>
         total === 1 ? "It gave a number the contract doesn't contain." : `${n} gave a number the contract doesn't contain.`,
       // Ticket 13: an Outside reference Redline found but couldn't cut into whole sentences.
@@ -106,6 +112,11 @@ export const COPY = {
         ? "1 flag merged into an Outside reference. It cited the same sentence for the same Red line, so Redline shows it once."
         : `${n} flags merged into Outside references. Each cited the same sentences for the same Red line, so Redline shows each sentence once.`,
     withheldTail: "Redline doesn't show a flag it can't trace to the contract.",
+    // Ticket 24 ruling 23(c).
+    judgmentsDropped: (n) =>
+      n === 1
+        ? "Redline left out 1 of its judgments because it said what's usual, which the contract doesn't show."
+        : `Redline left out ${n} of its judgments because they said what's usual, which the contract doesn't show.`,
     sourceCaption: "Source sentence",
     sourceCaptionOf: (i, n) => `Source sentence ${i} of ${n}`,
     // Shown only when no flags came back and the review is still not a Clean result.
@@ -193,6 +204,8 @@ export const COPY = {
     password: "This file is locked with a password. Save a copy without the password and use that.",
     unreadable: "Redline couldn't open this file. It might be damaged. Try saving it again, or paste the text in.",
     "no-text": "This file has no text for Redline to read.",
+    "ocr-failed":
+      "Redline couldn't read the scanned pages in this file, so it hasn't sent anything. Try again, or paste the text in.",
     "document-too-long": "That's too much text to read in one go. The limit is 200,000 characters.",
     "unreadable-output": "Redline couldn't read the summary it got back. Try again.",
     "no-script":

@@ -75,8 +75,15 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 
 ## Settled (from ticket 13, 2026-10-31)
 
-27. ~~**A statute "as amended from time to time" (from ticket 13's run over the sample PDFs).**~~ Settled by Fable advisor, 2026-10-31: option (b). A statute or its rules with a year, then "as amended", is skipped in every wording; no year, or the Counterparty's own rules, is still flagged (ADR 0007 addendum).
+27. ~~**A statute "as amended from time to time" (from ticket 13's run over the sample PDFs).**~~ Settled by Fable advisor, 2026-10-31: option (b), built fail-closed after the security review as option (c): a statute or its rules with a year, then "as amended", in any wording, stays an Outside reference at Negotiate without the Red line 3 match. No year, a possessive or a party term in the name keeps the match (ADR 0007 addendum).
 28. ~~**Other wordings of "as amended" (from ticket 13).**~~ Settled by Fable advisor, 2026-10-31: yes, as a bounded list of wordings (the verb synonyms, "as in force/effect", "as published by X", and "then-current"/"current version" beside a named document, terms or policy), quoted in the copy (lib/review/outside-references.js).
 29. ~~**A reworded or removed Red line 3 (from ticket 13).**~~ Settled by Fable advisor, 2026-10-31: no. Red line 3 matches only in its original wording (with its catches); reworded or removed, the reference is Negotiate and marking resolves it. The Red lines page says so.
 30. ~~**One Outside reference per sentence, every sentence (from ticket 13).**~~ Settled by Fable advisor, 2026-10-31: one reference per referenced document, with all its sentences and one mark (ADR 0007 addendum, migration 20261031003100).
 31. ~~**The same sentence flagged twice (from ticket 13).**~~ Settled by Fable advisor, 2026-10-31: merge. A model flag on the same Red line citing only the reference's sentences is dropped (not withheld, not stored) and counted in mergedCount.
+
+## Open (from ticket 24 part 1, 2026-10-31)
+
+32. ~~**"NOW IT IS AGREED THAT:" against ruling 21 A.**~~ Settled by Fable advisor, 2026-10-31: AGREED THAT and AGREE THAT join the formula openers, and a heading line ending ":" or ";" may not hold a lead-in word (that, agree(s), agreed, undertake(s), covenant(s), hereby). Built; two of its cases were settled in 35.
+33. ~~**The operative-word guard also catches plain all-caps headings (from ticket 24 part 1).**~~ Settled by Fable advisor, 2026-10-31: (a) keep the guard on every heading line; a real heading with NO or NOT cannot start a quote, and that sentence is withheld and counted.
+34. ~~**"as follows:-" is not a formula opener (from ticket 24 part 1).**~~ Settled by Fable advisor, 2026-10-31: (a) a lead-in colon may be ":" plus one dash (":-", ":–", ":—"), at start and end alike. Built.
+35. ~~**Two QUESTIONS 32 cases that conflict with built rules (from ticket 24 part 2).**~~ Settled by Fable advisor, 2026-10-31: (1) option (a), a lead-in word also disqualifies an all-caps word in rule D, so "LESSEE AGREES TO:\n(a) Pay…" is withheld; (2) as ADR 0010 says, "The Licensor…" is shown without the "1.". Built.
