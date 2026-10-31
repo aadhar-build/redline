@@ -222,6 +222,10 @@ export default function RiskFlags({ review }) {
 
           <Withheld count={review.withheldCount ?? 0} withheld={review.withheld ?? []} />
 
+          {!clean && review.cleanResultHeld === true ? (
+            <p className="flags-message" data-testid="clean-result-held">{COPY.clean.held}</p>
+          ) : null}
+
           {clean ? (
             <CleanResult review={review} flags={flags} closed={closed} toggle={toggle} />
           ) : flags.length === 0 && review.withheldCount === 0 ? (

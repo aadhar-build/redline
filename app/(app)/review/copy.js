@@ -99,6 +99,9 @@ export const COPY = {
     noRedLines: "Your Red line list was empty when Redline read this contract, so there was nothing to check it against.",
     knowThisLede: "These clauses are worth knowing about. Each one shows the sentence it came from.",
     noKnowThis: "There are no Know this flags either.",
+    // Shown while the Clean result is held back (lib/review/clean-result-gate.js) on a review that would
+    // otherwise be one.
+    held: "Redline can't check for Outside references or Ambiguous clauses yet, so it isn't giving this contract a Clean result.",
   },
   redLines: {
     title: "Red lines checked",

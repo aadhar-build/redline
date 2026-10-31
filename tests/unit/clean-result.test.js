@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { cleanResultOf, review } from "../../lib/review/review.js";
+import { CLEAN_RESULT_READY, gateCleanResult } from "../../lib/review/clean-result-gate.js";
 import { createFakeAdapter } from "../../lib/review/adapters/fake.js";
 import { createLocalFakeAdapter } from "../../lib/review/adapters/index.js";
 import { DEFAULT_RED_LINES } from "../../lib/review/red-lines.js";
@@ -37,6 +38,15 @@ async function run(riskFlags, redLines = DEFAULT_RED_LINES) {
 
 const asRow = (r) => JSON.parse(JSON.stringify(toStoredReview(r)));
 
+// What the rule decides for a review, and that the gate holds it back: while Outside references and
+// Ambiguous clauses cannot be found (tickets 13 and 07), cleanResult is always null, and
+// cleanResultHeld is true exactly when the rule would have given a Clean result.
+function expectDecided(r, decided) {
+  expect(cleanResultOf(r)).toBe(decided);
+  expect(r.cleanResult).toBeNull();
+  expect(r.cleanResultHeld).toBe(decided === true);
+}
+
 describe("Clean result content (PRD criterion 7)", () => {
   it("gives a Clean result for the clean fixture, with every Red line checked and its Know this flags", async () => {
     const result = await review({ documentText: cleanText, redLines: DEFAULT_RED_LINES, adapter: createLocalFakeAdapter({ root }) });
@@ -44,7 +54,7 @@ describe("Clean result content (PRD criterion 7)", () => {
     expect(result.withheldCount).toBe(0);
     expect(result.ambiguousClauses).toEqual([]);
     expect(result.outsideReferences).toEqual([]);
-    expect(result.cleanResult).toBe(true);
+    expectDecided(result, true);
     // Every Red line in the Review input, in order.
     expect(result.redLinesChecked.map((r) => r.id)).toEqual(DEFAULT_RED_LINES.map((r) => r.id));
     expect(result.riskFlags).toHaveLength(cleanFlags.length);
@@ -56,7 +66,7 @@ describe("Clean result content (PRD criterion 7)", () => {
 
   it("gives a Clean result when no flags come back at all", async () => {
     const result = await run([]);
-    expect(result.cleanResult).toBe(true);
+    expectDecided(result, true);
     expect(result.riskFlags).toEqual([]);
   });
 
@@ -64,21 +74,21 @@ describe("Clean result content (PRD criterion 7)", () => {
     const own = [{ id: "own-1", name: "No exclusivity" }];
     expect((await run([flag()], own)).redLinesChecked.map((r) => r.id)).toEqual(["own-1"]);
     const none = await run([flag()], []);
-    expect(none.cleanResult).toBe(true);
+    expectDecided(none, true);
     expect(none.redLinesChecked).toEqual([]);
   });
 });
 
 describe("what blocks a Clean result", () => {
   it("any Don't sign as written or Negotiate flag", async () => {
-    expect((await run([flag(), flag({ severity: "negotiate" })])).cleanResult).toBe(false);
-    expect((await run([flag({ severity: "dont-sign-as-written" })])).cleanResult).toBe(false);
+    expectDecided(await run([flag(), flag({ severity: "negotiate" })]), false);
+    expectDecided(await run([flag({ severity: "dont-sign-as-written" })]), false);
   });
 
   it("a Know this flag the model tied to a Red line, because Review raises it to Don't sign as written", async () => {
     const result = await run([flag({ redLine: "default-one-sided-changes" })]);
     expect(result.riskFlags[0].severity).toBe("dont-sign-as-written");
-    expect(result.cleanResult).toBe(false);
+    expectDecided(result, false);
   });
 
   it("any withheld flag, whatever its reason or Severity", async () => {
@@ -89,18 +99,31 @@ describe("what blocks a Clean result", () => {
     ]) {
       const result = await run([flag(), bad]);
       expect(result.withheldCount).toBe(1);
-      expect(result.cleanResult).toBe(false);
+      expectDecided(result, false);
     }
   });
 
   it("Risk flags that could not be read: nothing was checked, so it is neither clean nor not", async () => {
     const result = await review({ documentText: cleanText, adapter: createFakeAdapter({ responses: ['{"summary": "A summary."}'] }) });
-    expect(result.cleanResult).toBeNull();
+    expectDecided(result, null);
   });
 
   it("the vendor agreement fixture, which has flags at every level and withheld flags", async () => {
     const result = await review({ documentText: vendorText, redLines: DEFAULT_RED_LINES, adapter: createLocalFakeAdapter({ root }) });
-    expect(result.cleanResult).toBe(false);
+    expectDecided(result, false);
+  });
+});
+
+describe("the gate on the Clean result", () => {
+  it("is shut until tickets 13 and 07 land", () => {
+    expect(CLEAN_RESULT_READY).toBe(false);
+    expect(gateCleanResult(true)).toEqual({ cleanResult: null, cleanResultHeld: true });
+    expect(gateCleanResult(false)).toEqual({ cleanResult: null, cleanResultHeld: false });
+    expect(gateCleanResult(null)).toEqual({ cleanResult: null, cleanResultHeld: false });
+  });
+
+  it("passes the rule's decision through once lifted", () => {
+    for (const v of [true, false, null]) expect(gateCleanResult(v, true)).toEqual({ cleanResult: v, cleanResultHeld: false });
   });
 });
 
@@ -138,7 +161,7 @@ describe("a reopened saved review", () => {
   it("decides the Clean result again, the same way as when it was made", async () => {
     const result = await review({ documentText: cleanText, redLines: DEFAULT_RED_LINES, adapter: createLocalFakeAdapter({ root }) });
     const reopened = reopenReview({ documentText: cleanText, stored: asRow(result) });
-    expect(reopened.cleanResult).toBe(true);
+    expectDecided(reopened, true);
     expect(reopened.redLinesChecked).toEqual(result.redLinesChecked);
     expect(reopened.riskFlags).toEqual(result.riskFlags);
   });
@@ -149,7 +172,7 @@ describe("a reopened saved review", () => {
     row.flags[0].source_sentences = [row.flags[0].source_sentences[0].replace("1%", "10%")];
     const reopened = reopenReview({ documentText: cleanText, stored: row });
     expect(reopened.withheldCount).toBe(1);
-    expect(reopened.cleanResult).toBe(false);
+    expectDecided(reopened, false);
   });
 });
 

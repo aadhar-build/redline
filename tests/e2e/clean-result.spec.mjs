@@ -1,5 +1,9 @@
 // The Clean result through the interface (ticket 11, ADR 0006). Signed out, the review runs against the
-// Default Red lines, so a Clean result lists all four.
+// Default Red lines.
+//
+// The Clean result is held back until tickets 13 and 07 land (lib/review/clean-result-gate.js). A
+// review that would be one still lists every Red line checked and its Know this flags, and says in one
+// line why it isn't a Clean result.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -20,43 +24,33 @@ async function reviewText(page, text) {
   await expect(page.getByTestId("risk-flags")).toBeVisible();
 }
 
-test("a Clean result says so plainly, lists every Red line checked and shows the Know this flags beneath", async ({ page }) => {
+test("while the gate holds, a review that would be a Clean result says why it isn't one and still shows what was checked", async ({ page }) => {
   await reviewText(page, cleanText);
 
-  const clean = page.getByTestId("clean-result");
-  await expect(clean).toBeVisible();
-  await expect(page.getByTestId("clean-statement")).toHaveText(COPY.clean.statement);
+  await expect(page.getByTestId("clean-result")).toHaveCount(0);
+  await expect(page.getByTestId("clean-result-held")).toHaveText(COPY.clean.held);
 
-  const checked = clean.getByTestId("red-line-checked");
+  const checked = page.getByTestId("red-line-checked");
   await expect(checked).toHaveCount(DEFAULT_RED_LINES.length);
   expect(await checked.evaluateAll((els) => els.map((e) => e.dataset.redLine))).toEqual(DEFAULT_RED_LINES.map((r) => r.id));
+  await expect(page.getByTestId("group-know-this").getByTestId("flag-title")).toHaveText(cleanFlags.map((f) => f.title));
+  await expect(page.getByTestId("group-negotiate").getByTestId("risk-flag")).toHaveCount(0);
+  await expect(page.getByTestId("group-dont-sign-as-written").getByTestId("risk-flag")).toHaveCount(0);
 
-  // Know this flags sit beneath the statement and the Red lines; no other Severity group is shown.
-  const knowThis = clean.getByTestId("group-know-this");
-  await expect(knowThis.getByTestId("flag-title")).toHaveText(cleanFlags.map((f) => f.title));
-  await expect(page.getByTestId("group-negotiate")).toHaveCount(0);
-  await expect(page.getByTestId("group-dont-sign-as-written")).toHaveCount(0);
-  await expect(page.getByTestId("no-flags")).toHaveCount(0);
-  const testids = await clean.evaluate((el) =>
-    [...el.querySelectorAll("[data-testid=clean-statement], [data-testid=red-lines-checked], [data-testid=group-know-this]")].map(
-      (n) => n.dataset.testid,
-    ),
-  );
-  expect(testids).toEqual(["clean-statement", "red-lines-checked", "group-know-this"]);
-
-  // PRD criterion 8: the verdict-word check over the whole Clean result as shown, leaving out the
-  // Source sentences, which are the contract's own words.
-  const own = await clean.evaluate((el) => {
-    const copy = el.cloneNode(true);
-    copy.querySelectorAll("[data-testid=source-sentence], .flag-src").forEach((n) => n.remove());
-    return copy.textContent;
+  // PRD criterion 8 over Redline's own text in the pane, leaving out the Source sentences, which are
+  // the contract's own words.
+  const own = await page.getByTestId("risk-flags").evaluate((el) => {
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll("[data-testid=source-sentence], .flag-src").forEach((n) => n.remove());
+    return clone.textContent;
   });
   expect(findBannedWording(own)).toEqual([]);
-  await page.screenshot({ path: test.info().outputPath("clean-result.png"), fullPage: true });
+  await page.screenshot({ path: test.info().outputPath("clean-result-held.png"), fullPage: true });
 });
 
-test("a review with Negotiate or Don't sign as written flags is not a Clean result", async ({ page }) => {
+test("a review with Negotiate or Don't sign as written flags is not a Clean result and gets no held note", async ({ page }) => {
   await reviewText(page, read("fixtures/contracts/vendor-agreement-01.txt"));
   await expect(page.getByTestId("group-negotiate")).toBeVisible();
   await expect(page.getByTestId("clean-result")).toHaveCount(0);
+  await expect(page.getByTestId("clean-result-held")).toHaveCount(0);
 });
