@@ -446,3 +446,9 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .answer .source figcaption { display: flex; align-items: center; gap: 0.35rem; }
 .source-tick { width: 1rem; height: 0.85rem; color: var(--blue); }
 .source-quote { white-space: pre-line; }
+/* ---------- App: Risk flags under the summary ---------- */
+.results { display: grid; gap: 1.5rem; min-width: 0; }
+.flags-message, .group-empty { padding: 0.75rem 1rem 1rem; font-size: 0.9375rem; color: var(--ink-2); }
+.group-empty { padding-top: 0; font-size: 0.875rem; }
+.flags-pane .flag-title .basis-label { margin: 0 0 0 0.35rem; color: var(--ink); }
+.flags-note { margin: 0.25rem 1rem 1rem; }
