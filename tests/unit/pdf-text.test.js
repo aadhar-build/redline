@@ -117,3 +117,53 @@ describe("assemblePages rules", () => {
     expect(text).toBe("ends here\nnext page.");
   });
 });
+
+describe("rule (c): page numbers outside the bands that count up with the page", () => {
+  const line = (text, top) => ({ text, top });
+  const mid = (text) => line(text, 0.5);
+
+  it("removes 'Page n of m' read first at 0.866 on 6 pages, so a quote across the join passes", async () => {
+    // 106 points up from the bottom of a 792-point page is 0.866 from the top, outside the band.
+    const footer = (n) => ({ footer: `Page ${n} of 6`, footerAt: 106, footerFirst: true });
+    const lines = (n) =>
+      n === 2
+        ? ["2. Assignment", "The Vendor shall not assign this agreement or any of its rights under it without the"]
+        : n === 3
+          ? ["prior written consent of the Client.", `Clause ${n} applies.`]
+          : [`Clause ${n} applies.`];
+    const result = await read([1, 2, 3, 4, 5, 6].map((n) => body(lines(n), footer(n))));
+    expect(result.text).not.toMatch(/Page \d of 6/);
+    expect(
+      checkSource(
+        result.text,
+        "The Vendor shall not assign this agreement or any of its rights under it without the prior written consent of the Client.",
+      ),
+    ).toMatchObject({ found: true });
+    expect(result.removed).toEqual([1, 2, 3, 4, 5, 6].map((n) => ({ text: `Page ${n} of 6`, count: 1 })));
+  });
+
+  it("treats 'Page 9 of 37' and 'Page 10 of 37' as one footer", () => {
+    const pages = Array.from({ length: 6 }, (_, i) => [line(`Page ${i + 8} of 37`, 0.866), mid(`P${i}.`)]);
+    expect(assemblePages(pages).text).toBe("P0.\nP1.\nP2.\nP3.\nP4.\nP5.");
+  });
+
+  it("keeps a lone '12' in the middle of one page", () => {
+    expect(assemblePages([[mid("Body."), mid("12")], [mid("More.")]]).text).toBe("Body.\n12\nMore.");
+  });
+
+  it("keeps '7' and '12' at the same height on two pages", () => {
+    expect(assemblePages([[mid("7"), mid("A.")], [mid("12"), mid("B.")]]).text).toBe("7\nA.\n12\nB.");
+  });
+
+  it("keeps 'Page 3 of 9' on 3 pages when the number doesn't count up", () => {
+    const pages = [0, 1, 2].map((i) => [line("Page 3 of 9", 0.5), mid(`P${i}.`)]);
+    expect(assemblePages(pages).text.match(/Page 3 of 9/g)).toHaveLength(3);
+  });
+
+  it("keeps a footer that is on only 2 of 10 pages", () => {
+    const pages = Array.from({ length: 10 }, (_, i) => (i < 2 ? [line(`Page ${i + 1}`, 0.5), mid(`P${i}.`)] : [mid(`P${i}.`)]));
+    const { text, removed } = assemblePages(pages);
+    expect(text).toContain("Page 1\nP0.\nPage 2");
+    expect(removed).toEqual([]);
+  });
+});

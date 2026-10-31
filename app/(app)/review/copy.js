@@ -27,6 +27,22 @@ export const COPY = {
   clearFile: "Remove file",
   // Shown when a Word file has hidden text (w:vanish) with a letter or digit in it (ticket 21).
   hiddenText: "This file has text that Word hides, and Redline didn't read it.",
+  // Shown when a PDF's running headers or page numbers were left out (QUESTIONS.md 19).
+  // removed: [{ text, count }], at least one; names up to five distinct strings.
+  removedLines: (removed) => {
+    const total = removed.reduce((n, r) => n + r.count, 0);
+    const named = removed.slice(0, 5).map((r) => `"${r.text}"`);
+    const more = removed.length - named.length;
+    const list =
+      more > 0
+        ? `${named.join(", ")} and ${more} more`
+        : named.length === 1
+          ? named[0]
+          : `${named.slice(0, -1).join(", ")} and ${named[named.length - 1]}`;
+    return total === 1
+      ? `Redline left out 1 line it read as a running header or page number: ${list}.`
+      : `Redline left out ${total} lines it read as running headers or page numbers: ${list}.`;
+  },
   fieldLabel: "Contract text",
   fieldHint: "Paste the whole contract, or choose a file above.",
   // pages: 1-based page numbers, at least one.
