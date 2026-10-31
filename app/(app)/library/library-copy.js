@@ -50,5 +50,7 @@ export const LIBRARY_COPY = {
     notSaved: "Redline couldn't read part of this review, so it didn't save it. Review the contract again to save it.",
     signedOut: "You aren't signed in, so this review won't be saved.",
     signedOutLink: "Sign in to save reviews",
+    ownRedLines: "Redline checks this contract against your own Red lines.",
+    ownRedLinesLink: "Change your Red lines",
   },
 };

@@ -147,6 +147,11 @@ export default function PasteForm({ account = "off" }) {
             {paste.signedOut} <a href="/sign-in">{paste.signedOutLink}</a>
           </p>
         )}
+        {account === "signed-in" && (
+          <p className="field-hint" data-testid="own-red-lines">
+            {paste.ownRedLines} <a href="/red-lines">{paste.ownRedLinesLink}</a>
+          </p>
+        )}
       </form>
 
       {state.kind === "summary" ? (
