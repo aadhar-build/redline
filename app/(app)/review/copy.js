@@ -36,6 +36,20 @@ export const COPY = {
   summaryNote: "This only restates what the contract says. It doesn't tell you whether to sign.",
   markedNote:
     "Redline isn't supposed to use the highlighted words, because they hedge or pass judgment the contract doesn't back up. Check those parts against the contract.",
+  // Ticket 22, ruling C(b): numbers in Redline's own text that the contract doesn't contain.
+  numberNote: "The highlighted numbers aren't in the contract. Check them against the contract before you rely on them.",
+  // Ticket 22, ruling C(a).
+  templateNote:
+    "This looks like a blank form with gaps still to fill in. Redline describes what the form provides for, not what anyone has agreed to or signed.",
+  // Ticket 22, ruling E.
+  owner: {
+    label: "Reviewed for:",
+    unknown: "Redline couldn't tell which party you're on.",
+    change: "Change",
+    pickLabel: "Which party are you?",
+    submit: "Review again",
+    cancel: "Cancel",
+  },
   emptyState: "Choose a file or paste a contract, then press Review. The summary and Risk flags appear here.",
   unavailableTitle: "Analysis is off on this site",
   unavailableBody:
@@ -60,7 +74,10 @@ export const COPY = {
         total === 1 ? "It came back without a Source sentence." : `${n} came back without a Source sentence.`,
       unreadable: (n, total) =>
         total === 1 ? "It came back in a form Redline couldn't read." : `${n} came back in a form Redline couldn't read.`,
+      "unsupported-number": (n, total) =>
+        total === 1 ? "It gave a number the contract doesn't contain." : `${n} gave a number the contract doesn't contain.`,
     },
+    severityNote: "The level on each flag is Redline's judgment, not something the contract says.",
     withheldTail: "Redline doesn't show a flag it can't trace to the contract.",
     sourceCaption: "Source sentence",
     sourceCaptionOf: (i, n) => `Source sentence ${i} of ${n}`,
@@ -91,6 +108,7 @@ export const COPY = {
     "no-script":
       "This local setup only has scripted reviews for the sample contracts in fixtures/contracts. Paste one of those.",
     busy: "Redline is already reading a contract. Try again when it's done.",
+    "bad-owner-party": "Pick one of the parties named in the contract.",
     failed: "Redline couldn't finish reading the contract. Try again.",
     network: "Couldn't reach Redline. Check your connection and try again.",
     "save-failed": "Redline couldn't save the contract to your library, so it didn't review it. Try again.",

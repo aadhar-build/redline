@@ -68,7 +68,12 @@ export default function PasteForm({ account = "off", runToken = null }) {
     if (checked.kind !== "text") return setState({ kind: "error", code: checked.reason });
     // The text box is read-only while a file's text is in it, so the source is the file's or a paste.
     const source = fileName !== null && fileSource ? fileSource : "paste";
+    return runReview(text, source, null);
+  }
 
+  // Sends the text for review. ownerParty set: the Reviewer chose whose side the review is for
+  // (ticket 22, "Change"), and the same text is reviewed again with that party as the Owner.
+  async function runReview(documentText, source, ownerParty) {
     setState({ kind: "busy" });
     let res;
     let data;
@@ -76,7 +81,7 @@ export default function PasteForm({ account = "off", runToken = null }) {
       res = await fetch("/api/review", {
         method: "POST",
         headers: { "content-type": "application/json", ...(runToken ? { "x-redline-run-token": runToken } : {}) },
-        body: JSON.stringify({ text, source }),
+        body: JSON.stringify(ownerParty ? { text: documentText, source, ownerParty } : { text: documentText, source }),
       });
       data = await res.json();
     } catch {
@@ -88,7 +93,8 @@ export default function PasteForm({ account = "off", runToken = null }) {
     if (summary?.status === "shown") {
       return setState({
         kind: "summary",
-        documentText: text,
+        documentText,
+        source,
         documentId: data.documentId ?? null,
         saved: data.saved ?? "signed-out",
         review: data.review,
@@ -154,7 +160,14 @@ export default function PasteForm({ account = "off", runToken = null }) {
       </form>
 
       {state.kind === "summary" ? (
-        <ReviewResult review={state.review} documentText={state.documentText} documentId={state.documentId} runToken={runToken}>
+        <ReviewResult
+          review={state.review}
+          documentText={state.documentText}
+          documentId={state.documentId}
+          runToken={runToken}
+          busy={busy}
+          onChangeOwner={(term) => runReview(state.documentText, state.source, term)}
+        >
           {account === "signed-in" &&
             (state.documentId ? (
               <p className="saved-note" data-testid="saved-note">

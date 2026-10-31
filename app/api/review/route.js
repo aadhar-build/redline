@@ -32,6 +32,8 @@ async function handle(request, adapter) {
 
   try {
     // Until the Reviewer can edit and save Red lines (ticket 12), every review runs against the defaults.
+    // The Owner's side, when the Reviewer chose one with "Change" (ticket 22). Review checks it.
+    const ownerParty = typeof body?.ownerParty === "string" ? body.ownerParty : null;
     const { db, user } = await currentAccount();
     if (user) {
       const { review: result, documentId } = await saveAndReview({
@@ -40,10 +42,11 @@ async function handle(request, adapter) {
         sourceKind: sourceKindFrom(body?.source),
         redLines: DEFAULT_RED_LINES,
         adapter,
+        ownerParty,
       });
       return json({ review: result, documentId, saved: documentId ? "saved" : "incomplete" }, 200);
     }
-    const result = await review({ documentText: body?.text, redLines: DEFAULT_RED_LINES, adapter });
+    const result = await review({ documentText: body?.text, redLines: DEFAULT_RED_LINES, adapter, ownerParty });
     return json({ review: result, documentId: null, saved: "signed-out" }, 200);
   } catch (err) {
     if (err instanceof ReviewInputError) return json({ error: err.code }, 400);
