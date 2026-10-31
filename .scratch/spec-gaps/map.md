@@ -55,7 +55,7 @@ Every implementation ticket in `.scratch/redline-v1/issues/` has a Blocked-by li
 
 ## Not yet specified
 
-- **Open tickets now:** verifying the three statute rows against the official text (30). OCR engine chosen (24); ticket 27 validates it.
+- **Open tickets now:** none in the map; Registration Act s.49 is parked for the owner (ticket 30).
 
 - **Eval targets.** PRD.md section 4 "Numbers that are unset": targets for misses, false alarms, Clean result share, how many Know this flags is too many, and a method for catching unsupported claims. Becomes sharp once the model (ticket 05) and Market standard basis (ticket 19) are known and a first real run exists.
 - **What a "clear case" for Don't sign as written is**, outside Red line matches (ADR 0005). Probably falls out of ticket 19.
