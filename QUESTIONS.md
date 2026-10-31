@@ -21,3 +21,13 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 8. ~~What happens when a summary breaks the ban (from ticket 01).~~ Answered: show the summary with the banned words highlighted and a short note.
 9. ~~ADR 0010 span wording (from ticket 03).~~ Answered 2026-10-31: the wording was a drafting error. A quote is one or more whole consecutive sentences; ADR 0010 corrected.
 10. ~~Market standard wording in flag text (from ticket 03).~~ Answered by ADR 0009: with no table row behind it, the claim is labelled Redline's judgment, as built.
+11. **Source sentences cut at page joins (from ticket 09, a trust problem).** In the first real runs, 3 shown Source sentences end mid-sentence where one PDF page ends. Extraction joins pages with a blank line, and ADR 0010 treats a blank line as the end of a sentence. Example (T05): "...the Allottee(s) fail(s) to". Both the current check and ticket 14's accept these. Where a footer such as "Page 16 of 37" falls inside a sentence, the same join also withholds correct quotes. Options:
+    - (a) Extraction joins pages with a single line break. A footer then causes a withhold, not a fragment.
+    - (b) A blank line ends a span only when the text before it ends a sentence or is a heading line. This also covers pasted text with blank lines.
+    - (c) Extraction removes repeated page headers and footers before joining. This is riskier: it changes the stored text.
+12. **Correct quotes withheld because the clause number was left off (from ticket 09).** All 30 withheld flags across 6 real contracts quote the document word for word. 20 were withheld only because the model began the quote after an inline clause number, letter, bullet or heading ("17.2 The Licencee shall...", "• $1,500.00 shall be due..."), so the quote doesn't start on a sentence boundary. Ticket 14's rule rescues none of them. On T05 this withheld 9 of 17 flags. Options:
+    - (a) Review's prompt tells the model to start each quote at the clause number or heading that opens its line.
+    - (b) The check treats a numbering token or bullet at the start of a clause as a boundary.
+    - (c) Both.
+    - (d) Leave as is.
+13. **Which party is the Owner (from ticket 09, not blocking).** Review's prompt does not say which side the Owner is on, so the model infers it (licensee, allottee, consultant, lessee). Should the Reviewer pick the side, or should Redline ask when it's unclear?
