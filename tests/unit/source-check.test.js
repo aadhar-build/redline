@@ -223,6 +223,64 @@ describe("Source sentence check: sentence boundaries (ADR 0010 addendum, ticket 
     });
   }
 
+  describe("heading lines must start on a boundary and be followed by a capital (QUESTIONS 11)", () => {
+    const headingCases = [
+      [
+        "1, a title-case line inside a wrapped sentence cannot end a quote",
+        "The Supplier shall be liable to\nKestrel Analytics Private\nLimited unless the claim is fraudulent.",
+        "The Supplier shall be liable to Kestrel Analytics Private",
+        false,
+      ],
+      [
+        "1, the full sentence",
+        "The Supplier shall be liable to\nKestrel Analytics Private\nLimited unless the claim is fraudulent.",
+        "The Supplier shall be liable to Kestrel Analytics Private Limited unless the claim is fraudulent.",
+        true,
+      ],
+      [
+        "2, a page footer inside a sentence",
+        "The Supplier shall notify the Customer within\nPage 2 of 6\nthree months before the claim.",
+        "three months before the claim.",
+        false,
+      ],
+      [
+        "3, a page footer between sentences",
+        "The Supplier shall indemnify the Customer.\nPage 2 of 6\nThe Customer shall pay within 30 days.",
+        "The Customer shall pay within 30 days.",
+        true,
+      ],
+      [
+        "4, a heading after a number line",
+        "Services were performed.\n\n12.\nLimitation of Liability\nThe Supplier's liability is capped at the fees paid.",
+        "The Supplier's liability is capped at the fees paid.",
+        true,
+      ],
+      [
+        "5, a lowercase line after a heading",
+        "Fees are payable monthly.\n\nTermination\nfor convenience requires 30 days' notice.",
+        "for convenience requires 30 days' notice.",
+        false,
+      ],
+      [
+        "5, the heading and the line together",
+        "Fees are payable monthly.\n\nTermination\nfor convenience requires 30 days' notice.",
+        "Termination for convenience requires 30 days' notice.",
+        true,
+      ],
+      [
+        "6, a title-case line after a blank line (accepted cost)",
+        "Fees are payable monthly.\n\nKestrel Analytics Private\nLimited may terminate without notice.",
+        "Limited may terminate without notice.",
+        true,
+      ],
+    ];
+    for (const [name, doc, quote, expected] of headingCases) {
+      it(`case ${name}: ${expected ? "found" : "not found"}`, () => {
+        expect(found(doc, quote)).toBe(expected);
+      });
+    }
+  });
+
   it("does not read an ordinary lowercase word as a numbering token in a heading", () => {
     const doc = "Notice To Mumbai Civil Court did\nnot reach the Company.";
     expect(found(doc, "not reach the Company.")).toBe(false);
