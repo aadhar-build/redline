@@ -42,10 +42,17 @@ async function handle(request, adapter) {
         sourceKind: sourceKindFrom(body?.source),
         redLines: forReview(redLines),
         adapter,
+        ocrRanges: body?.ocrRanges,
       });
       return json({ review: result, documentId, saved: documentId ? "saved" : "incomplete" }, 200);
     }
-    const result = await review({ documentText: body?.text, redLines: DEFAULT_RED_LINES, adapter });
+    const result = await review({
+      documentText: body?.text,
+      redLines: DEFAULT_RED_LINES,
+      adapter,
+      // Where OCR read the text (ADR 0008); only a PDF's text has any.
+      ocrRanges: body?.source === "pdf" ? body?.ocrRanges : undefined,
+    });
     return json({ review: result, documentId: null, saved: "signed-out" }, 200);
   } catch (err) {
     if (err instanceof ReviewInputError) return json({ error: err.code }, 400);

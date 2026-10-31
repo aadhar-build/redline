@@ -27,7 +27,7 @@ function OwnText({ part }) {
 function Withheld({ count, withheld }) {
   if (count === 0) return null;
   const by = (reason) => withheld.filter((w) => w.reason === reason).length;
-  const reasons = ["source-not-found", "no-source", "unreadable"].filter((r) => by(r) > 0);
+  const reasons = ["source-not-found", "no-source", "unreadable", "unreadable-amount"].filter((r) => by(r) > 0);
   return (
     <p className="withheld is-shown" data-testid="withheld">
       <Glyph kind="withheld" />
