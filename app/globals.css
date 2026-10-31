@@ -557,3 +557,16 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .red-line-edit { display: grid; gap: 0.25rem; }
 .red-lines-removed { display: grid; gap: 0.6rem; }
 .red-line-add { max-width: 48rem; }
+
+/* ---------- Outside references (ticket 13) ---------- */
+/* Not reviewed: graphite, dashed, the Outside reference glyph's own stroke. Reviewed: the Reviewer's
+   statement, solid and graphite, never the blue tick that marks what Redline found itself. */
+.outside-state {
+  justify-self: start; margin-top: 0.2rem;
+  font: 700 0.6875rem / 1 var(--font-label-stack); letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink); border: 1.5px dashed currentColor; padding: 0.2rem 0.35rem;
+}
+.outside-state.is-reviewed { border-style: solid; }
+.outside-review { display: grid; gap: 0.5rem; justify-items: start; }
+.basis-statement .basis-label { color: var(--ink); }
+.outside-mark { display: grid; gap: 0.5rem; justify-items: start; }

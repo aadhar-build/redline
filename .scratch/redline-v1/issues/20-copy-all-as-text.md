@@ -15,3 +15,7 @@
 - [ ] Once ticket 11 has landed, copying a Clean result includes its plain statement and every Red line checked (PRD criterion 7).
 - [ ] Copying writes to the clipboard only; no request leaves the browser.
 - [ ] All copy the Reviewer reads in this ticket has been run through the humanizer skill before commit (CLAUDE.md).
+
+## Rulings from ticket 07 (Fable advisor, 2026-10-31, high confidence)
+- For an Ambiguous clause, the copied block also lists each reading after "What the clause says", in the order shown on screen, none marked as chosen, then the Counter-offer. The same labels and hedge-word marking as on screen.
+- Also in this ticket's build: add to `AMBIGUOUS_PROMPT_LINES` in lib/review/review.js that the Counter-offer's wording must be one of the shown readings, not a third construction (a person checks this, PRD criterion 17). Remove the "for now (QUESTIONS.md)" hedge on `shownSeverity`: a Red line match outranks Ambiguous (ADR 0003, spec-gaps 15). That is settled.

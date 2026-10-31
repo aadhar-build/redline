@@ -8,12 +8,12 @@
 
 **Needs approval for:** None
 
-**Status:** ready-for-agent
+**Status:** built on feature/13-outside-references, awaiting merge. Clean-result gate lifted here with ticket 07 (CLEAN_RESULT_READY = true).
 
-- [ ] Each seeded kind is raised with the referencing sentence as its Source sentence; no Clean result while any is unresolved; once all are marked reviewed a Clean result is given (PRD criterion 6, in part).
-- [ ] Marked as reviewed is saved and shown as the Reviewer's statement, not something Redline checked.
-- [ ] A network check shows no request to any referenced address.
-- [ ] All copy the Reviewer reads in this ticket has been run through the humanizer skill before commit (CLAUDE.md).
+- [x] Each seeded kind is raised with the referencing sentence as its Source sentence; no Clean result while any is unresolved; once all are marked reviewed a Clean result is given (PRD criterion 6, in part). Evidence: tests/unit/outside-references.test.js (cleanResultOf with the gate's logic: blocked until every reference is marked, an "as amended" Red line 3 match never resolves); tests/e2e/outside-references.spec.mjs. With the gate lifted, marking every reference reviewed gives a shown Clean result (outside-references-saved.spec.mjs).
+- [x] Marked as reviewed is saved and shown as the Reviewer's statement, not something Redline checked. Evidence: reviews.outside_references (migration 20261031003000), tests/isolation/outside-references.test.ts (another account can't read or write it), tests/e2e/outside-references-saved.spec.mjs (survives reload and reopen).
+- [x] A network check shows no request to any referenced address. Evidence: both e2e specs record every request.
+- [x] All copy the Reviewer reads in this ticket has been run through the humanizer skill before commit (CLAUDE.md).
 
 ## Comments
 

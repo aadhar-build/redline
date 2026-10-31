@@ -1,0 +1,8 @@
+HOSTING AGREEMENT
+
+This Hosting Agreement is made between Cloudnest Hosting LLP (the "Provider") and Sharma Clinics (the "Customer").
+
+1. The Provider will host the Customer's booking website on the plan named in the Statement of Work.
+2. The Customer will follow the Provider's hosting rules, as amended from time to time.
+3. This Agreement runs for twelve months from the date both parties sign it.
+4. Either party can end this Agreement by giving the other thirty days' written notice.

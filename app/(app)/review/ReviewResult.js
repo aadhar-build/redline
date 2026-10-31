@@ -3,6 +3,7 @@
 // A finished review: the summary, the question box under it and the Risk flags. Used right after a
 // review and when a saved one is reopened from the library, so both read the same.
 
+import { useState } from "react";
 import { COPY } from "./copy";
 import MarkedText, { isNumberMark } from "./MarkedText";
 import OwnerLine from "./OwnerLine";
@@ -26,6 +27,22 @@ export default function ReviewResult({
   busy = false,
   children,
 }) {
+  // After the Reviewer marks an Outside reference, the server sends the saved review back (ticket 13).
+  // It replaces what is shown until a new review arrives from the parent. Whose side the review is for
+  // is not stored, so that is kept from the review as it was.
+  const [marked, setMarked] = useState(null);
+  const current =
+    marked && marked.base === review ? { ...marked.review, ownerParty: review.ownerParty, parties: review.parties } : review;
+  const onReview = documentId ? (next) => setMarked({ base: review, review: next }) : null;
+  return (
+    <Result review={current} documentText={documentText} documentId={documentId} askOff={askOff} runToken={runToken}
+      onChangeOwner={onChangeOwner} busy={busy} onReview={onReview}>
+      {children}
+    </Result>
+  );
+}
+
+function Result({ review, documentText, documentId, askOff, runToken, onChangeOwner, busy, onReview, children }) {
   const summary = review.summary;
   const marked = summary.marked ?? [];
   return (
@@ -55,6 +72,8 @@ export default function ReviewResult({
       </section>
       <RiskFlags
         review={review}
+        documentId={documentId}
+        onReview={onReview}
         above={
           <OwnerLine
             key={review.ownerParty?.term ?? ""}
