@@ -33,3 +33,7 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
     - (c) Both.
     - (d) Leave as is.
 15. ~~**Which party is the Owner (from ticket 09, not blocking).** Review's prompt does not say…~~ Settled by Fable advisor, 2026-10-31: the model names the Owner party and the review shows it with a Change control (ticket 22 E).
+
+## Parked for you (2026-10-31)
+
+16. **OCR text is still shown unmarked; do you want to keep that?** (Parked by the Fable advisor: it reverses your own explicit choice, so it's yours.) The OCR validation on 5 public scans measured: ₹ read correctly 0 of 5 (as "Z" or "2", so "₹. 17,19,26,000/-" became "2. 17,19,26,000/-"); a zero read as "o" inside an amount; section numbers 38 of 44 right ("(iii)" became "(ii )", "ARTICLE 9." lost its 9); a heading dropped with no warning; the engine's confidence scores didn't flag the garbage; 1.5% character error rate after deskew, tuned on the same 8 pages it was scored on. Already decided either way: flags citing a sentence with an unreadable amount are withheld and counted. Your choice: keep OCR text unmarked as decided, or add the cheapest safeguard, a note on any document that was partly read from a scan.
