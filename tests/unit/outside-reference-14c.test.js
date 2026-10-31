@@ -96,3 +96,28 @@ describe("Bug 2: government e-stamp and registration verification addresses", ()
     expect(found[0].labels).toEqual(["www.example.com"]);
   });
 });
+
+describe("verification addresses fail closed (security review 2)", () => {
+  it("accepts only a plain path after an allowlisted host", async () => {
+    const { isVerificationAddress } = await import("../../lib/review/outside-references.js");
+    expect(isVerificationAddress("https://www.shcilestamp.com/eStamp_en/verify")).toBe(true);
+    expect(isVerificationAddress("shcilestamp.com/verify?x=1")).toBe(true);
+    expect(isVerificationAddress("shcilestamp.com/verify?x=a.b")).toBe(false);
+    expect(isVerificationAddress("shcilestamp.com/x/www.evil.example")).toBe(false);
+    expect(isVerificationAddress("shcilestamp.com/go/https://evil.example")).toBe(false);
+    expect(isVerificationAddress("shcilestamp.com/a/1.2.3.4")).toBe(false);
+    expect(isVerificationAddress("shcilestamp.com/page.html")).toBe(false);
+  });
+
+  it("checks state portals label by label and stays fast on long hosts", async () => {
+    const { isVerificationAddress } = await import("../../lib/review/outside-references.js");
+    expect(isVerificationAddress("igrs.telangana.gov.in")).toBe(true);
+    expect(isVerificationAddress("egras.raj.nic.in")).toBe(true);
+    expect(isVerificationAddress("igrs.example.com")).toBe(false);
+    expect(isVerificationAddress("gov.in")).toBe(false);
+    const long = `${"a-".repeat(5000)}.${"b.".repeat(3000)}gov.in`;
+    const t = performance.now();
+    expect(isVerificationAddress(long)).toBe(false);
+    expect(performance.now() - t).toBeLessThan(50);
+  });
+});
