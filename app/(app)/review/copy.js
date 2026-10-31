@@ -108,6 +108,11 @@ export const COPY = {
     },
     severityNote: "The level on each flag is Redline's judgment, not something the contract says.",
     withheldTail: "Redline doesn't show a flag it can't trace to the contract.",
+    // Ticket 24 ruling 23(c).
+    judgmentsDropped: (n) =>
+      n === 1
+        ? "Redline left out 1 of its judgments because it said what's usual, which the contract doesn't show."
+        : `Redline left out ${n} of its judgments because they said what's usual, which the contract doesn't show.`,
     sourceCaption: "Source sentence",
     sourceCaptionOf: (i, n) => `Source sentence ${i} of ${n}`,
     // Shown only when no flags came back and the review is still not a Clean result.
@@ -177,6 +182,14 @@ export const COPY = {
       "signed-out": "Your session has ended. Sign in again to mark this as reviewed.",
       failed: "Redline couldn't save that. Try again.",
     },
+  },
+  // Ticket 20: Copy all as text. Marked words are wrapped in square brackets in the copied text.
+  copyAll: {
+    button: "Copy all as text",
+    copied: "Copied",
+    status: "Copied the whole review.",
+    failed: "Couldn't copy the review. Select the text and copy it yourself.",
+    bracketKey: "Words in [square brackets] are highlighted on screen.",
   },
   redLines: {
     title: "Red lines checked",

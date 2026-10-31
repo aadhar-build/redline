@@ -106,7 +106,9 @@ export default function PasteForm({ account = "off", runToken = null }) {
 
   // Sends the text for review. ownerParty set: the Reviewer chose whose side the review is for
   // (ticket 22, "Change"), and the same text is reviewed again with that party as the Owner.
-  async function runReview(documentText, source, ownerParty) {
+  // documentId set (signed in, already saved): Change re-runs that saved document by id, and the server
+  // saves a new review of it instead of a new library entry (ticket 24 ruling 23(a)).
+  async function runReview(documentText, source, ownerParty, documentId = null) {
     setState({ kind: "busy" });
     let res;
     let data;
@@ -116,7 +118,7 @@ export default function PasteForm({ account = "off", runToken = null }) {
         headers: { "content-type": "application/json", ...(runToken ? { "x-redline-run-token": runToken } : {}) },
         // ocrRanges, ocrPages and pageCount go only with a file's text that OCR read; they are numbers,
         // never file content.
-        body: JSON.stringify({
+        body: JSON.stringify(documentId ? { documentId, ownerParty } : {
           text: documentText,
           source,
           ...(ownerParty ? { ownerParty } : {}),
@@ -227,10 +229,10 @@ export default function PasteForm({ account = "off", runToken = null }) {
           documentId={state.documentId}
           runToken={runToken}
           busy={busy}
-          onChangeOwner={(term) => runReview(state.documentText, state.source, term)}
+          onChangeOwner={(term) => runReview(state.documentText, state.source, term, state.documentId)}
         >
           {account === "signed-in" &&
-            (state.documentId ? (
+            (state.documentId && state.saved === "saved" ? (
               <p className="saved-note" data-testid="saved-note">
                 {paste.saved} <a href={`/library/${state.documentId}`}>{paste.savedLink}</a>
               </p>

@@ -25,9 +25,9 @@
 **24. Earlier reviews** (medium). Read-only, inside scope item 6: the saved document page lists its reviews (date, flag count, older-list tag) newest first; openSaved takes an optional reviewId that must belong to that document (RLS applies) and renders it through the same reopen path. No deleting, comparing or re-running an old review; no model call. Test: two reviews, open the older by id, it shows the older-list tag; another account → null.
 
 - [x] Part 1 tests through the source-check and Review seams.
-- [ ] Part 2 tests through the library and isolation seams, plus e2e.
+- [x] Part 2 tests through the library and isolation seams, plus e2e.
 - [x] A real re-run of the six contracts after part 1, before/after recorded here.
-- [ ] New copy through the humanizer.
+- [x] New copy through the humanizer.
 
 ## Comments
 
@@ -92,3 +92,11 @@
 
     - No flag changed on any document. T03's clause 1 after "agreed as follows:-" now has a start boundary: a probe with the clause's dot-leader blank replaced is withheld before and shown after. The model's quotes of that clause still carry the dot-leader blank, though, and are withheld as `ellipsis`, so the count doesn't move.
     - The two QUESTIONS 33 losses (T01, T05) stay withheld, as ruled. None of the six texts has an AGREED THAT or AGREE THAT opener.
+- 2026-10-31, part 2, rulings 23 and 24 built (feature/24b-owner-and-history):
+  - **Migration** 20261031003400_review_owner_and_judgments.sql adds reviews.owner_party (text null, not blank), owner_fixed (boolean not null default false) and judgments_dropped (integer not null default 0, check >= 0). The table grants and owner-only RLS on reviews cover them. It is numbered 003400 because the shared local DB already records 20261031003100 for another builder's outside_reference_groups. It went in with psql through docker exec, because `supabase migration up` refused on that unknown version.
+  - **23(a):** a signed-in Change posts {documentId, ownerParty}. The route passes ownerParty to rerunSaved, which saves a new review of the same document. Signed out, Change is unchanged. A party the document doesn't name is refused (bad-owner-party) and nothing is saved.
+  - **23(b):** toStoredReview stores the three fields. reopenReview shows "Reviewed for: X" from the stored owner, kept only if the stored text names it, and judgmentsDropped = the stored count + any dropped on reopen. Rows from before the migration reopen with no Owner and 0 dropped. Change is offered on a saved document's latest review when analysis is on. Parties aren't stored, so on reopen the Reviewer types the party, prefilled with the stored Owner, and the server checks it.
+  - **23(c):** "Redline left out N of its judgments because they said what's usual, which the contract doesn't show." This sits under the withheld count and is hidden at 0.
+  - **24:** openSaved takes an optional reviewId that must belong to the document (RLS applies). It returns `history` newest first, with the first marked latest. The saved page lists the reviews (date, flag count, Latest, older-list tag, Showing) when there is more than one, and opens ?review=<id> through the same reopen path. An earlier review is read-only: no Change, no re-run and no Outside-reference marks. Nothing here calls the model.
+  - **Tests:** unit (tests/unit/saved.test.js), isolation (tests/isolation/review-history.test.ts) and e2e (tests/e2e/review-history.spec.mjs, in the library project).
+  - **Not done:** no real-document run of part 2, so it isn't recorded as working end to end against a real contract.
