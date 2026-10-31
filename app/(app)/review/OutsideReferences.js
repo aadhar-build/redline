@@ -15,6 +15,7 @@ import { formatSavedAt } from "../library/format";
 import { COPY } from "./copy";
 import MarkedText from "./MarkedText";
 import CounterOffer from "./CounterOffer";
+import AddReferenced from "./AddReferenced";
 
 const KIND = { "dont-sign-as-written": "dont", negotiate: "negotiate", "know-this": "know" };
 
@@ -63,7 +64,7 @@ function MarkControl({ reference, documentId, onReview }) {
   );
 }
 
-function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onReview }) {
+function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onReview, runToken }) {
   const copy = COPY.outside;
   const kind = KIND[reference.severity] ?? "negotiate";
   const panelId = `outside-panel-${number}`;
@@ -87,7 +88,7 @@ function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onRevi
           </span>
           <span className="flag-src">{reference.sourceSentences[0].text}</span>
           <span className={`outside-state ${reviewed ? "is-reviewed" : ""}`} data-testid="outside-state">
-            {reviewed ? copy.reviewedTag : copy.notReviewedTag}
+            {reference.referencedDocument ? copy.addedTag : reviewed ? copy.reviewedTag : copy.notReviewedTag}
           </span>
         </span>
         <span className="flag-ref">
@@ -117,7 +118,10 @@ function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onRevi
         </figure>
         <CounterOffer counterOffer={reference.counterOffer ?? null} number={number} />
         <div className="outside-review" data-testid="outside-review">
-          {reviewed ? (
+          {reference.referencedDocument ? (
+            <p className="basis basis-statement" data-testid="outside-added">{copy.added(reference.referencedDocument.title)}</p>
+          ) : null}
+          {reference.referencedDocument ? null : reviewed ? (
             <p className="basis basis-statement" data-testid="outside-statement">
               <span className="basis-label">{copy.statementLabel}</span>
               {copy.statement(formatSavedAt(reference.reviewed.at))}
@@ -126,7 +130,10 @@ function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onRevi
             <p className="basis" data-testid="outside-not-reviewed">{copy.notReviewed}</p>
           )}
           {reference.redLineMatch ? <p className="basis" data-testid="outside-still-blocks">{copy.stillBlocks}</p> : null}
-          <MarkControl reference={reference} documentId={documentId} onReview={onReview} />
+          {reference.referencedDocument ? null : <MarkControl reference={reference} documentId={documentId} onReview={onReview} />}
+          {documentId && onReview && !reference.referencedDocument && reference.kinds.some((k) => k !== "as-amended") ? (
+            <AddReferenced reference={reference} number={number} documentId={documentId} runToken={runToken} onReview={onReview} />
+          ) : null}
         </div>
       </div>
     </li>
@@ -138,9 +145,9 @@ function ReferenceItem({ reference, number, isOpen, onToggle, documentId, onRevi
  * firstNumber: the number of the first reference, after the pane's other flags, so every number in the
  * pane is unique.
  */
-export default function OutsideReferences({ references, firstNumber, documentId = null, onReview = null }) {
+export default function OutsideReferences({ references, firstNumber, documentId = null, onReview = null, runToken = null, inReferenced = [] }) {
   const [closed, setClosed] = useState(() => new Set());
-  if (references.length === 0) return null;
+  if (references.length === 0 && inReferenced.length === 0) return null;
   const toggle = (n) =>
     setClosed((prev) => {
       const next = new Set(prev);
@@ -166,10 +173,25 @@ export default function OutsideReferences({ references, firstNumber, documentId 
               onToggle={() => toggle(number)}
               documentId={documentId}
               onReview={onReview}
+              runToken={runToken}
             />
           );
         })}
       </ul>
+      {inReferenced.length > 0 ? (
+        <div data-testid="outside-in-referenced">
+          <h4 className="group-title">{COPY.outside.inReferencedTitle} <span className="count">{inReferenced.length}</span></h4>
+          <p className="group-empty">{COPY.outside.inReferencedLede}</p>
+          <ul className="flags">
+            {inReferenced.map((r, i) => (
+              <li key={i} className="flag">
+                <p className="basis">{COPY.outside.fromReferenced(r.referencedDocument?.title)}</p>
+                <blockquote data-testid="source-sentence">{r.sourceSentences[0].text}</blockquote>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </div>
   );
 }

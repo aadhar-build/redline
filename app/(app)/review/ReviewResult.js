@@ -78,6 +78,7 @@ function Result({ review, documentText, documentId, askOff, runToken, onChangeOw
         review={review}
         documentId={documentId}
         onReview={onReview}
+        runToken={runToken}
         above={
           <OwnerLine
             key={review.ownerParty?.term ?? ""}

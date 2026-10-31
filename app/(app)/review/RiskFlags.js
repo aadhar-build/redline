@@ -114,6 +114,9 @@ function FlagItem({ flag, kind, isOpen, onToggle }) {
             </ul>
           </div>
         ) : null}
+        {flag.referencedDocument ? (
+          <p className="basis" data-testid="flag-from-referenced">{COPY.outside.fromReferenced(flag.referencedDocument.title)}</p>
+        ) : null}
         {flag.sourceSentences.map((s, i) => (
           <figure className="source" key={s.start}>
             <figcaption>{total === 1 ? COPY.flags.sourceCaption : COPY.flags.sourceCaptionOf(i + 1, total)}</figcaption>
@@ -203,7 +206,13 @@ function CleanResult({ review, flags, closed, toggle, outside }) {
         empty={COPY.clean.noKnowThis}
       />
       {(review.outsideReferences ?? []).length > 0 ? (
-        <p className="flags-message" data-testid="clean-outside-note">{COPY.clean.outsideReviewed}</p>
+        <p className="flags-message" data-testid="clean-outside-note">
+          {(() => {
+            const added = review.outsideReferences.filter((r) => r.referencedDocument).length;
+            if (added === 0) return COPY.clean.outsideReviewed;
+            return added === review.outsideReferences.length ? COPY.clean.outsideAdded : COPY.clean.outsideMarkedSome;
+          })()}
+        </p>
       ) : null}
       {outside}
     </div>
@@ -213,7 +222,7 @@ function CleanResult({ review, flags, closed, toggle, outside }) {
 // above: shown under the pane heading, before the flags (the Owner line, ticket 22).
 // documentId and onReview: set when the review is saved, so the Reviewer can mark Outside references
 // as reviewed; onReview takes the review the server sends back.
-export default function RiskFlags({ review, above = null, documentId = null, onReview = null }) {
+export default function RiskFlags({ review, above = null, documentId = null, onReview = null, runToken = null }) {
   const flags = review.riskFlags ?? [];
   const references = review.outsideReferences ?? [];
   // Every flag starts open, so each Source sentence is on screen without a click.
@@ -230,7 +239,8 @@ export default function RiskFlags({ review, above = null, documentId = null, onR
   const clean = !unreadable && review.cleanResult === true;
   // The Outside reference group, numbered after the flags so every number in the pane is unique.
   const outside = (
-    <OutsideReferences references={references} firstNumber={flags.length + 1} documentId={documentId} onReview={onReview} />
+    <OutsideReferences references={references} firstNumber={flags.length + 1} documentId={documentId} onReview={onReview}
+      runToken={runToken} inReferenced={review.referencedOutsideReferences ?? []} />
   );
   const marks = [...flags, ...references].flatMap((f) => [f.title, f.says, f.judgment, ...(f.readings ?? [])].flatMap((p) => p?.marked ?? []));
   const anyMarked = marks.some((m) => !isNumberMark(m));
