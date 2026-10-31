@@ -15,4 +15,7 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 2. ~~India Market standard table.~~ Answered: statute rows only (MSMED, Contract Act s.27, Registration Act).
 3. ~~Statute citations.~~ Answered: fixed approved list.
 4. **Statute wording.** Please open India Code for the three approved sections so their exact text can be recorded (.scratch/spec-gaps/issues/30); automated fetches are blocked. No legal point is shown until then.
-5. **Ticket 01's live check.** The Vercel preview is behind Vercel Authentication and the Vercel connection here can't open it. Run `! npm i -g vercel && vercel login`, then the check can use `vercel curl`.
+5. ~~Ticket 01's live check.~~ Done 2026-10-31 with `vercel curl` against the preview.
+6. ~~"fine" as a penalty (from ticket 01).~~ Answered: allowed in the money sense, next to an amount. Built in lib/review/wording.js.
+7. ~~"May" as a month (from ticket 01).~~ Answered: allowed capitalised next to a day number or year. Built in lib/review/wording.js.
+8. ~~What happens when a summary breaks the ban (from ticket 01).~~ Answered: show the summary with the banned words highlighted and a short note.

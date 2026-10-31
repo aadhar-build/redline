@@ -395,3 +395,32 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
   .group-title { padding: 0.6rem 0.75rem 0.25rem; }
   .flag-row { row-gap: 0.3rem; }
 }
+
+/* ---------- App: paste a contract and read its summary ---------- */
+.app-page { padding-block: 2.5rem 4rem; min-height: calc(100vh - 3.75rem); }
+.paste-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; align-items: start; margin-top: 2rem;
+}
+@media (max-width: 60rem) { .paste-grid { grid-template-columns: 1fr; gap: 1.5rem; } }
+.action-box { background: var(--paper); border: 1.5px solid var(--rule-strong); padding: 1.25rem; }
+.paste-form { display: grid; gap: 0.5rem; }
+.field-label, .box-title {
+  font: 700 0.8125rem / 1.2 var(--font-label-stack); letter-spacing: 0.07em; text-transform: uppercase;
+}
+.field-hint { font-size: 0.875rem; color: var(--ink-2); }
+.paste-field {
+  width: 100%; min-height: 18rem; resize: vertical; margin-block: 0.25rem 0.5rem;
+  font: 400 1rem / 1.55 var(--font-text-stack); color: var(--ink);
+  background: var(--paper); border: 1px solid var(--ink-2); border-radius: 2px; padding: 0.65rem 0.75rem;
+}
+.paste-field:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.paste-form .cta { justify-self: start; cursor: pointer; }
+.paste-form .cta:disabled { cursor: progress; background: var(--ink-2); border-color: var(--ink-2); }
+.form-error { font-size: 0.9375rem; color: var(--ink); border-left: 3px solid var(--ink); padding: 0.2rem 0 0.2rem 0.65rem; }
+.summary-body { padding: 1rem; display: grid; gap: 0.85rem; }
+.summary-text { font: 400 1.0625rem / 1.65 var(--font-text-stack); max-width: 68ch; white-space: pre-line; }
+.summary-note, .summary-empty { font-size: 0.875rem; color: var(--ink-2); }
+.unavailable { margin-top: 2rem; max-width: 36rem; display: grid; gap: 0.5rem; }
+/* A word Redline's wording rules ban: wavy graphite underline on the reference wash, so it never relies on colour. */
+.banned-word { background: var(--blue-wash); color: var(--ink); text-decoration: underline wavy var(--ink); text-underline-offset: 0.2em; padding-inline: 0.1em; }
+.marked-note { font-size: 0.875rem; color: var(--ink); border-left: 3px solid var(--ink); padding: 0.2rem 0 0.2rem 0.65rem; }
