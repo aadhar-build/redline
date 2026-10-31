@@ -8,7 +8,7 @@
 
 **Needs approval for:** None
 
-**Status:** built on `feature/15-own-red-lines-saved-reviews` (2026-10-31), not yet merged
+**Status:** merged into `development` (2026-10-31)
 
 - [x] A clause seeded for each added Red line is flagged Don't sign as written (PRD criterion 5).
 - [x] Re-analysis of saved documents and the Red line list kept with each saved review follow the OQ17 decision (PRD criterion 7, for saved reviews).

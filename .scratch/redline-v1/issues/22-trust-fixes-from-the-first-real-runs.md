@@ -4,7 +4,7 @@
 
 **Blocked by:** 09 (Real model adapter and first end-to-end run on a real contract)
 
-**Status:** B–E built on feature/22-trust-fixes (A in ticket 21); real re-run recorded below
+**Status:** merged into `development` (2026-10-31)
 
 **A. PDF pages join with a single "\n"** (high). Trim trailing newlines from each page before joining. Blank lines in pasted text and DOCX stay boundaries. Built in ticket 21.
 
