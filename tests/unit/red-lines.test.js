@@ -16,6 +16,17 @@ const scriptFor = (document) =>
 const sameSources = (flag, sentences) =>
   flag.sourceSentences.length === sentences.length && flag.sourceSentences.every((s, i) => s.text === sentences[i]);
 
+// QUESTIONS.md 31: a Red line flag that only repeats an Outside reference is merged into it, so the
+// reference stands for the flag: same Red line, and it cites every one of the flag's sentences.
+function shownOrMerged(result, sentences) {
+  const flag = result.riskFlags.find((f) => sameSources(f, sentences));
+  if (flag) return flag;
+  const ref = result.outsideReferences.find((r) => r.redLineMatch && sentences.every((t) => r.sourceSentences.some((s) => s.text === t)));
+  if (!ref) return undefined;
+  expect(result.mergedCount).toBeGreaterThan(0);
+  return { severity: ref.severity, redLineMatch: ref.redLineMatch, sourceSentences: ref.sourceSentences.filter((s) => sentences.includes(s.text)) };
+}
+
 // A local fake adapter that also records each prompt it was sent.
 function recordingAdapter() {
   const inner = createLocalFakeAdapter({ root });
@@ -92,7 +103,7 @@ describe.each(RED_LINE_SEEDS)("Review seam: Default Red lines in $document ($con
     expect(result.withheldCount).toBe(0);
     for (const seed of seeds) {
       for (const s of seed.sentences) expect(documentText).toContain(s);
-      const flag = result.riskFlags.find((f) => sameSources(f, seed.sentences));
+      const flag = shownOrMerged(result, seed.sentences);
       expect(flag, `${seed.redLine}: ${seed.sentences[0]}`).toBeDefined();
       expect(flag.severity).toBe("dont-sign-as-written");
       expect(flag.redLineMatch).toMatchObject({ id: seed.redLine });
@@ -109,7 +120,7 @@ describe.each(RED_LINE_SEEDS)("Review seam: Default Red lines in $document ($con
     expect(lowered.length).toBeGreaterThan(0);
     const result = await run();
     for (const raw of lowered) {
-      const flag = result.riskFlags.find((f) => sameSources(f, raw.sourceSentences));
+      const flag = shownOrMerged(result, raw.sourceSentences);
       expect(flag.severity).toBe("dont-sign-as-written");
       expect(flag.redLineMatch.id).toBe(raw.redLine);
     }
@@ -151,7 +162,7 @@ describe.each(RED_LINE_SEEDS)("Review seam: Default Red lines in $document ($con
     }
     // The other Red lines still match.
     for (const seed of seeds.filter((s) => s.redLine !== id)) {
-      const flag = result.riskFlags.find((f) => sameSources(f, seed.sentences));
+      const flag = shownOrMerged(result, seed.sentences);
       expect(flag.redLineMatch.id).toBe(seed.redLine);
       expect(flag.severity).toBe("dont-sign-as-written");
     }

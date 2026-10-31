@@ -278,6 +278,9 @@ export default function RiskFlags({ review, above = null, documentId = null, onR
 
           <Withheld count={review.withheldCount ?? 0} withheld={review.withheld ?? []} />
           <JudgmentsDropped count={review.judgmentsDropped ?? 0} />
+          {(review.mergedCount ?? 0) > 0 ? (
+            <p className="flags-message" data-testid="merged-count">{COPY.flags.merged(review.mergedCount)}</p>
+          ) : null}
 
           {clean ? (
             <CleanResult review={review} flags={flags} closed={closed} toggle={toggle} outside={outside} />
