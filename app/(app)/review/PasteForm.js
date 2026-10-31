@@ -9,12 +9,12 @@
 // then asks about the saved document by id, so its answers are checked against the stored text.
 
 import { useRef, useState } from "react";
-import { extractFile, extractPasted } from "../../../lib/extraction/index.js";
+import { extractFile, extractPasted, MAX_TEXT_LENGTH } from "../../../lib/extraction/index.js";
 import { LIBRARY_COPY } from "../library/library-copy";
 import { COPY } from "./copy";
 import ReviewResult from "./ReviewResult";
 
-const MAX_LENGTH = 200_000;
+const MAX_LENGTH = MAX_TEXT_LENGTH;
 
 /**
  * @param {{ account: "off" | "signed-out" | "signed-in", runToken?: string | null }} props
@@ -26,15 +26,24 @@ export default function PasteForm({ account = "off", runToken = null }) {
   const [fileName, setFileName] = useState(null); // set while the text shown came from a file
   const [fileSource, setFileSource] = useState(null); // "pdf" or "docx" while a file's text is shown
   const [hiddenText, setHiddenText] = useState(false); // the file's Word text has hidden runs
+  // Where OCR read the file's text (ADR 0008): [start, end] offsets, posted with the text so Review
+  // can apply the unreadable-amount rule. Empty for any text that did not come from OCR.
+  const [ocrRanges, setOcrRanges] = useState([]);
   const [state, setState] = useState({ kind: "empty" });
   const fileInput = useRef(null);
+  const reading = useRef(null); // the AbortController of the file being read
 
   function clearFile() {
     setFileName(null);
     setFileSource(null);
     setHiddenText(false);
+    setOcrRanges([]);
     setText("");
     if (fileInput.current) fileInput.current.value = "";
+  }
+
+  function cancelReading() {
+    reading.current?.abort();
   }
 
   async function onFileChosen(event) {
@@ -43,24 +52,35 @@ export default function PasteForm({ account = "off", runToken = null }) {
     setFileName(null);
     setFileSource(null);
     setHiddenText(false);
+    setOcrRanges([]);
     setText("");
-    setState({ kind: "reading" });
+    setState({ kind: "reading", progress: null });
+    reading.current?.abort();
+    const controller = new AbortController();
+    reading.current = controller;
+    const onProgress = (progress) => {
+      if (!controller.signal.aborted) setState({ kind: "reading", progress });
+    };
     let result;
     try {
-      result = await extractFile(file);
-    } catch {
-      result = { kind: "rejected", reason: "unreadable" };
+      result = await extractFile(file, { onProgress, signal: controller.signal });
+    } catch (err) {
+      result = err?.name === "AbortError" ? { kind: "cancelled" } : { kind: "rejected", reason: "unreadable" };
     }
+    if (reading.current !== controller) return; // another file was chosen meanwhile
+    reading.current = null;
     if (result.kind === "text") {
       setText(result.text);
       setFileName(file.name);
       setFileSource(result.source);
       setHiddenText((result.hiddenRuns ?? 0) > 0);
+      setOcrRanges(result.ocrRanges ?? []);
       return setState({ kind: "empty" });
     }
-    // A rejected file, or one with scanned pages (OCR is not built yet): nothing is sent.
+    // A rejected or cancelled file: nothing is sent.
     if (fileInput.current) fileInput.current.value = "";
-    if (result.kind === "needs-ocr") return setState({ kind: "error", code: "needs-ocr", pages: result.pages });
+    if (result.kind === "cancelled") return setState({ kind: "cancelled" });
+    if (result.kind === "needs-ocr") return setState({ kind: "error", code: "ocr-failed" });
     return setState({ kind: "error", code: result.reason });
   }
 
@@ -80,7 +100,8 @@ export default function PasteForm({ account = "off", runToken = null }) {
       res = await fetch("/api/review", {
         method: "POST",
         headers: { "content-type": "application/json", ...(runToken ? { "x-redline-run-token": runToken } : {}) },
-        body: JSON.stringify({ text, source }),
+        // ocrRanges goes only with a file's text that OCR read; it holds offsets, never file content.
+        body: JSON.stringify(source === "pdf" && ocrRanges.length > 0 ? { text, source, ocrRanges } : { text, source }),
       });
       data = await res.json();
     } catch {
@@ -102,11 +123,10 @@ export default function PasteForm({ account = "off", runToken = null }) {
   }
 
   const busy = state.kind === "busy";
-  const reading = state.kind === "reading";
+  const isReading = state.kind === "reading";
+  const progress = isReading ? state.progress : null;
   let errorText = null;
-  if (state.kind === "error") {
-    errorText = state.code === "needs-ocr" ? COPY.scannedPages(state.pages) : (COPY.errors[state.code] ?? COPY.errors.failed);
-  }
+  if (state.kind === "error") errorText = COPY.errors[state.code] ?? COPY.errors.failed;
   const paste = LIBRARY_COPY.paste;
 
   return (
@@ -122,9 +142,19 @@ export default function PasteForm({ account = "off", runToken = null }) {
           accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           aria-describedby="contract-file-hint"
           onChange={onFileChosen}
-          disabled={busy || reading}
+          disabled={busy || isReading}
         />
-        {reading && <p className="field-hint" role="status">{COPY.fileReading}</p>}
+        {isReading && (
+          <p className="field-hint" role="status" data-testid="file-reading">
+            {progress && progress.total > 0 ? COPY.ocrProgress(progress.done, progress.total) : COPY.fileReading}{" "}
+            {progress && (
+              <button type="button" className="link-button" onClick={cancelReading}>{COPY.ocrCancel}</button>
+            )}
+          </p>
+        )}
+        {state.kind === "cancelled" && (
+          <p className="field-hint" role="status" data-testid="file-cancelled">{COPY.ocrCancelled}</p>
+        )}
         {fileName && (
           <p className="file-loaded" data-testid="file-loaded">
             {COPY.fileLoaded(fileName)}{" "}
@@ -147,7 +177,7 @@ export default function PasteForm({ account = "off", runToken = null }) {
           rows={16}
           spellCheck={false}
         />
-        <button className="cta" type="submit" disabled={busy || reading}>
+        <button className="cta" type="submit" disabled={busy || isReading}>
           {busy ? COPY.submitBusy : COPY.submit}
         </button>
         {errorText && (

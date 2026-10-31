@@ -5,7 +5,9 @@
 //                              footer }: top is the first line's baseline in points from the top
 //                              edge (default 72); header and footer are lines drawn 36 points from
 //                              the top and bottom edges, where a running header or page number sits
-//   scanPage()                 a page that is one full-page image and no text
+//   scanPage(jpeg?)            a page that is one full-page image and no text: an 8x8 grey checker,
+//                              or { data, width, height }, a JPEG (built in the browser by the e2e
+//                              tests from text drawn on a canvas, so no scan is ever committed)
 //   hiddenOcrPage(lines)       a full-page image with the lines drawn invisibly (text render mode 3),
 //                              the way a scanner's OCR makes a scan searchable
 //   makePdf(pages) -> Buffer
@@ -34,7 +36,7 @@ export const textPage = (lines, { top = 72, header, footer } = {}) => ({
   ].filter(Boolean).join("\n"),
   image: false,
 });
-export const scanPage = () => ({ content: IMAGE_DRAW, image: true });
+export const scanPage = (jpeg) => ({ content: IMAGE_DRAW, image: true, jpeg });
 export const hiddenOcrPage = (lines) => ({ content: `${IMAGE_DRAW}\n${textOps(lines, 3)}`, image: true });
 
 // Wraps text into lines of at most `width` characters, breaking at spaces.
@@ -63,8 +65,20 @@ export function makePdf(pages) {
   // An 8x8 grey checker, uncompressed, so pdf.js needs no image decoder.
   const pixels = Buffer.alloc(64, 0).map((_, i) => ((i + Math.floor(i / 8)) % 2 ? 0x30 : 0xd0));
   objects[4] = { dict: "<< /Type /XObject /Subtype /Image /Width 8 /Height 8 /ColorSpace /DeviceGray /BitsPerComponent 8", data: pixels };
+  let nextId = 5 + pages.length * 2;
   pages.forEach((page, i) => {
-    const resources = page.image ? "<< /Font << /F1 3 0 R >> /XObject << /Im1 4 0 R >> >>" : "<< /Font << /F1 3 0 R >> >>";
+    let imageId = 4;
+    if (page.jpeg) {
+      imageId = nextId++;
+      const { data, width, height } = page.jpeg;
+      objects[imageId] = {
+        dict: `<< /Type /XObject /Subtype /Image /Width ${width} /Height ${height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode`,
+        data: Buffer.from(data),
+      };
+    }
+    const resources = page.image
+      ? `<< /Font << /F1 3 0 R >> /XObject << /Im1 ${imageId} 0 R >> >>`
+      : "<< /Font << /F1 3 0 R >> >>";
     objects[pageIds[i]] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${WIDTH} ${HEIGHT}] /Resources ${resources} /Contents ${pageIds[i] + 1} 0 R >>`;
     objects[pageIds[i] + 1] = { dict: "<<", data: Buffer.from(page.content, "latin1") };
   });
