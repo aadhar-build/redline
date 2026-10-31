@@ -25,6 +25,8 @@ export const COPY = {
   fileReading: "Reading the file…",
   fileLoaded: (name) => `Text from ${name}. Check it, then press Review.`,
   clearFile: "Remove file",
+  // Shown when a Word file has hidden text (w:vanish) with a letter or digit in it (ticket 21).
+  hiddenText: "This file has text that Word hides, and Redline didn't read it.",
   fieldLabel: "Contract text",
   fieldHint: "Paste the whole contract, or choose a file above.",
   // pages: 1-based page numbers, at least one.
