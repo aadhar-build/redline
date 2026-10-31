@@ -6,8 +6,11 @@
       "title": "Three-year minimum term",
       "says": "The minimum term is three years from the date the card machine is installed.",
       "judgment": null,
-      "sourceSentences": ["The minimum term of this Agreement is three years from the date the card machine is installed."],
-      "redLine": "default-auto-renewal-or-long-term"
+      "sourceSentences": [
+        "The minimum term of this Agreement is three years from the date the card machine is installed."
+      ],
+      "redLine": "default-auto-renewal-or-long-term",
+      "counterOffer": "The minimum term of this Agreement is one year from the date the card machine is installed."
     },
     {
       "severity": "know-this",
@@ -18,23 +21,30 @@
         "After the minimum term, this Agreement renews automatically for successive periods of one year unless Merchant gives written notice at least sixty days before a renewal date.",
         "If Merchant ends this Agreement before the end of the minimum term or of any renewal period, Merchant will pay Provider an exit fee of Rs. 42,000."
       ],
-      "redLine": "default-auto-renewal-or-long-term"
+      "redLine": "default-auto-renewal-or-long-term",
+      "counterOffer": "After the minimum term, this Agreement renews for one year only if Merchant gives written notice at least sixty days before a renewal date. Merchant will pay no exit fee if it ends this Agreement at the end of the minimum term or of a renewal period."
     },
     {
       "severity": "negotiate",
       "title": "Charges as amended from time to time by Provider",
       "says": "The 1.8% fee on each card sale and the Rs. 450 monthly rental both apply as amended from time to time by Sanchay.",
       "judgment": null,
-      "sourceSentences": ["Merchant will pay a fee of 1.8% of each card sale and a machine rental of Rs. 450 a month, both as amended from time to time by Provider."],
-      "redLine": "default-one-sided-changes"
+      "sourceSentences": [
+        "Merchant will pay a fee of 1.8% of each card sale and a machine rental of Rs. 450 a month, both as amended from time to time by Provider."
+      ],
+      "redLine": "default-one-sided-changes",
+      "counterOffer": "Merchant will pay a fee of 1.8% of each card sale and a machine rental of Rs. 450 a month. Provider will not change either charge unless Merchant agrees in writing."
     },
     {
       "severity": "dont-sign-as-written",
       "title": "Partner's personal guarantee",
       "says": "Meera Kulkarni personally guarantees every amount Meera Sweets owes under the agreement.",
       "judgment": null,
-      "sourceSentences": ["Meera Kulkarni, a partner of Merchant, personally guarantees the payment of every amount Merchant owes under this Agreement."],
-      "redLine": "default-personal-guarantee"
+      "sourceSentences": [
+        "Meera Kulkarni, a partner of Merchant, personally guarantees the payment of every amount Merchant owes under this Agreement."
+      ],
+      "redLine": "default-personal-guarantee",
+      "counterOffer": "Meera Kulkarni does not guarantee any amount Merchant owes under this Agreement."
     },
     {
       "severity": "know-this",
@@ -45,7 +55,8 @@
         "Merchant will indemnify Provider against all claims, penalties and losses arising from any card transaction at Merchant's shop.",
         "Merchant's liability under this clause is not limited to the charges paid under this Agreement."
       ],
-      "redLine": "default-uncapped-liability"
+      "redLine": "default-uncapped-liability",
+      "counterOffer": "Merchant will indemnify Provider against claims, penalties and losses arising from a card transaction at Merchant's shop. Merchant's liability under this clause is limited to the charges paid under this Agreement."
     }
   ]
 }

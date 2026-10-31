@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Glyph, Tick, SEVERITY_LABELS } from "../../Glyph";
 import { COPY } from "./copy";
 import MarkedText, { isNumberMark } from "./MarkedText";
+import CounterOffer from "./CounterOffer";
 
 // Review's Severity ids, in their fixed group order, and the glyph each one uses.
 const GROUPS = [
@@ -91,6 +92,7 @@ function FlagItem({ flag, kind, isOpen, onToggle }) {
             <blockquote data-testid="source-sentence">{s.text}</blockquote>
           </figure>
         ))}
+        <CounterOffer counterOffer={flag.counterOffer} number={flag.number} quiet={flag.severity === "know-this"} />
       </div>
     </li>
   );
@@ -194,6 +196,9 @@ export default function RiskFlags({ review, above = null }) {
   const marks = flags.flatMap((f) => [f.title, f.says, f.judgment].flatMap((p) => p?.marked ?? []));
   const anyMarked = marks.some((m) => !isNumberMark(m));
   const anyNumber = marks.some(isNumberMark);
+  // Counter-offer marks get their own notes: a changed figure there can be a legitimate tightening.
+  const counterMarks = flags.flatMap((f) => f.counterOffer?.marked ?? []);
+  const anyCounterOffer = flags.some((f) => f.counterOffer);
 
   return (
     <section className="pane flags-pane" aria-labelledby="flags-title" data-testid="risk-flags">
@@ -244,6 +249,13 @@ export default function RiskFlags({ review, above = null }) {
 
           {anyMarked && <p className="marked-note flags-note" data-testid="flags-marked-note">{COPY.markedNote}</p>}
           {anyNumber && <p className="marked-note flags-note" data-testid="flags-number-note">{COPY.numberNote}</p>}
+          {anyCounterOffer && <p className="marked-note flags-note" data-testid="counter-offer-note">{COPY.counterOffer.note}</p>}
+          {counterMarks.some((m) => !isNumberMark(m)) && (
+            <p className="marked-note flags-note" data-testid="counter-offer-marked-note">{COPY.counterOffer.markedNote}</p>
+          )}
+          {counterMarks.some(isNumberMark) && (
+            <p className="marked-note flags-note" data-testid="counter-offer-number-note">{COPY.counterOffer.numberNote}</p>
+          )}
 
           {clean ? null : <RedLinesChecked redLines={review.redLinesChecked ?? []} />}
         </>
