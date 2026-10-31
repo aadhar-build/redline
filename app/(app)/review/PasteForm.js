@@ -40,7 +40,13 @@ export default function PasteForm({ account = "off" }) {
     if (!res.ok) return setState({ kind: "error", code: data?.error ?? "failed" });
     const summary = data?.review?.summary;
     if (summary?.status === "shown") {
-      return setState({ kind: "summary", documentText: text, documentId: data.documentId ?? null, review: data.review });
+      return setState({
+        kind: "summary",
+        documentText: text,
+        documentId: data.documentId ?? null,
+        saved: data.saved ?? "signed-out",
+        review: data.review,
+      });
     }
     return setState({ kind: "error", code: summary?.reason ?? "failed" });
   }
@@ -83,8 +89,13 @@ export default function PasteForm({ account = "off" }) {
               <p className="saved-note" data-testid="saved-note">
                 {paste.saved} <a href={`/library/${state.documentId}`}>{paste.savedLink}</a>
               </p>
-            ) : (
+            ) : state.saved === "incomplete" ? (
               <p className="marked-note" data-testid="not-saved-note">{paste.notSaved}</p>
+            ) : (
+              // The session ended between loading the page and pressing Review.
+              <p className="marked-note" data-testid="not-saved-note">
+                {paste.signedOut} <a href="/sign-in">{paste.signedOutLink}</a>
+              </p>
             ))}
         </ReviewResult>
       ) : (

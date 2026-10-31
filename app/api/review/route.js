@@ -28,10 +28,10 @@ export async function POST(request) {
     const { db, user } = await currentAccount();
     if (user) {
       const { review: result, documentId } = await saveAndReview({ db, text: body?.text, adapter });
-      return json({ review: result, documentId }, 200);
+      return json({ review: result, documentId, saved: documentId ? "saved" : "incomplete" }, 200);
     }
     const result = await review({ documentText: body?.text, redLines: [], adapter });
-    return json({ review: result, documentId: null }, 200);
+    return json({ review: result, documentId: null, saved: "signed-out" }, 200);
   } catch (err) {
     if (err instanceof ReviewInputError) return json({ error: err.code }, 400);
     if (err?.code === "no-script") return json({ error: "no-script" }, 422);

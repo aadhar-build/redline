@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { expect, test } from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
 import { COPY } from "../../app/(app)/review/copy.js";
 import { ASK_COPY } from "../../app/(app)/review/ask-copy.js";
 import { LIBRARY_COPY } from "../../app/(app)/library/library-copy.js";
@@ -37,6 +38,18 @@ test.describe.configure({ mode: "serial" });
 const runId = randomUUID().slice(0, 8);
 const emailA = `library-e2e-a-${runId}@example.test`;
 const emailB = `library-e2e-b-${runId}@example.test`;
+
+// Deletes this run's two accounts from the shared local stack; their documents and reviews cascade.
+// Test-only: the service-role key never appears in app code.
+test.afterAll(async () => {
+  const key = env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!key) return;
+  const admin = createClient(env.NEXT_PUBLIC_SUPABASE_URL, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { data } = await admin.auth.admin.listUsers({ perPage: 1000 });
+  for (const u of data?.users ?? []) {
+    if (u.email === emailA || u.email === emailB) await admin.auth.admin.deleteUser(u.id);
+  }
+});
 
 async function signInLink(email) {
   for (let i = 0; i < 40; i++) {

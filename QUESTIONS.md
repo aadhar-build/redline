@@ -21,3 +21,4 @@ Open items that block work. Each one is skipped, not guessed, until answered. Th
 8. ~~What happens when a summary breaks the ban (from ticket 01).~~ Answered: show the summary with the banned words highlighted and a short note.
 9. ~~ADR 0010 span wording (from ticket 03).~~ Answered 2026-10-31: the wording was a drafting error. A quote is one or more whole consecutive sentences; ADR 0010 corrected.
 10. ~~Market standard wording in flag text (from ticket 03).~~ Answered by ADR 0009: with no table row behind it, the claim is labelled Redline's judgment, as built.
+11. **Incomplete reviews in the library (from ticket 10).** Only a complete review is saved: one whose summary was shown and whose Risk flags list could be read. Otherwise the document row is removed again and the Reviewer is told it was not saved. Keep that, or save every document and mark the incomplete ones (which needs a migration for a review status)?
