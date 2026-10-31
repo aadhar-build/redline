@@ -120,7 +120,9 @@ describe("copy", () => {
     expect(line).toContain("Default Red line 2");
     expect(line).toContain(DEFAULT_RED_LINES[1].name);
     expect(line).toMatch(/no longer checks/);
-    expect(line).toMatch(/no longer marked Don't sign as written/);
+    expect(line).toMatch(/isn't a Red line match any more and isn't always Don't sign as written/);
+    // Removing a Red line takes away the match, not a Severity: the clause is never said to be demoted.
+    expect(line).not.toMatch(/no longer marked Don't sign/);
   });
 
   it("uses no hedge or verdict words on the Red lines screen", () => {

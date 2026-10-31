@@ -25,7 +25,7 @@ export const RED_LINES_COPY = {
   addSubmit: "Add Red line",
   removedTitle: "Default Red lines you removed",
   removed: (n, name) =>
-    `You removed Default Red line ${n}: ${name}. Redline no longer checks contracts for it, so a clause it would have caught is no longer marked Don't sign as written. That clause gets a Severity like any other, and a common version of it can come back at a lower level.`,
+    `You removed Default Red line ${n}: ${name}. Redline no longer checks contracts for it, so a clause it would have caught isn't a Red line match any more and isn't always Don't sign as written. That clause gets a Severity like any other, and a common version of it can come back at a lower level.`,
   errors: {
     "empty-red-line": "Write the Red line first.",
     "red-line-too-long": "That's too long for one Red line. Keep it to 300 characters or fewer.",

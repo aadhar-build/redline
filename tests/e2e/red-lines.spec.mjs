@@ -132,6 +132,8 @@ test("the next review is checked against the current list: a removed Default Red
   const guarantee = page.getByTestId("risk-flag").filter({ has: page.getByTestId("source-sentence").filter({ hasText: GUARANTEE }) });
   await expect(guarantee).toHaveCount(1);
   await expect(guarantee.getByTestId("flag-red-line")).toHaveCount(0);
+  // Its Severity is now the one the model gave it: the script puts this clause at Don't sign as written.
+  await expect(guarantee).toHaveAttribute("data-severity", "dont-sign-as-written");
 
   const ids = await checked(page);
   expect(ids).not.toContain("default-personal-guarantee");
