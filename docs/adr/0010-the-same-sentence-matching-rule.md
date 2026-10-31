@@ -35,6 +35,6 @@ Settled by a Fable advisor under the product owner's question rule (high confide
 3. **More abbreviations** that never end a sentence: ltd, inc, llp, govt, dept, rd, ref, encl, annex, exh, etc. (alongside the existing list).
 4. **Initials.** A lone capital followed by "." is not a boundary when the next token is a digit ("S. 27"), or another lone capital with "." ("A. K."), or when the previous token is one ("K." in "A. K. Sharma"). "Schedule A. The Company…" stays a boundary.
 
-5. **Stored-text shape of a PDF** (ticket 22 ruling A, built in ticket 21): PDF pages are joined with a single "\n", after each page's trailing newlines and its running headers and page numbers are removed, so a page join is never a blank-line boundary by itself; blank lines in pasted text and DOCX stay boundaries.
-
 Accepted cost: a narrow PDF line made only of title-case words ("Sharma Infrastructure Private") that starts on a boundary can pass the heading test, so a quote may start after it and drop part of a party name, never an operative word. Decimals stay non-boundaries (a "." only counts when followed by whitespace). Test cases: the advisor's twelve, recorded in implementation ticket 14.
+
+Stored-text shape (ticket 22 ruling A, built in ticket 21): PDF pages are joined with a single "\n", after each page's trailing newlines and its running headers and page numbers are removed, so a page join is never a blank-line boundary by itself; blank lines in pasted text and DOCX stay boundaries.
