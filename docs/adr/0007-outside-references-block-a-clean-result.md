@@ -45,3 +45,10 @@ Each change fails closed (toward keeping the reference and the Red line 3 match)
 - **Self-titles.** The heading counts only in the added text's title block, its first 3 non-blank lines. A mention is skipped only when it names the same document: no identifier, or the heading's own ("Order Form No. 3" under "ORDER FORM No. 3"). A mention with another identifier ("Order Form No. 5") is still raised.
 - **Schedule headings.** The schedule's name is matched in any case and the rest of the line case-sensitively, so a "capitalised title" needs a capital letter. A wrapped body line such as "Schedule A and the Customer will pay the" is no longer read as a heading.
 
+## Addendum (2026-10-31, second security review of the QUESTIONS.md 43 and 44 build, ticket 13e)
+
+Each change fails closed:
+- **Known Acts.** The whole capitalised name before "Act" (leading "the", "of" and the like dropped) must be exactly a listed name, with an optional listed prefix. An extra word ("Acme Companies Act") keeps the Red line 3 match.
+- **General law.** Exempt only when the run starts a clause: at a sentence start, or right after with, under, by, of, in, to (so "subject to"), per, follow, comply, applicable or notwithstanding. A list separator, a capitalised word or any other word before it keeps the Red line 3 match.
+- **Self-titles.** A mention with no identifier is skipped only when the heading has none either, or when it points at the text itself ("this Order Form", "the Order Form above", "herein"). A mention qualified by other, prior, previous, each, any, every, separate, additional, further, future, dated or signed is always raised.
+
