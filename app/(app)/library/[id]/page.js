@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { openSaved } from "../../../../lib/library/library.js";
-import { isAnalysisAvailable } from "../../../../lib/review/adapters/index.js";
+import { getModelAdapter } from "../../../../lib/review/adapters/index.js";
+import { runTokenFor } from "../../../../lib/review/local-guard.js";
 import { supabaseConfig } from "../../../../lib/supabase/config.js";
 import { currentAccount } from "../../../../lib/supabase/server.js";
 import ReviewResult from "../../review/ReviewResult";
@@ -21,6 +22,9 @@ export default async function SavedReviewPage({ params }) {
   const { id } = await params;
   const saved = await openSaved({ db, documentId: id });
   if (!saved) notFound();
+  // Only to say whether questions are on, and to hand the CLI run token to the question box;
+  // opening a saved review never calls the model.
+  const adapter = getModelAdapter();
 
   const copy = LIBRARY_COPY.saved;
   const { document, review } = saved;
@@ -43,7 +47,12 @@ export default async function SavedReviewPage({ params }) {
           <>
             <p className="section-lede" data-testid="saved-note">{copy.note}</p>
             <div className="saved-grid">
-              <ReviewResult review={review} documentId={document.id} askOff={isAnalysisAvailable() ? null : copy.askOff} />
+              <ReviewResult
+                review={review}
+                documentId={document.id}
+                askOff={adapter ? null : copy.askOff}
+                runToken={runTokenFor(adapter)}
+              />
             </div>
           </>
         ) : (

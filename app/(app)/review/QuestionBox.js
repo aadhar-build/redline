@@ -29,11 +29,12 @@ function MarkedText({ text, marked }) {
 }
 
 /**
- * @param {{ documentText?: string, documentId?: string | null }} props
+ * @param {{ documentText?: string, documentId?: string | null, runToken?: string | null }} props
  * documentId: a saved document. Only its id is sent; the server reads the stored text itself.
  * documentText: an unsaved paste, the text the summary was made from, not the live paste box.
+ * runToken: set only with the local Claude Code CLI adapter; the route requires it back.
  */
-export default function QuestionBox({ documentText, documentId = null }) {
+export default function QuestionBox({ documentText, documentId = null, runToken = null }) {
   const [question, setQuestion] = useState("");
   const [state, setState] = useState({ kind: "empty" });
 
@@ -49,7 +50,7 @@ export default function QuestionBox({ documentText, documentId = null }) {
     try {
       res = await fetch("/api/ask", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", ...(runToken ? { "x-redline-run-token": runToken } : {}) },
         body: JSON.stringify(documentId ? { documentId, question: q } : { text: documentText, question: q }),
       });
       data = await res.json();

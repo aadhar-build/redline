@@ -90,6 +90,7 @@ export const COPY = {
     "unreadable-output": "Redline couldn't read the summary it got back. Try again.",
     "no-script":
       "This local setup only has scripted reviews for the sample contracts in fixtures/contracts. Paste one of those.",
+    busy: "Redline is already reading a contract. Try again when it's done.",
     failed: "Redline couldn't finish reading the contract. Try again.",
     network: "Couldn't reach Redline. Check your connection and try again.",
     "save-failed": "Redline couldn't save the contract to your library, so it didn't review it. Try again.",
