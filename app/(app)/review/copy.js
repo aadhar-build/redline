@@ -108,6 +108,11 @@ export const COPY = {
     },
     severityNote: "The level on each flag is Redline's judgment, not something the contract says.",
     withheldTail: "Redline doesn't show a flag it can't trace to the contract.",
+    // Ticket 24 ruling 23(c).
+    judgmentsDropped: (n) =>
+      n === 1
+        ? "Redline left out 1 of its judgments because it said what's usual, which the contract doesn't show."
+        : `Redline left out ${n} of its judgments because they said what's usual, which the contract doesn't show.`,
     sourceCaption: "Source sentence",
     sourceCaptionOf: (i, n) => `Source sentence ${i} of ${n}`,
     // Shown only when no flags came back and the review is still not a Clean result.
