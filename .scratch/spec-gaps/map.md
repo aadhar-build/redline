@@ -18,6 +18,7 @@ Every implementation ticket in `.scratch/redline-v1/issues/` has a Blocked-by li
 - Also approved 2026-10-31: @supabase/ssr for magic-link sessions; hosted Supabase project in Mumbai (ap-south-1), keys into the Vercel project env. "Live" means the protected Vercel preview of `development` with everything except analysis; analysis runs only on the product owner's machine (no API key adopted). The owner promotes to main.
 - From 2026-10-31 the working branch for spec and code is `development`; `spec/wayfinder-gaps` is frozen.
 - Hosted Supabase created 2026-10-31: project `redline` (ref kwtpcbbvurfahgnhohmb, Mumbai), migrations 01–02 pushed; NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY set in Vercel for Preview on `development`. DB password lives only in the integration worktree's .env.local. Still to do when ticket 10 lands: allow the preview URLs as auth redirect URLs.
+- Question rule (owner, 2026-10-31): a new question first goes to a Fable advisor (a subagent on the Fable model, briefed with the relevant spec). Act on its answer when it is confident; park the question in QUESTIONS.md for the owner only when its confidence is low. Record each Fable-settled answer in the ticket it affects, marked "settled by Fable advisor". The OCR engine (ticket 24) was chosen by Claude on the owner's instruction.
 - C1 (ranking within a Severity level) is already settled: grouped by level, not ranked (ADR 0003, CLAUDE.md edit 2026-10-20).
 
 ## Decisions so far
