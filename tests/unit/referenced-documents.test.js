@@ -12,6 +12,8 @@ import { createLocalFakeAdapter } from "../../lib/review/adapters/index.js";
 import { DEFAULT_RED_LINES } from "../../lib/review/red-lines.js";
 import { reopenReview, toStoredReview } from "../../lib/review/saved.js";
 import { canAttachTo } from "../../lib/review/referenced.js";
+import { reviewAsText } from "../../app/(app)/review/review-text.js";
+import { COPY } from "../../app/(app)/review/copy.js";
 
 const root = path.resolve(__dirname, "../..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
@@ -47,6 +49,9 @@ describe("a review run together with a referenced document", () => {
     expect(seen[0]).not.toContain("<referenced-document");
     expect(seen[1]).toContain('<referenced-document id="R1">');
     expect(seen[1]).toContain(SUSPEND);
+    // The reply form names the key, so the model knows to give it.
+    expect(seen[0]).not.toContain('"document": "main"');
+    expect(seen[1]).toContain('"riskFlags": [{"document": "main", "severity"');
   });
 
   it("checks a flag from the referenced text against that text, and shows which document it came from", async () => {
@@ -133,6 +138,32 @@ describe("resolving an Outside reference by adding its document", () => {
     expect(canAttachTo(b.outsideReferences, "1. The Supplier will deliver the goods each week.")).toBeNull();
     const amendedOnly = await run("SUPPLY AGREEMENT\n\n1. The Customer will follow the delivery rules as amended from time to time.\n", [], []);
     expect(canAttachTo(amendedOnly.outsideReferences, "1. The Customer will follow the delivery rules as amended from time to time.")).toBeNull();
+  });
+});
+
+describe("Copy all with a referenced document", () => {
+  it("says which flag came from the added document, and that the reference was resolved by adding it", async () => {
+    const r = await run(ONLY_B, [flag({ document: "R1" })], [B(scheduleB, ONLY_B_REF)]);
+    const text = reviewAsText(r);
+    expect(text).toContain(COPY.outside.fromReferenced("SCHEDULE B"));
+    expect(text).toContain(`(${COPY.outside.addedTag})`);
+    expect(text).toContain(COPY.outside.added("SCHEDULE B"));
+    expect(text).not.toContain(COPY.outside.notReviewed);
+  });
+
+  it("uses the added-document note on a Clean result, never the Reviewer's-mark note alone", async () => {
+    const r = await run(ONLY_B, [], [B(scheduleB, ONLY_B_REF)]);
+    expect(r.cleanResult).toBe(true);
+    const text = reviewAsText(r);
+    expect(text).toContain(COPY.clean.outsideAdded);
+    expect(text).not.toContain(COPY.clean.outsideReviewed);
+  });
+
+  it("lists references inside the added document", async () => {
+    const r = await run(ONLY_B, [], [B("SCHEDULE B\nService Levels\n\n1. The service credits are set out in the Order Form.\n", ONLY_B_REF)]);
+    const text = reviewAsText(r);
+    expect(text).toContain(COPY.outside.inReferencedTitle);
+    expect(text).toContain("1. The service credits are set out in the Order Form.");
   });
 });
 

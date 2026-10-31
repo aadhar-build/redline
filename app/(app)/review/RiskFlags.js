@@ -207,11 +207,7 @@ function CleanResult({ review, flags, closed, toggle, outside }) {
       />
       {(review.outsideReferences ?? []).length > 0 ? (
         <p className="flags-message" data-testid="clean-outside-note">
-          {(() => {
-            const added = review.outsideReferences.filter((r) => r.referencedDocument).length;
-            if (added === 0) return COPY.clean.outsideReviewed;
-            return added === review.outsideReferences.length ? COPY.clean.outsideAdded : COPY.clean.outsideMarkedSome;
-          })()}
+          {COPY.clean.outsideNote(review.outsideReferences)}
         </p>
       ) : null}
       {outside}

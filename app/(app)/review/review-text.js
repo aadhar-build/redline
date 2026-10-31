@@ -63,6 +63,7 @@ function flagBlock(flag, kind) {
     lines.push(`${COPY.ambiguous.label}: ${COPY.ambiguous.lede}`);
     flag.readings.forEach((r, i) => lines.push(`${COPY.ambiguous.readingCaption(i + 1, flag.readings.length)}: ${own(r)}`));
   }
+  if (flag.referencedDocument) lines.push(COPY.outside.fromReferenced(flag.referencedDocument.title));
   lines.push(...sources(flag.sourceSentences), ...counterOffer(flag.counterOffer));
   return lines.join("\n");
 }
@@ -78,21 +79,30 @@ function referenceBlock(r, number) {
   const c = COPY.outside;
   const kind = KIND[r.severity] ?? "negotiate";
   const reviewed = r.reviewed !== null && r.reviewed !== undefined;
-  const lines = [`${number}. ${SEVERITY_LABELS[kind]}: ${own(r.title)} (${reviewed ? c.reviewedTag : c.notReviewedTag})`, own(r.says)];
+  const tag = r.referencedDocument ? c.addedTag : reviewed ? c.reviewedTag : c.notReviewedTag;
+  const lines = [`${number}. ${SEVERITY_LABELS[kind]}: ${own(r.title)} (${tag})`, own(r.says)];
   if (r.redLineMatch) lines.push(`${COPY.flags.redLineMatchLabel}: ${COPY.flags.redLineMatched(r.redLineMatch.number, r.redLineMatch.name)}`);
   if (r.judgment) lines.push(`${COPY.flags.judgmentLabel}: ${own(r.judgment)}`);
   lines.push(...sources(r.sourceSentences.slice(0, 1)), ...counterOffer(r.counterOffer ?? null));
-  lines.push(reviewed ? `${c.statementLabel}: ${c.statement(formatSavedAt(r.reviewed.at))}` : c.notReviewed);
+  if (r.referencedDocument) lines.push(c.added(r.referencedDocument.title));
+  else lines.push(reviewed ? `${c.statementLabel}: ${c.statement(formatSavedAt(r.reviewed.at))}` : c.notReviewed);
   if (r.redLineMatch) lines.push(c.stillBlocks);
   return lines.join("\n");
 }
 
-function outsideSection(references, firstNumber) {
-  if (references.length === 0) return [];
-  return [
-    `${COPY.outside.title} (${references.length})\n${COPY.outside.lede}`,
-    ...references.map((r, i) => referenceBlock(r, firstNumber + i)),
-  ];
+function outsideSection(references, firstNumber, inReferenced = []) {
+  const blocks = [];
+  if (references.length > 0) {
+    blocks.push(`${COPY.outside.title} (${references.length})\n${COPY.outside.lede}`, ...references.map((r, i) => referenceBlock(r, firstNumber + i)));
+  }
+  // Ticket 18: sentences in an added document that bring in yet another document.
+  if (inReferenced.length > 0) {
+    blocks.push(
+      `${COPY.outside.inReferencedTitle} (${inReferenced.length})\n${COPY.outside.inReferencedLede}`,
+      ...inReferenced.map((r) => [COPY.outside.fromReferenced(r.referencedDocument?.title), ...sources(r.sourceSentences.slice(0, 1))].join("\n")),
+    );
+  }
+  return blocks;
 }
 
 function redLinesSection(redLines, { lede = COPY.redLines.lede, empty = null } = {}) {
@@ -159,12 +169,12 @@ export function reviewAsText(review, { ownerUnknownShown = false } = {}) {
   blocks.push(head.join("\n"));
 
   const clean = review.cleanResult === true;
-  const outside = outsideSection(references, flags.length + 1);
+  const outside = outsideSection(references, flags.length + 1, review.referencedOutsideReferences ?? []);
   if (clean) {
     blocks.push(`${COPY.clean.title}\n${COPY.clean.statement}`);
     blocks.push(...redLinesSection(review.redLinesChecked ?? [], { lede: COPY.clean.checkedLede, empty: COPY.clean.noRedLines }));
     blocks.push(...group(flags, "know-this", "know", { lede: COPY.clean.knowThisLede, empty: COPY.clean.noKnowThis }));
-    if (references.length > 0) blocks.push(COPY.clean.outsideReviewed);
+    if (references.length > 0) blocks.push(COPY.clean.outsideNote(references));
     blocks.push(...outside);
   } else if (flags.length === 0 && references.length === 0 && review.withheldCount === 0) {
     blocks.push(COPY.flags.none);

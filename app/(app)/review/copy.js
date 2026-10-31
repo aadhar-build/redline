@@ -161,8 +161,14 @@ export const COPY = {
     outsideReviewed:
       "You marked each Outside reference below as reviewed. That's your own statement. Redline hasn't read the documents they point to.",
     outsideMarkedSome:
-      "You marked some Outside references below as reviewed. That's your own statement: Redline hasn't read those documents. It reviewed the ones you added together with this contract.",
+      "Redline reviewed the documents you added together with this contract. You marked the other Outside references below as reviewed yourself, and Redline hasn't read the documents they point to.",
     outsideAdded: "You added the document for each Outside reference below, and Redline reviewed them together with this contract.",
+    // Which note goes with a Clean result: the Reviewer's marks, the added documents, or both.
+    outsideNote(references) {
+      const added = references.filter((r) => r.referencedDocument).length;
+      if (added === 0) return this.outsideReviewed;
+      return added === references.length ? this.outsideAdded : this.outsideMarkedSome;
+    },
   },
   // Outside references (ticket 13, ADR 0007). Marking one as reviewed is the Reviewer's statement, never
   // something Redline checked, and every line here says so.
@@ -210,7 +216,7 @@ export const COPY = {
     },
     addedTag: "Document added",
     added: (title) =>
-      `You added ${title ? `"${title}"` : "the referenced document"}. Redline reviewed it together with this contract. Flags from it appear with the others, each quoting its own sentence.`,
+      `You added ${title ? `"${title}"` : "the referenced document"}. Redline reviewed it together with this contract. Any flags from it are listed with the others, each quoting its own sentence.`,
     fromReferenced: (title) => (title ? `From "${title}", the document you added` : "From the document you added"),
     inReferencedTitle: "References in the documents you added",
     inReferencedLede:
