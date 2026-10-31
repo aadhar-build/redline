@@ -12,6 +12,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:local": "REDLINE_LOOPBACK_ONLY=1 next dev -H 127.0.0.1 -p ${PORT:-3000}",
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
@@ -20,6 +21,7 @@
     "check:client-bundle": "node scripts/check-client-bundle.mjs .next",
     "test:bundle-check-plant": "node scripts/prove-bundle-check-fails.mjs",
     "predev": "node scripts/copy-pdfjs-assets.mjs",
+    "predev:local": "node scripts/copy-pdfjs-assets.mjs",
     "prebuild": "node scripts/copy-pdfjs-assets.mjs"
   },
   "devDependencies": {

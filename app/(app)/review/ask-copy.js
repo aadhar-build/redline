@@ -27,6 +27,7 @@ export const ASK_COPY = {
     "document-too-long": "That's too much text to read in one go. The limit is 200,000 characters.",
     "no-script":
       "This local setup only has scripted answers for the questions in fixtures/questions. Ask one of those.",
+    busy: "Redline is still working on another request. Ask again when it's done.",
     failed: "Redline couldn't answer that. Try again.",
     network: "Couldn't reach Redline. Check your connection and try again.",
     "not-found": "Redline can't find this contract in your library. Sign in again and reopen it.",

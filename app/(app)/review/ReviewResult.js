@@ -12,8 +12,9 @@ import RiskFlags from "./RiskFlags";
  * @param {{ review: object, documentText?: string, documentId?: string | null, askOff?: string | null, children?: React.ReactNode }} props
  * documentId set: the question box asks about the saved document by id. Otherwise it posts documentText.
  * askOff set: questions are off on this site, and this line says so in place of the box.
+ * runToken: set only with the local Claude Code CLI adapter; the question route requires it back.
  */
-export default function ReviewResult({ review, documentText, documentId = null, askOff = null, children }) {
+export default function ReviewResult({ review, documentText, documentId = null, askOff = null, runToken = null, children }) {
   const summary = review.summary;
   const marked = summary.marked ?? [];
   return (
@@ -32,7 +33,7 @@ export default function ReviewResult({ review, documentText, documentId = null, 
           {askOff ? (
             <p className="summary-note" data-testid="ask-off">{askOff}</p>
           ) : (
-            <QuestionBox key={documentId ?? documentText} documentId={documentId} documentText={documentText} />
+            <QuestionBox key={documentId ?? documentText} documentId={documentId} documentText={documentText} runToken={runToken} />
           )}
         </div>
       </section>

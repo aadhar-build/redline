@@ -16,8 +16,12 @@ import ReviewResult from "./ReviewResult";
 
 const MAX_LENGTH = 200_000;
 
-/** @param {{ account: "off" | "signed-out" | "signed-in" }} props */
-export default function PasteForm({ account = "off" }) {
+/**
+ * @param {{ account: "off" | "signed-out" | "signed-in", runToken?: string | null }} props
+ * runToken is set only when the local Claude Code CLI adapter runs this server; the routes require it
+ * back (lib/review/local-guard.js).
+ */
+export default function PasteForm({ account = "off", runToken = null }) {
   const [text, setText] = useState("");
   const [fileName, setFileName] = useState(null); // set while the text shown came from a file
   const [fileSource, setFileSource] = useState(null); // "pdf" or "docx" while a file's text is shown
@@ -71,7 +75,7 @@ export default function PasteForm({ account = "off" }) {
     try {
       res = await fetch("/api/review", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", ...(runToken ? { "x-redline-run-token": runToken } : {}) },
         body: JSON.stringify({ text, source }),
       });
       data = await res.json();
@@ -150,7 +154,7 @@ export default function PasteForm({ account = "off" }) {
       </form>
 
       {state.kind === "summary" ? (
-        <ReviewResult review={state.review} documentText={state.documentText} documentId={state.documentId}>
+        <ReviewResult review={state.review} documentText={state.documentText} documentId={state.documentId} runToken={runToken}>
           {account === "signed-in" &&
             (state.documentId ? (
               <p className="saved-note" data-testid="saved-note">
