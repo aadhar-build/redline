@@ -49,3 +49,5 @@ S04 has 5 ₹ figures. v6 small printed ₹ on 2 of them and left it out on the 
 On the blank grey-checker test pages, v6 small reads a few huge, low-confidence boxes ("一" and "1", confidence 0.51 to 0.55), where v5 read nothing. The page is then rejected as "not English" instead of "has no text".
 
 Fixed by the coordinator's ruling (2026-10-31), with no confidence floor, because 4 of 361 real boxes on the round-2 pages score under 0.6. ocr-lines.js drops any box with no Latin letter, digit or ₹. An OCR'd page with fewer than 20 Latin letters counts as having no readable text, so a blank scan gets "no text". Both rules have unit tests in ocr-extraction.test.js and are recorded in ADR 0008.
+
+- 2026-10-31, final real run (../final-real-run-2026-10-31.md): S01 and S04 ran end to end in the browser (OCR then CLI review). Scanned note shown on both; S04 had 1 unreadable-amount withhold. Box 5 left unticked: only 2 of the 5 scans were run, and S04 withheld 10 of 13 flags.
