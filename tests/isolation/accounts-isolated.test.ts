@@ -3,7 +3,7 @@
 // Two accounts sign in to the LOCAL Supabase stack. Account B queries the
 // database directly through the Supabase client with its own session, not
 // through any interface, and must get nothing of account A's documents,
-// reviews or Red lines. Every "B gets nothing" check is paired with a positive
+// reviews, Red lines or settings. Every "B gets nothing" check is paired with a positive
 // control that A does get its own row, so a broken query cannot pass by
 // returning nothing.
 
@@ -12,7 +12,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { adminClient, anonClient, psql } from "./local-supabase";
 
-const TABLES = ["documents", "reviews", "red_lines"] as const;
+const TABLES = ["documents", "reviews", "red_lines", "account_settings"] as const;
 type Table = (typeof TABLES)[number];
 
 type Account = { id: string; client: SupabaseClient };
@@ -40,7 +40,7 @@ async function makeAccount(label: string): Promise<Account> {
 
 let a: Account;
 let b: Account;
-const aRows: Record<Table, string> = { documents: "", reviews: "", red_lines: "" };
+const aRows: Record<Table, string> = { documents: "", reviews: "", red_lines: "", account_settings: "" };
 let bDocumentId = "";
 let bRedLineId = "";
 
@@ -89,6 +89,14 @@ beforeAll(async () => {
     .single();
   if (review.error) throw review.error;
   aRows.reviews = review.data.id;
+
+  const settings = await a.client
+    .from("account_settings")
+    .insert({ udyam_micro_or_small: true })
+    .select("id")
+    .single();
+  if (settings.error) throw settings.error;
+  aRows.account_settings = settings.data.id;
 
   const bDoc = await b.client
     .from("documents")
@@ -199,7 +207,9 @@ describe("writing rows owned by another account", () => {
           ? { title: "Changed by B" }
           : table === "red_lines"
             ? { text: "Changed by B" }
-            : { summary: "Changed by B" };
+            : table === "reviews"
+              ? { summary: "Changed by B" }
+              : { udyam_micro_or_small: false };
       const upd = await b.client.from(table).update(patch).eq("id", aRows[table]).select("id");
       expect(upd.error).toBeNull();
       expect(upd.data).toEqual([]);
@@ -221,6 +231,8 @@ describe("writing rows owned by another account", () => {
     expect(rl.data).toEqual({ text: "A's own Red line" });
     const rv = await a.client.from("reviews").select("summary").eq("id", aRows.reviews).single();
     expect(rv.data).toEqual({ summary: "A's summary" });
+    const st = await a.client.from("account_settings").select("udyam_micro_or_small").eq("id", aRows.account_settings).single();
+    expect(st.data).toEqual({ udyam_micro_or_small: true });
   });
 
   it("B cannot hand its own document or Red line over to A", async () => {
@@ -234,6 +246,27 @@ describe("writing rows owned by another account", () => {
 
     const aView = await a.client.from("documents").select("id").eq("id", bDocumentId);
     expect(aView.data).toEqual([]);
+  });
+
+  it("B cannot insert a settings row owned by A", async () => {
+    const { data, error } = await b.client
+      .from("account_settings")
+      .insert({ owner_id: a.id, udyam_micro_or_small: false })
+      .select("id");
+    expect(data).toBeNull();
+    expect(error?.code).toBe("42501");
+  });
+
+  it("B cannot hand its own settings row over to A", async () => {
+    const own = await b.client.from("account_settings").insert({}).select("id").single();
+    expect(own.error).toBeNull();
+    const handover = await b.client
+      .from("account_settings")
+      .update({ owner_id: a.id })
+      .eq("id", own.data!.id)
+      .select("id");
+    expect(handover.data).toBeNull();
+    expect(handover.error?.code).toBe("42501");
   });
 
   it("B cannot hand its own review over to A", async () => {
@@ -262,6 +295,26 @@ describe("an account changing its own rows", () => {
     expect(upd.data).toHaveLength(1);
     expect(upd.data![0].text).toBe("A's edited Red line");
     expect(new Date(upd.data![0].updated_at).getTime()).toBeGreaterThan(new Date(before.data!.updated_at).getTime());
+  });
+
+  it("an account has at most one settings row, and the Udyam answer starts unanswered", async () => {
+    const second = await a.client.from("account_settings").insert({}).select("id");
+    expect(second.data).toBeNull();
+    expect(second.error?.code).toBe("23505");
+
+    const bSettings = await b.client.from("account_settings").select("udyam_micro_or_small");
+    expect(bSettings.error).toBeNull();
+    expect(bSettings.data).toEqual([{ udyam_micro_or_small: null }]);
+  });
+
+  it("A can change its own Udyam answer", async () => {
+    const upd = await a.client
+      .from("account_settings")
+      .update({ udyam_micro_or_small: false })
+      .eq("id", aRows.account_settings)
+      .select("udyam_micro_or_small");
+    expect(upd.error).toBeNull();
+    expect(upd.data).toEqual([{ udyam_micro_or_small: false }]);
   });
 
   it("A can delete a row of its own", async () => {
@@ -327,7 +380,7 @@ describe("what the schema stores", () => {
       .filter(Boolean);
 
     const tables = new Set(rows.map((r) => r.split(".")[0]));
-    expect([...tables].sort()).toEqual(["documents", "red_lines", "reviews"]);
+    expect([...tables].sort()).toEqual(["account_settings", "documents", "red_lines", "reviews"]);
 
     for (const row of rows) {
       const [, rest] = row.split(".");
@@ -350,7 +403,12 @@ describe("what the schema stores", () => {
     const rls = psql(`
       select relname || ':' || relrowsecurity || ':' || relforcerowsecurity
       from pg_class where relnamespace = 'public'::regnamespace and relkind = 'r' order by 1`);
-    expect(rls.split("\n")).toEqual(["documents:true:true", "red_lines:true:true", "reviews:true:true"]);
+    expect(rls.split("\n")).toEqual([
+      "account_settings:true:true",
+      "documents:true:true",
+      "red_lines:true:true",
+      "reviews:true:true",
+    ]);
 
     const anonGrants = psql(`
       select count(*) from information_schema.role_table_grants
