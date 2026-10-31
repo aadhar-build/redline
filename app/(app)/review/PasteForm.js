@@ -25,12 +25,14 @@ export default function PasteForm({ account = "off", runToken = null }) {
   const [text, setText] = useState("");
   const [fileName, setFileName] = useState(null); // set while the text shown came from a file
   const [fileSource, setFileSource] = useState(null); // "pdf" or "docx" while a file's text is shown
+  const [hiddenText, setHiddenText] = useState(false); // the file's Word text has hidden runs
   const [state, setState] = useState({ kind: "empty" });
   const fileInput = useRef(null);
 
   function clearFile() {
     setFileName(null);
     setFileSource(null);
+    setHiddenText(false);
     setText("");
     if (fileInput.current) fileInput.current.value = "";
   }
@@ -40,6 +42,7 @@ export default function PasteForm({ account = "off", runToken = null }) {
     if (!file) return;
     setFileName(null);
     setFileSource(null);
+    setHiddenText(false);
     setText("");
     setState({ kind: "reading" });
     let result;
@@ -52,6 +55,7 @@ export default function PasteForm({ account = "off", runToken = null }) {
       setText(result.text);
       setFileName(file.name);
       setFileSource(result.source);
+      setHiddenText((result.hiddenRuns ?? 0) > 0);
       return setState({ kind: "empty" });
     }
     // A rejected file, or one with scanned pages (OCR is not built yet): nothing is sent.
@@ -133,6 +137,9 @@ export default function PasteForm({ account = "off", runToken = null }) {
             <button type="button" className="link-button" onClick={clearFile}>{COPY.clearFile}</button>
           </p>
         )}
+        {fileName && hiddenText && (
+          <p className="field-hint" data-testid="hidden-text-note">{COPY.hiddenText}</p>
+        )}
 
         <label className="field-label" htmlFor="contract-text">{COPY.fieldLabel}</label>
         <p className="field-hint" id="contract-text-hint">{COPY.fieldHint}</p>
@@ -155,6 +162,11 @@ export default function PasteForm({ account = "off", runToken = null }) {
         {account === "signed-out" && (
           <p className="field-hint" data-testid="not-signed-in">
             {paste.signedOut} <a href="/sign-in">{paste.signedOutLink}</a>
+          </p>
+        )}
+        {account === "signed-in" && (
+          <p className="field-hint" data-testid="own-red-lines">
+            {paste.ownRedLines} <a href="/red-lines">{paste.ownRedLinesLink}</a>
           </p>
         )}
       </form>

@@ -1,6 +1,7 @@
 import { currentAccount } from "../../lib/supabase/server.js";
 import { supabaseConfig } from "../../lib/supabase/config.js";
 import { LIBRARY_COPY } from "./library/library-copy";
+import { RED_LINES_COPY } from "./red-lines/red-lines-copy";
 
 // App shell for screens behind the landing page. When accounts are on, the top bar links the library
 // and signs in or out.
@@ -20,6 +21,7 @@ export default async function AppLayout({ children }) {
               {user ? (
                 <>
                   <a href="/library">{nav.library}</a>
+                  <a href="/red-lines">{RED_LINES_COPY.nav}</a>
                   <span className="account-email" data-testid="account-email">{user.email}</span>
                   <form action="/auth/sign-out" method="post">
                     <button type="submit" className="link-button">{nav.signOut}</button>

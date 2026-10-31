@@ -25,6 +25,8 @@ export const COPY = {
   fileReading: "Reading the file…",
   fileLoaded: (name) => `Text from ${name}. Check it, then press Review.`,
   clearFile: "Remove file",
+  // Shown when a Word file has hidden text (w:vanish) with a letter or digit in it (ticket 21).
+  hiddenText: "This file has text that Word hides, and Redline didn't read it.",
   fieldLabel: "Contract text",
   fieldHint: "Paste the whole contract, or choose a file above.",
   // pages: 1-based page numbers, at least one.
@@ -112,5 +114,8 @@ export const COPY = {
     failed: "Redline couldn't finish reading the contract. Try again.",
     network: "Couldn't reach Redline. Check your connection and try again.",
     "save-failed": "Redline couldn't save the contract to your library, so it didn't review it. Try again.",
+    "bad-red-lines":
+      "One of your Red lines couldn't be read, so Redline didn't review the contract. Check the list on the Red lines page, then try again.",
+    "red-lines-failed": "Redline couldn't load your Red lines, so it didn't review the contract. Try again.",
   },
 };

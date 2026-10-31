@@ -115,6 +115,42 @@ test("the DOCX reader keeps clause numbers, takes the accepted view and never gl
       "Kesari Cleaning Services",
     ].join("\n\n"),
   );
+  // The hidden run " Hidden note." stays out of the text, and the upload says the file has some.
+  await expect(page.getByTestId("hidden-text-note")).toHaveText(COPY.hiddenText);
+});
+
+test("the DOCX reader adds footnotes and endnotes after the body, in the order they are referred to", async ({ page }) => {
+  const ref = (kind, id) => `<w:r><w:${kind}Reference w:id="${id}"/></w:r>`;
+  const note = (kind, id, ...paras) =>
+    `<w:${kind} w:id="${id}">${paras.map((t, i) => `<w:p>${i === 0 ? `<w:r><w:${kind}Ref/></w:r>` : ""}${r(` ${t}`)}</w:p>`).join("")}</w:${kind}>`;
+  const separators = (kind) =>
+    `<w:${kind} w:type="separator" w:id="-1"><w:p>${r("----")}</w:p></w:${kind}><w:${kind} w:type="continuationSeparator" w:id="0"><w:p>${r("----")}</w:p></w:${kind}>`;
+  const body = [
+    `<w:p>${r("The fee is Rs. 18,000 a month.")}${ref("footnote", 3)}${r(" Tax is extra.")}${ref("footnote", 2)}</w:p>`,
+    // A hidden run with no letter or digit in it is not counted.
+    `<w:p>${r("The term is two years.")}${ref("endnote", 1)}<w:r><w:rPr><w:vanish/></w:rPr><w:t xml:space="preserve"> </w:t></w:r></w:p>`,
+  ].join("");
+  const file = await makeDocx({
+    body,
+    footnotes: `${separators("footnote")}${note("footnote", 2, "GST at 18 per cent.")}${note("footnote", 3, "Payable in advance.", "By bank transfer.")}${note("footnote", 9, "Never referred to.")}`,
+    endnotes: `${separators("endnote")}${note("endnote", 1, "Renewal needs both parties to agree.")}`,
+  });
+
+  await page.goto("/review");
+  await choose(page, "notes.docx", DOCX, file);
+  await expect(page.getByTestId("file-loaded")).toBeVisible();
+  expect(await page.getByLabel(COPY.fieldLabel).inputValue()).toBe(
+    [
+      "The fee is Rs. 18,000 a month. Tax is extra.",
+      "The term is two years.",
+      "Footnotes",
+      "Payable in advance.\nBy bank transfer.",
+      "GST at 18 per cent.",
+      "Endnotes",
+      "Renewal needs both parties to agree.",
+    ].join("\n\n"),
+  );
+  await expect(page.getByTestId("hidden-text-note")).toHaveCount(0);
 });
 
 test("the DOCX reader numbers clauses through heading styles", async ({ page }) => {
