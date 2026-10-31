@@ -249,6 +249,31 @@ describe("writing rows owned by another account", () => {
     expect(aView.data).toEqual([]);
   });
 
+  it("B cannot read or reset the date A's Default Red lines were seeded (ticket 12)", async () => {
+    const seed = await a.client
+      .from("account_settings")
+      .update({ red_lines_seeded_at: "2026-10-31T00:00:00Z" })
+      .eq("id", aRows.account_settings)
+      .select("red_lines_seeded_at");
+    expect(seed.error).toBeNull();
+    expect(seed.data).toHaveLength(1);
+
+    const read = await b.client.from("account_settings").select("red_lines_seeded_at").eq("owner_id", a.id);
+    expect(read.error).toBeNull();
+    expect(read.data).toEqual([]);
+
+    // Clearing it would make Redline seed A's Default Red lines again.
+    const reset = await b.client
+      .from("account_settings")
+      .update({ red_lines_seeded_at: null })
+      .eq("id", aRows.account_settings)
+      .select("id");
+    expect(reset.error).toBeNull();
+    expect(reset.data).toEqual([]);
+    const still = await a.client.from("account_settings").select("red_lines_seeded_at").eq("id", aRows.account_settings).single();
+    expect(new Date(still.data!.red_lines_seeded_at).toISOString()).toBe("2026-10-31T00:00:00.000Z");
+  });
+
   it("B cannot insert a settings row owned by A", async () => {
     const { data, error } = await b.client
       .from("account_settings")
