@@ -101,6 +101,10 @@ export const COPY = {
           : `${n} are references to other documents that Redline couldn't cite as whole sentences, such as lines in a contents list.`,
     },
     severityNote: "The level on each flag is Redline's judgment, not something the contract says.",
+    merged: (n) =>
+      n === 1
+        ? "1 flag merged into an Outside reference. It cited the same sentence for the same Red line, so Redline shows it once."
+        : `${n} flags merged into Outside references. Each cited the same sentences for the same Red line, so Redline shows each sentence once.`,
     withheldTail: "Redline doesn't show a flag it can't trace to the contract.",
     sourceCaption: "Source sentence",
     sourceCaptionOf: (i, n) => `Source sentence ${i} of ${n}`,
@@ -165,6 +169,8 @@ export const COPY = {
     mark: "Mark as reviewed",
     unmark: "Undo",
     markBusy: "Saving…",
+    sourcesCaption: "Source sentences",
+    markCovers: (n) => `Marking this covers all ${n} sentences.`,
     signInToMark: "To mark this as reviewed, sign in and review the contract again. Redline only keeps that mark on a saved review.",
     errors: {
       "not-found": "Redline couldn't find this reference on your saved review. Reload the page and try again.",

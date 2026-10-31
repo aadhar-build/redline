@@ -70,3 +70,15 @@ test('an "as amended" reference is Don\'t sign as written through Red line 3', a
   await expect(amended.getByTestId("outside-red-line")).toContainText(COPY.flags.redLineMatched(3, ""));
   await expect(amended.getByTestId("outside-still-blocks")).toHaveText(COPY.outside.stillBlocks);
 });
+
+test("a model flag that only repeats an as amended reference is merged, and the sentence shows once (QUESTIONS.md 31)", async ({ page }) => {
+  await reviewText(page, read("fixtures/contracts/vendor-agreement-03.txt"));
+  const charges = "both as amended from time to time by Provider.";
+  await expect(page.getByTestId("merged-count")).toHaveText(COPY.flags.merged(1));
+  await expect(page.getByTestId("risk-flags").getByTestId("risk-flag").filter({ hasText: charges })).toHaveCount(0);
+  const refs = page.getByTestId("outside-reference");
+  await expect(refs).toHaveCount(1);
+  await expect(refs.first()).toHaveAttribute("data-severity", "dont-sign-as-written");
+  await expect(refs.first().getByTestId("outside-title")).toHaveText('Terms "as amended from time to time"');
+  await expect(refs.first().getByTestId("source-sentence")).toHaveCount(1);
+});
