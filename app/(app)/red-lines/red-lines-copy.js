@@ -4,7 +4,7 @@
 export const RED_LINES_COPY = {
   nav: "Red lines",
   pageTitle: "Your Red lines",
-  lede: "A Red line is a term the business won't accept. Redline checks every contract you review while signed in against this list, and a clause that matches one is always Don't sign as written. Your list starts with Redline's four Default Red lines. Change it here and your next review uses the new list. Reviews already in your library keep the list they were checked against.",
+  lede: "A Red line is a term the business won't accept. Redline checks every contract you review while signed in against this list, and a clause that matches one is always Don't sign as written. Your list starts with Redline's four Default Red lines. Change it here and your next review uses the new list. Reviews already in your library keep the list they were checked against, and you can review any of them again with the new list.",
   off: "Accounts are switched off on this site, so there are no saved Red lines here.",
   listLabel: "Red lines",
   defaultLabel: (n) => `Default Red line ${n}`,

@@ -9,7 +9,10 @@ import { describe, expect, it } from "vitest";
 import { createLocalFakeAdapter } from "../../lib/review/adapters/index.js";
 import { DEFAULT_RED_LINES } from "../../lib/review/red-lines.js";
 import { review } from "../../lib/review/review.js";
-import { forReview, redLineFromRow } from "../../lib/library/red-lines.js";
+import { forReview, redLineFromRow, sameRedLineList } from "../../lib/library/red-lines.js";
+import { findBannedWording } from "../../lib/review/wording.js";
+import { LIBRARY_COPY } from "../../app/(app)/library/library-copy.js";
+import { RED_LINES_COPY } from "../../app/(app)/red-lines/red-lines-copy.js";
 import { OWN_RED_LINE_SEEDS, OWN_RED_LINES_DOCUMENT } from "../../fixtures/contracts/own-red-line-seeds.js";
 
 const root = path.resolve(__dirname, "../..");
@@ -110,5 +113,44 @@ describe("Review seam: Red lines in the Reviewer's own words", () => {
   it("checked against the Default Red lines only, none of these clauses is a Red line match", async () => {
     const { result } = await run(defaults);
     expect(result.riskFlags.every((f) => f.redLineMatch === null)).toBe(true);
+  });
+});
+
+describe("whether a saved review was checked against the current list (OQ17)", () => {
+  const now = forReview(fullList);
+
+  it("is the same list when the stored list is what Review checked, basis aside", async () => {
+    const { result } = await run(fullList);
+    expect(sameRedLineList(result.redLinesChecked, now)).toBe(true);
+    // The basis is shown, never sent to the model, so it does not make a list older.
+    expect(sameRedLineList(result.redLinesChecked.map((r) => ({ ...r, basis: null })), now)).toBe(true);
+  });
+
+  it("is an older list after any addition, removal, rewording, change to what a Red line catches, or reordering", async () => {
+    const { result } = await run(fullList);
+    const stored = result.redLinesChecked;
+    const changed = [
+      [...now, { id: "own-new", name: "A new one", catches: null }],
+      now.slice(1),
+      now.map((r, i) => (i === 4 ? { ...r, name: `${r.name}, or 45` } : r)),
+      now.map((r, i) => (i === 0 ? { ...r, catches: "Something else." } : r)),
+      [now[1], now[0], ...now.slice(2)],
+    ];
+    for (const list of changed) expect(sameRedLineList(stored, list)).toBe(false);
+  });
+
+  it("is an older list, without throwing, for a stored list of any other shape", () => {
+    for (const stored of [null, undefined, "x", {}, [], [null], [{ text: "Old", default_number: 1 }], [{ id: 3, name: "x" }]]) {
+      expect(sameRedLineList(stored, now)).toBe(false);
+    }
+    expect(sameRedLineList([], [])).toBe(true);
+  });
+});
+
+describe("copy for saved reviews and re-runs", () => {
+  it("uses no hedge or verdict words", () => {
+    const { library, saved } = LIBRARY_COPY;
+    const strings = [library.lede, library.olderList, saved.olderList, saved.rerun, saved.rerunBusy, saved.rerunOff, ...Object.values(saved.rerunErrors), RED_LINES_COPY.lede];
+    for (const s of strings) expect(findBannedWording(s), s).toEqual([]);
   });
 });
