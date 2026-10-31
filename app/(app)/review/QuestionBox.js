@@ -28,8 +28,12 @@ function MarkedText({ text, marked }) {
   return parts;
 }
 
-/** @param {{ documentText: string }} props The text the summary was made from, not the live paste box. */
-export default function QuestionBox({ documentText }) {
+/**
+ * @param {{ documentText?: string, documentId?: string | null }} props
+ * documentId: a saved document. Only its id is sent; the server reads the stored text itself.
+ * documentText: an unsaved paste, the text the summary was made from, not the live paste box.
+ */
+export default function QuestionBox({ documentText, documentId = null }) {
   const [question, setQuestion] = useState("");
   const [state, setState] = useState({ kind: "empty" });
 
@@ -46,7 +50,7 @@ export default function QuestionBox({ documentText }) {
       res = await fetch("/api/ask", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ text: documentText, question: q }),
+        body: JSON.stringify(documentId ? { documentId, question: q } : { text: documentText, question: q }),
       });
       data = await res.json();
     } catch {

@@ -23,7 +23,7 @@ test("pasting the fixture contract shows its plain-English summary", async ({ pa
   await page.getByRole("button", { name: COPY.submit }).click();
 
   const request = await posted;
-  expect(JSON.parse(request.postData())).toEqual({ text: fixtureText });
+  expect(JSON.parse(request.postData())).toEqual({ text: fixtureText, source: "paste" });
 
   await expect(page.getByTestId("summary")).toHaveText(fixtureSummary);
   await expect(page.getByText(COPY.summaryNote)).toBeVisible();

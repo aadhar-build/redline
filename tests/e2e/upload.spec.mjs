@@ -28,15 +28,17 @@ function recordRequests(page) {
   return requests;
 }
 
-function expectOnlyTextLeft(requests, baseURL, fileBytes) {
+function expectOnlyTextLeft(requests, baseURL, fileBytes, source) {
   const origin = new URL(baseURL).origin;
   // Nothing goes to another host: no CDN worker, no model API.
   expect(requests.filter((q) => new URL(q.url).origin !== origin).map((q) => q.url)).toEqual([]);
   const withBody = requests.filter((q) => q.body && q.body.length > 0);
-  // The one request with a body is the review POST, and its body is JSON holding only the text.
+  // The one request with a body is the review POST, and its body is JSON holding only the text and
+  // the name of where it came from ("pdf" or "docx"), which the library stores (ticket 10).
   expect(withBody.map((q) => `${q.method} ${new URL(q.url).pathname}`)).toEqual(["POST /api/review"]);
   const body = withBody[0].body;
-  expect(Object.keys(JSON.parse(body.toString("utf8")))).toEqual(["text"]);
+  expect(Object.keys(JSON.parse(body.toString("utf8")))).toEqual(["text", "source"]);
+  expect(JSON.parse(body.toString("utf8")).source).toBe(source);
   for (const sig of ["%PDF-", "PK\u0003\u0004"]) expect(body.includes(Buffer.from(sig, "latin1"))).toBe(false);
   expect(body.includes(fileBytes.subarray(0, 64))).toBe(false);
   expect(body.includes(Buffer.from(fileBytes.toString("base64").slice(0, 64)))).toBe(false);
@@ -66,7 +68,7 @@ for (const [kind, name, mimeType, build] of [
     await posted;
     await expect(page.getByTestId("summary")).toHaveText(fixtureSummary);
 
-    const sent = expectOnlyTextLeft(requests, baseURL, file);
+    const sent = expectOnlyTextLeft(requests, baseURL, file, kind.toLowerCase());
     expect(sent).toBe(extracted);
     if (kind === "PDF") {
       expect(requests.some((q) => /\/pdfjs\/[\d.]+\/pdf\.worker\.min\.mjs$/.test(new URL(q.url).pathname))).toBe(true);

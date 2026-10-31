@@ -459,3 +459,43 @@ html.motion .demo:not([data-played]) .status-live { display: none; }
 .file-loaded { font-size: 0.875rem; color: var(--ink); border-left: 3px solid var(--blue); padding: 0.2rem 0 0.2rem 0.65rem; margin-bottom: 0.5rem; }
 .link-button { font: inherit; color: var(--blue); background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; }
 .paste-field[readonly] { background: var(--sheet); }
+
+/* ---------- App: accounts and the saved library (ticket 10) ---------- */
+.account-nav { display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem 1.1rem; font-size: 0.9375rem; }
+.account-nav form { display: contents; }
+.account-email { color: var(--ink-2); font-size: 0.875rem; overflow-wrap: anywhere; }
+.link-button {
+  font: inherit; color: var(--blue); background: none; border: 0; padding: 0; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 0.18em; text-decoration-thickness: 1px;
+}
+.link-button:hover { text-decoration-thickness: 2px; }
+.link-button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 2px; }
+.sign-in-form { margin-top: 2rem; max-width: 30rem; display: grid; gap: 0.6rem; }
+.sign-in-form .cta { justify-self: start; cursor: pointer; }
+.sign-in-form .cta:disabled { cursor: progress; background: var(--ink-2); border-color: var(--ink-2); }
+.sign-in-error { margin-top: 1.25rem; max-width: 36rem; }
+.sign-in-sent { font-size: 0.9375rem; border-left: 3px solid var(--blue); padding: 0.2rem 0 0.2rem 0.65rem; }
+.saved-note { font-size: 0.875rem; color: var(--ink); border-left: 3px solid var(--blue); padding: 0.2rem 0 0.2rem 0.65rem; }
+.library-empty { margin-top: 2rem; max-width: 36rem; display: grid; gap: 0.85rem; justify-items: start; }
+/* The library as a workpaper index: a framed table with reference codes in blue tabular numerals. */
+.library-index {
+  margin-top: 2rem; width: 100%; max-width: 60rem; border-collapse: collapse;
+  background: var(--paper); border: 1.5px solid var(--rule-strong);
+}
+.library-index th {
+  font: 700 0.75rem / 1.2 var(--font-label-stack); letter-spacing: 0.07em; text-transform: uppercase;
+  text-align: left; color: var(--ink-2); padding: 0.6rem 0.75rem; border-bottom: 1.5px solid var(--rule-strong);
+}
+.library-index td { padding: 0.65rem 0.75rem; border-top: 1px solid var(--rule); vertical-align: top; font-variant-numeric: tabular-nums; }
+.library-index tbody tr:first-child td { border-top: 0; }
+.library-index td a { font: 400 1.0625rem / 1.4 var(--font-text-stack); }
+.library-index .ref-col { width: 4.5rem; color: var(--blue); font-weight: 600; white-space: nowrap; }
+.library-index .num-col { text-align: right; white-space: nowrap; }
+.back-link { margin-bottom: 1rem; font-size: 0.9375rem; }
+.saved-fields { display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; margin-top: 0.85rem; }
+.saved-fields dt { font: 600 0.75rem / 1.2 var(--font-label-stack); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-2); }
+.saved-fields dd { margin: 0.2rem 0 0; font-variant-numeric: tabular-nums; }
+.saved-grid { margin-top: 2rem; max-width: 60rem; }
+@media (max-width: 40rem) {
+  .library-index .ref-col { display: none; }
+}
