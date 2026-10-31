@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Next 16 otherwise writes a generated section into the tracked CLAUDE.md on every dev start.
+  agentRules: false,
   turbopack: {
     resolveAlias: {
       // ppu-paddle-ocr imports "onnxruntime-web", whose default build carries the 29.5 MB JSEP/WebGPU
