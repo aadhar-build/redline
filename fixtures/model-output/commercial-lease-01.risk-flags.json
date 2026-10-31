@@ -10,31 +10,41 @@
         "This Lease runs for three years from 1 December 2026 and then renews automatically for further terms of three years unless Tenant gives written notice at least six months before the end of a term.",
         "If Tenant vacates the Premises before the end of a term, Tenant will pay Landlord an exit fee equal to six months' rent."
       ],
-      "redLine": "default-auto-renewal-or-long-term"
+      "redLine": "default-auto-renewal-or-long-term",
+      "counterOffer": "This Lease runs for three years from 1 December 2026 and renews for a further term of three years only if Tenant gives written notice at least six months before the end of a term. If Tenant vacates the Premises at the end of a term, Tenant pays Landlord no exit fee."
     },
     {
       "severity": "know-this",
       "title": "Rent rises 15% every year",
       "says": "The rent goes up by 15% on each anniversary of the start date.",
       "judgment": null,
-      "sourceSentences": ["The rent increases by 15% on each anniversary of the start date."],
-      "redLine": "default-one-sided-changes"
+      "sourceSentences": [
+        "The rent increases by 15% on each anniversary of the start date."
+      ],
+      "redLine": "default-one-sided-changes",
+      "counterOffer": "The rent increases by 15% only at the start of each renewed term."
     },
     {
       "severity": "know-this",
       "title": "Six months' rent as deposit",
       "says": "Chai Kona pays an interest-free security deposit of six months' rent before taking possession.",
       "judgment": null,
-      "sourceSentences": ["Tenant will pay Landlord an interest-free security deposit equal to six months' rent before taking possession."],
-      "redLine": null
+      "sourceSentences": [
+        "Tenant will pay Landlord an interest-free security deposit equal to six months' rent before taking possession."
+      ],
+      "redLine": null,
+      "counterOffer": "Tenant will pay Landlord a security deposit equal to six months' rent before taking possession, and Landlord will pay interest on it."
     },
     {
       "severity": "dont-sign-as-written",
       "title": "Managing director's personal guarantee",
       "says": "Anil Joshi personally guarantees the rent and every other obligation Chai Kona has under the lease.",
       "judgment": null,
-      "sourceSentences": ["Anil Joshi, the managing director of Tenant, personally guarantees the payment of rent and every other obligation of Tenant under this Lease."],
-      "redLine": "default-personal-guarantee"
+      "sourceSentences": [
+        "Anil Joshi, the managing director of Tenant, personally guarantees the payment of rent and every other obligation of Tenant under this Lease."
+      ],
+      "redLine": "default-personal-guarantee",
+      "counterOffer": "Anil Joshi does not guarantee the payment of rent or any other obligation of Tenant under this Lease."
     },
     {
       "severity": "negotiate",
@@ -45,7 +55,8 @@
         "Tenant will indemnify Landlord against all claims, losses and costs arising from Tenant's use of the Premises.",
         "This indemnity applies whether or not the loss was foreseeable and continues after this Lease ends."
       ],
-      "redLine": "default-uncapped-liability"
+      "redLine": "default-uncapped-liability",
+      "counterOffer": "Tenant will indemnify Landlord against claims, losses and costs arising from Tenant's use of the Premises. This indemnity applies only to a loss that was foreseeable and ends when this Lease ends."
     }
   ]
 }

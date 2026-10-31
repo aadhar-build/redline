@@ -6,8 +6,11 @@
       "title": "Three-year initial term",
       "says": "The agreement runs for three years from the date Bluebird Bakery signs it.",
       "judgment": null,
-      "sourceSentences": ["This Agreement runs for an initial term of three years from the date Merchant signs it."],
-      "redLine": "default-auto-renewal-or-long-term"
+      "sourceSentences": [
+        "This Agreement runs for an initial term of three years from the date Merchant signs it."
+      ],
+      "redLine": "default-auto-renewal-or-long-term",
+      "counterOffer": "This Agreement runs for an initial term of one year from the date Merchant signs it."
     },
     {
       "severity": "negotiate",
@@ -18,23 +21,30 @@
         "At the end of each term, this Agreement renews automatically for a further one-year term unless Merchant gives written notice at least ninety days before the renewal date.",
         "If Merchant ends this Agreement before the end of a term for any reason, Merchant will pay Processor an early termination fee of $495."
       ],
-      "redLine": "default-auto-renewal-or-long-term"
+      "redLine": "default-auto-renewal-or-long-term",
+      "counterOffer": "At the end of each term, this Agreement renews for a further one-year term only if Merchant gives written notice before the renewal date. Merchant will pay no early termination fee if it ends this Agreement at the end of a term."
     },
     {
       "severity": "negotiate",
       "title": "Processor can change fees by email",
       "says": "Harbor Point can change any fee or add a new one at any time by sending an email.",
       "judgment": null,
-      "sourceSentences": ["Processor can change any fee, or add a new fee, at any time by sending Merchant an email."],
-      "redLine": "default-one-sided-changes"
+      "sourceSentences": [
+        "Processor can change any fee, or add a new fee, at any time by sending Merchant an email."
+      ],
+      "redLine": "default-one-sided-changes",
+      "counterOffer": "Processor will not change any fee, or add a new fee, unless Merchant agrees in writing."
     },
     {
       "severity": "dont-sign-as-written",
       "title": "Owner's personal guarantee",
       "says": "Henry Alvarez personally guarantees every obligation Bluebird Bakery has under the agreement.",
       "judgment": null,
-      "sourceSentences": ["Henry Alvarez, who owns Merchant, personally guarantees every obligation of Merchant under this Agreement."],
-      "redLine": "default-personal-guarantee"
+      "sourceSentences": [
+        "Henry Alvarez, who owns Merchant, personally guarantees every obligation of Merchant under this Agreement."
+      ],
+      "redLine": "default-personal-guarantee",
+      "counterOffer": "Henry Alvarez does not guarantee any obligation of Merchant under this Agreement."
     },
     {
       "severity": "negotiate",
@@ -45,15 +55,19 @@
         "Merchant will indemnify Processor against all losses, chargebacks and costs arising from Merchant's card transactions.",
         "This indemnity covers direct and indirect losses and continues after this Agreement ends."
       ],
-      "redLine": "default-uncapped-liability"
+      "redLine": "default-uncapped-liability",
+      "counterOffer": "Merchant will indemnify Processor against direct losses, chargebacks and costs arising from Merchant's card transactions. This indemnity does not cover indirect losses and ends when this Agreement ends."
     },
     {
       "severity": "negotiate",
       "title": "$25 late fee",
       "says": "Any amount not paid within ten days of its due date carries a $25 late fee.",
       "judgment": null,
-      "sourceSentences": ["Merchant will pay a late fee of $25 for any amount not paid within ten days of its due date."],
-      "redLine": null
+      "sourceSentences": [
+        "Merchant will pay a late fee of $25 for any amount not paid within ten days of its due date."
+      ],
+      "redLine": null,
+      "counterOffer": "Merchant will pay a late fee of $25 for any amount not paid within ten days of written notice that it is due."
     }
   ]
 }
