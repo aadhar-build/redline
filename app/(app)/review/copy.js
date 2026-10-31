@@ -47,7 +47,7 @@ export const COPY = {
   // QUESTIONS 18 (decided 2026-10-31): shown on any review whose document OCR read, in whole or part.
   // scanned: { pages, pageCount } from the review; pages or pageCount may be null (unknown).
   scannedNote: ({ pages, pageCount }) => {
-    const tail = "It may have misread a word or number, so check the ones you rely on against the original.";
+    const tail = "Redline can misread a scan, so check any word or number you rely on against the original.";
     if (pages == null) return `Redline read part of this document from a scan. ${tail}`;
     if (pageCount != null && pages === pageCount) {
       return pages === 1
@@ -57,9 +57,9 @@ export const COPY = {
     if (pageCount != null) return `Redline read ${pages} of this document's ${pageCount} pages from a scan. ${tail}`;
     return `Redline read ${pages} ${pages === 1 ? "page" : "pages"} of this document from a scan. ${tail}`;
   },
-  // Ticket 22, ruling C(a).
+  // Ticket 22, ruling C(a), worded by ticket 24 ruling 22: blanks, never "an unsigned form".
   templateNote:
-    "This looks like a blank form with gaps still to fill in. Redline describes what the form provides for, not what anyone has agreed to or signed.",
+    "This document has blanks that haven't been filled in. Redline calls it signed or dated only where the document itself says so.",
   // Ticket 22, ruling E.
   owner: {
     label: "Reviewed for:",

@@ -49,7 +49,7 @@ describe("Review: the scanned note", () => {
 });
 
 describe("scanned note copy", () => {
-  const tail = "It may have misread a word or number, so check the ones you rely on against the original.";
+  const tail = "Redline can misread a scan, so check any word or number you rely on against the original.";
   it("names the pages", () => {
     expect(COPY.scannedNote({ pages: 3, pageCount: 3 })).toBe(`Redline read all 3 pages of this document from a scan. ${tail}`);
     expect(COPY.scannedNote({ pages: 1, pageCount: 1 })).toBe(`Redline read this one-page document from a scan. ${tail}`);
