@@ -6,7 +6,7 @@
 
 **Needs approval for:** None
 
-**Status:** ready-for-agent
+**Status:** merged into `development` (2026-10-31); own-words matching box belongs to ticket 15
 
 - [x] After a Default Red line is removed, its seeded clause is not a Red line match in a review run after removal (PRD criterion 4).
 - [x] Edits persist across sessions, and the Isolation seam still returns no rows (PRD criterion 15).
