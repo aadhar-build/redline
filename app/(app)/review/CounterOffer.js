@@ -37,6 +37,10 @@ export default function CounterOffer({ counterOffer, number, quiet = false }) {
       <p data-testid="counter-offer-text">
         <MarkedText text={counterOffer.text} marked={counterOffer.marked ?? []} />
       </p>
+      {/* Announces the copy to screen readers; the button's own label stays the same. */}
+      <span className="sr-only" aria-live="polite" data-testid="counter-offer-copy-status">
+        {state === "copied" ? COPY.counterOffer.copied : ""}
+      </span>
       {state === "failed" ? (
         <p className="counter-copy-failed" role="alert" data-testid="counter-offer-copy-failed">
           {COPY.counterOffer.copyFailed}
