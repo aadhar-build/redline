@@ -498,12 +498,12 @@ describe("Ticket 24 ruling 21: lead-in exceptions, start-only", () => {
     expect(found(doc, quote)).toBe(false);
   });
 
-  it("shows clause 1 after NOW IT IS AGREED THAT: (QUESTIONS.md 27)", () => {
+  it("shows clause 1 after NOW IT IS AGREED THAT: (QUESTIONS.md 32)", () => {
     expect(shown("The fee is due.\nNOW IT IS AGREED THAT:\n1. The Licensor grants the licence.", "1. The Licensor grants the licence.")).toBe("1. The Licensor grants the licence.");
   });
 });
 
-describe("QUESTIONS.md 27: lead-in words on rule A, formula openers ending THAT", () => {
+describe("QUESTIONS.md 32: lead-in words on rule A, formula openers ending THAT", () => {
   const shown = (doc, quote) => {
     const r = checkSource(doc, quote);
     return r.found ? r.text : null;
@@ -545,7 +545,7 @@ describe("QUESTIONS.md 27: lead-in words on rule A, formula openers ending THAT"
   });
 });
 
-describe("QUESTIONS.md 28: the operative-word guard on every heading line", () => {
+describe("QUESTIONS.md 33: the operative-word guard on every heading line", () => {
   it.each([
     ["9. NO CHANGE IN CONTROL", "9. NO CHANGE IN CONTROL\nNo change in Control of the Licensee is permitted.", "No change in Control of the Licensee is permitted."],
     ["24. WAIVER NOT A LIMITATION TO ENFORCE", "24. WAIVER NOT A LIMITATION TO ENFORCE\n24.1 No waiver limits enforcement.", "24.1 No waiver limits enforcement."],
@@ -561,7 +561,7 @@ describe("QUESTIONS.md 28: the operative-word guard on every heading line", () =
   });
 });
 
-describe("QUESTIONS.md 29: a lead-in colon written with a dash", () => {
+describe("QUESTIONS.md 34: a lead-in colon written with a dash", () => {
   const shown = (doc, quote) => {
     const r = checkSource(doc, quote);
     return r.found ? r.text : null;
