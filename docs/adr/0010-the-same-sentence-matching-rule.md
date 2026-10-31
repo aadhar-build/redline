@@ -20,3 +20,14 @@ Research on what extraction does to text: .scratch/spec-gaps/research/09-what-ex
 
 ## Consequences
 - Fixtures in that research (section 7), including quotes with "30" changed to "60", "shall" changed to "may", "not" dropped and clauses spliced with an ellipsis, become the tests for implementation ticket 14. Each must fail.
+
+## Addendum, 2026-10-31: what a sentence boundary is
+
+Settled by a Fable advisor under the product owner's question rule (high confidence on 2 and 3, medium on 1 and 4).
+
+1. **A single newline is a boundary only after a heading line.** A line is a heading if it has at most 8 words and 80 characters, ends with a letter, digit or ")", contains no ";" or ":", and every word starts with a capital, is a numbering token ("12.3", "(a)", "(iv)", "I."), or is one of a, an, and, the, of, for, to, in, on, by, or, with. A blank line, or ".", "!", "?" followed by whitespace, is a boundary as before. A list item ending in ";" or a lead-in ending in ":" is not, so a sub-item cannot be cited without its lead-in.
+2. **Lowercase-next backstop.** ".", "!" or "?" followed by whitespace is not a boundary when the next non-space character is a lowercase letter.
+3. **More abbreviations** that never end a sentence: ltd, inc, llp, govt, dept, rd, ref, encl, annex, exh, etc. (alongside the existing list).
+4. **Initials.** A lone capital followed by "." is not a boundary when the next token is a digit ("S. 27"), or another lone capital with "." ("A. K."), or when the previous token is one ("K." in "A. K. Sharma"). "Schedule A. The Company…" stays a boundary.
+
+Accepted cost: a narrow PDF line made only of title-case words ("Sharma Infrastructure Private") can pass the heading test, so a quote may start after it and drop part of a party name, never an operative word. Decimals stay non-boundaries (a "." only counts when followed by whitespace). Test cases: the advisor's twelve, recorded in implementation ticket 14.
