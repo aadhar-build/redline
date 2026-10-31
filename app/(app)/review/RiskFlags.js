@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Glyph, Tick, SEVERITY_LABELS } from "../../Glyph";
 import { COPY } from "./copy";
 import MarkedText, { isNumberMark } from "./MarkedText";
+import OutsideReferences from "./OutsideReferences";
 
 // Review's Severity ids, in their fixed group order, and the glyph each one uses.
 const GROUPS = [
@@ -27,7 +28,7 @@ function OwnText({ part }) {
 function Withheld({ count, withheld }) {
   if (count === 0) return null;
   const by = (reason) => withheld.filter((w) => w.reason === reason).length;
-  const reasons = ["source-not-found", "unsupported-number", "no-source", "unreadable"].filter((r) => by(r) > 0);
+  const reasons = ["source-not-found", "unsupported-number", "no-source", "unreadable", "reference-not-citable"].filter((r) => by(r) > 0);
   return (
     <p className="withheld is-shown" data-testid="withheld">
       <Glyph kind="withheld" />
@@ -155,7 +156,7 @@ function Group({ severity, kind, flags, closed, toggle, lede = null, empty = COP
 
 // A Clean result, as the server decided it: the plain statement, every Red line checked, then any Know
 // this flags beneath (ADR 0006). The browser never works out whether a review is a Clean result.
-function CleanResult({ review, flags, closed, toggle }) {
+function CleanResult({ review, flags, closed, toggle, outside }) {
   return (
     <div className="clean-result" data-testid="clean-result">
       <div className="clean-statement">
@@ -172,13 +173,20 @@ function CleanResult({ review, flags, closed, toggle }) {
         lede={COPY.clean.knowThisLede}
         empty={COPY.clean.noKnowThis}
       />
+      {(review.outsideReferences ?? []).length > 0 ? (
+        <p className="flags-message" data-testid="clean-outside-note">{COPY.clean.outsideReviewed}</p>
+      ) : null}
+      {outside}
     </div>
   );
 }
 
 // above: shown under the pane heading, before the flags (the Owner line, ticket 22).
-export default function RiskFlags({ review, above = null }) {
+// documentId and onReview: set when the review is saved, so the Reviewer can mark Outside references
+// as reviewed; onReview takes the review the server sends back.
+export default function RiskFlags({ review, above = null, documentId = null, onReview = null }) {
   const flags = review.riskFlags ?? [];
+  const references = review.outsideReferences ?? [];
   // Every flag starts open, so each Source sentence is on screen without a click.
   const [closed, setClosed] = useState(() => new Set());
   const toggle = (n) =>
@@ -191,7 +199,11 @@ export default function RiskFlags({ review, above = null }) {
   const unreadable = review.riskFlagsStatus !== "checked";
   // Strictly true: anything else, including a missing value, is not a Clean result.
   const clean = !unreadable && review.cleanResult === true;
-  const marks = flags.flatMap((f) => [f.title, f.says, f.judgment].flatMap((p) => p?.marked ?? []));
+  // The Outside reference group, numbered after the flags so every number in the pane is unique.
+  const outside = (
+    <OutsideReferences references={references} firstNumber={flags.length + 1} documentId={documentId} onReview={onReview} />
+  );
+  const marks = [...flags, ...references].flatMap((f) => [f.title, f.says, f.judgment].flatMap((p) => p?.marked ?? []));
   const anyMarked = marks.some((m) => !isNumberMark(m));
   const anyNumber = marks.some(isNumberMark);
 
@@ -199,7 +211,7 @@ export default function RiskFlags({ review, above = null }) {
     <section className="pane flags-pane" aria-labelledby="flags-title" data-testid="risk-flags">
       <div className="pane-head">
         <h2 className="pane-title" id="flags-title">{COPY.flags.title}</h2>
-        {!unreadable && <p className="pane-status">{COPY.flags.status(flags.length)}</p>}
+        {!unreadable && <p className="pane-status">{COPY.flags.status(flags.length + references.length)}</p>}
       </div>
       {above}
 
@@ -215,6 +227,12 @@ export default function RiskFlags({ review, above = null }) {
                   <span>{SEVERITY_LABELS[kind]}</span>
                 </li>
               ))}
+            </ul>
+            <ul className="key-group key-group-other">
+              <li className="key-item sev-outside">
+                <Glyph kind="outside" />
+                <span>{COPY.outside.keyLabel}</span>
+              </li>
             </ul>
             <ul className="key-group">
               <li className="key-item key-tick">
@@ -233,13 +251,16 @@ export default function RiskFlags({ review, above = null }) {
           ) : null}
 
           {clean ? (
-            <CleanResult review={review} flags={flags} closed={closed} toggle={toggle} />
-          ) : flags.length === 0 && review.withheldCount === 0 ? (
+            <CleanResult review={review} flags={flags} closed={closed} toggle={toggle} outside={outside} />
+          ) : flags.length === 0 && references.length === 0 && review.withheldCount === 0 ? (
             <p className="flags-message" data-testid="no-flags">{COPY.flags.none}</p>
           ) : (
-            GROUPS.map(({ severity, kind }) => (
-              <Group key={severity} severity={severity} kind={kind} flags={flags} closed={closed} toggle={toggle} />
-            ))
+            <>
+              {GROUPS.map(({ severity, kind }) => (
+                <Group key={severity} severity={severity} kind={kind} flags={flags} closed={closed} toggle={toggle} />
+              ))}
+              {outside}
+            </>
           )}
 
           {anyMarked && <p className="marked-note flags-note" data-testid="flags-marked-note">{COPY.markedNote}</p>}

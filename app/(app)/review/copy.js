@@ -94,6 +94,11 @@ export const COPY = {
         total === 1 ? "It came back in a form Redline couldn't read." : `${n} came back in a form Redline couldn't read.`,
       "unsupported-number": (n, total) =>
         total === 1 ? "It gave a number the contract doesn't contain." : `${n} gave a number the contract doesn't contain.`,
+      // Ticket 13: an Outside reference Redline found but couldn't cut into whole sentences.
+      "reference-not-citable": (n, total) =>
+        total === 1
+          ? "It's a reference to another document that Redline couldn't cite as a whole sentence, such as a line in a contents list."
+          : `${n} are references to other documents that Redline couldn't cite as whole sentences, such as lines in a contents list.`,
     },
     severityNote: "The level on each flag is Redline's judgment, not something the contract says.",
     withheldTail: "Redline doesn't show a flag it can't trace to the contract.",
@@ -117,8 +122,38 @@ export const COPY = {
     knowThisLede: "These clauses are worth knowing about. Each one shows the sentence it came from.",
     noKnowThis: "There are no Know this flags either.",
     // Shown while the Clean result is held back (lib/review/clean-result-gate.js) on a review that would
-    // otherwise be one.
-    held: "Redline can't check for Outside references or Ambiguous clauses yet, so it isn't giving this contract a Clean result.",
+    // otherwise be one. Outside references are checked now (ticket 13); Ambiguous clauses are ticket 07.
+    held: "Redline can't check for Ambiguous clauses yet, so it isn't giving this contract a Clean result.",
+    // Under a Clean result whose Outside references the Reviewer marked as reviewed.
+    outsideReviewed:
+      "You marked each Outside reference below as reviewed. That's your own statement. Redline hasn't read the documents they point to.",
+  },
+  // Outside references (ticket 13, ADR 0007). Marking one as reviewed is the Reviewer's statement, never
+  // something Redline checked, and every line here says so.
+  outside: {
+    keyLabel: "Outside reference",
+    title: "Outside references",
+    lede: "These sentences pull in terms from documents Redline wasn't given, so it hasn't read those terms.",
+    notReviewedTag: "Not reviewed",
+    reviewedTag: "Marked reviewed by you",
+    counterOfferCaption: "Counter-offer",
+    notReviewed: "You haven't marked this as reviewed, so this contract can't get a Clean result yet.",
+    statementLabel: "Your statement",
+    statement: (when) =>
+      when
+        ? `You marked this as reviewed on ${when}. Redline hasn't read the referenced terms.`
+        : "You marked this as reviewed. Redline hasn't read the referenced terms.",
+    stillBlocks:
+      "This one matches a Red line, so it still stops a Clean result after you mark it reviewed.",
+    mark: "Mark as reviewed",
+    unmark: "Undo",
+    markBusy: "Saving…",
+    signInToMark: "To mark this as reviewed, sign in and review the contract again. Redline only keeps that mark on a saved review.",
+    errors: {
+      "not-found": "Redline couldn't find this reference on your saved review. Reload the page and try again.",
+      "signed-out": "Your session has ended. Sign in again to mark this as reviewed.",
+      failed: "Redline couldn't save that. Try again.",
+    },
   },
   redLines: {
     title: "Red lines checked",
