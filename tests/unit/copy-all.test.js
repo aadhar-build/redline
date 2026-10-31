@@ -129,3 +129,19 @@ describe("reviewAsText", () => {
     expect(reviewAsText(strip(reopened.review ?? reopened))).toBe(reviewAsText(strip(r)));
   });
 });
+
+describe("Copy all: the scanned-pages note (ticket 23)", () => {
+  const base = { summary: { status: "shown", text: "A short summary.", marked: [] }, riskFlagsStatus: "checked", riskFlags: [], outsideReferences: [], withheld: [], withheldCount: 0 };
+
+  it("copies the note exactly as the screen shows it, before the summary", () => {
+    const scanned = { pages: [2, 3], pageCount: 12 };
+    const text = reviewAsText({ ...base, scanned });
+    const note = COPY.scannedNote(scanned);
+    expect(text).toContain(note);
+    expect(text.indexOf(note)).toBeLessThan(text.indexOf("A short summary."));
+  });
+
+  it("copies no note when no page came from a scan", () => {
+    expect(reviewAsText({ ...base, scanned: null })).not.toContain(COPY.scannedNote({ pages: [1], pageCount: 1 }).split(" ")[0] + " read");
+  });
+});

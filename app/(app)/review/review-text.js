@@ -135,6 +135,7 @@ export function reviewAsText(review, { ownerUnknownShown = false } = {}) {
 
   // The summary pane.
   const summary = [COPY.summaryCaption];
+  if (review.scanned) summary.push(COPY.scannedNote(review.scanned));
   if (review.template) summary.push(COPY.templateNote);
   summary.push(bracketMarks(review.summary.text, summaryMarks));
   if (summaryMarks.some((m) => !isNumberMark(m))) summary.push(COPY.markedNote);
