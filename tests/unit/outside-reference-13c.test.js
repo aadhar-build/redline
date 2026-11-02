@@ -335,17 +335,29 @@ describe("security review 4: one strict clause-start gate for both exemptions", 
   }
 });
 
-describe("a listed Act mid-sentence needs only the deny checks", () => {
+describe("a listed Act mid-sentence needs a clause opener just before it", () => {
   const kinds = (text) => findOutsideReferences(text).found.map((f) => f.kinds);
-  it("exempts a listed Act after an ordinary lowercase word", () => {
-    expect(kinds("1. Sums are recoverable under the provisions of the Revenue\nRecovery Act for the time being in force as arrears.")).toEqual([["other"]]);
-  });
+  const exempt = [
+    "1. Title passes in line with the terms of the Transfer of\nProperty Act as amended from time to time.",
+    "1. Disputes go to arbitration in accordance with the Arbitration and Conciliation Act as amended from time to time.",
+    "1. Each filing is made pursuant to the Companies Act as amended from time to time.",
+    "1. Each filing is made as per the Companies Act as amended from time to time.",
+  ];
+  for (const text of exempt) {
+    it(`exempt: ${JSON.stringify(text.slice(3, 60))}`, () => {
+      expect(kinds(text)).toEqual([["other"]]);
+    });
+  }
   const denied = [
     "1. Each party will follow the rules of Acme the Companies Act as amended from time to time.",
     "1. Each party will follow the rules of acme co. the Companies Act as amended from time to time.",
     "1. Each party will follow the Provider's the Companies Act as amended from time to time.",
     "1. Each party will follow the provider the Companies Act as amended from time to time.",
     "1. Each party will follow these rules; or Acme Companies Act as amended from time to time.",
+    // Any other lowercase word, a bracket or a number keeps the match.
+    "1. Each party will follow the Provider policies the Companies Act as amended from time to time.",
+    "1. Each party will follow the policies (see above) the Companies Act as amended from time to time.",
+    "1. Each party will follow clause 5 the Companies Act as amended from time to time.",
   ];
   for (const text of denied) {
     it(`keeps the Red line 3 match: ${JSON.stringify(text.slice(26, 70))}`, () => {
@@ -353,6 +365,6 @@ describe("a listed Act mid-sentence needs only the deny checks", () => {
     });
   }
   it("leaves general law mid-sentence under the strict gate", () => {
-    expect(kinds("1. Sums are recoverable under the provisions any law for the time being in force.")).toEqual([["as-amended"]]);
+    expect(kinds("1. Sums fall due under the terms any law for the time being in force.")).toEqual([["as-amended"]]);
   });
 });

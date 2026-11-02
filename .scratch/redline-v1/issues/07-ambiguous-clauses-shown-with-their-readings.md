@@ -6,7 +6,7 @@
 
 **Needs approval for:** None
 
-**Status:** done (2026-10-31, fixture runs; not yet run against a real contract with the Claude CLI)
+**Status:** merged into `development` with ticket 20 (2026-10-31); 3 Ambiguous clauses on real documents in final-real-run-2026-11-02
 
 - [x] Each two-reading fixture clause shows both readings and no chosen reading (PRD criterion 11).
 - [x] Readings pass the hedge-word check (PRD criterion 8).

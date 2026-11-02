@@ -50,6 +50,12 @@ describe("hasClauses", () => {
   it("does not count a loose unnumbered will", () => {
     expect(hasClauses("Thank you. We will be in touch with you soon.")).toBe(false);
   });
+  it("does not join separate lines into a clause", () => {
+    expect(hasClauses("1. Fees payable\n2. Term of agreement")).toBe(false);
+    expect(hasClauses("What you must do\nFees\nTerm")).toBe(false);
+    expect(hasClauses("1. Fees payable\nTerm of agreement and renewal of the same")).toBe(false);
+    expect(hasClauses("Payment\nmust\nFees\nTerm of the agreement between both sides")).toBe(false);
+  });
   it("stays fast on hostile input", () => {
     const t0 = Date.now();
     hasClauses("1 ".repeat(500_000));

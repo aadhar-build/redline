@@ -9,7 +9,7 @@
 - [x] OCR runs only on `needs-ocr` pages; text-layer pages keep their embedded text.
 - [x] Projection-profile deskew from the prototype (no new dependency); `onnxruntime-web/wasm` with self-hosted paths set before ppu is imported; no request leaves the origin at runtime (Playwright network check).
 - [x] Unreadable-amount rule (spec-gaps 24) as a tested matcher with the five S04 shapes as fixtures (shapes only, no sample text committed); flags citing such a sentence are withheld with reason "unreadable-amount" (stored reason code via migration).
-- [x] Progress shown per page; the Reviewer can cancel; copy through the humanizer.
+- [ ] Progress shown per page; the Reviewer can cancel; copy through the humanizer. Left open: e2e asserts the progress text and cancel, but no test shows the count advancing page by page, and the only humanizer record found covers the scanned note, not the progress and cancel copy.
 - [x] The 5 real scans in ~/redline-samples run end to end locally; results summarised in the ticket. Ticked on final-real-run-2026-11-02 with a limit stated plainly: 4 scans ran end to end (S01, S03, S04, S05); S02 did not, the 300-page cap refused it (304 pages).
 
 
@@ -51,4 +51,4 @@ On the blank grey-checker test pages, v6 small reads a few huge, low-confidence 
 Fixed by the coordinator's ruling (2026-10-31), with no confidence floor, because 4 of 361 real boxes on the round-2 pages score under 0.6. ocr-lines.js drops any box with no Latin letter, digit or ₹. An OCR'd page with fewer than 20 Latin letters counts as having no readable text, so a blank scan gets "no text". Both rules have unit tests in ocr-extraction.test.js and are recorded in ADR 0008.
 
 - 2026-10-31, final real run (../final-real-run-2026-10-31.md): S01 and S04 ran end to end in the browser (OCR then CLI review). Scanned note shown on both; S04 had 1 unreadable-amount withhold. Box 5 left unticked: only 2 of the 5 scans were run, and S04 withheld 10 of 13 flags.
-- 2026-11-02, final real run 2: boxes 1 to 4 checked against the code and tests (lib/extraction/, tests/e2e/ocr.spec.mjs, tests/unit/unreadable-amount.test.js, migration 20261031002300). Box 5 as noted on it.
+- 2026-11-02, ticket 06c: boxes 1 to 3 checked against the code and tests (lib/extraction/, tests/e2e/ocr.spec.mjs, tests/unit/unreadable-amount.test.js, migration 20261031002300). Box 4 left open as noted on it. Box 5 cites final-real-run-2026-11-02.

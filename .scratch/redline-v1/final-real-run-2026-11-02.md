@@ -108,6 +108,6 @@ Counts only. Sonnet 5.5 through the CLI adapter, called directly at the Review s
 | Doc | Shown (DSAW / Neg / Know) | Withheld (reasons) | Ambiguous | Outside refs | Has clauses | Clean | Clean on reopen |
 |---|---|---|---|---|---|---|---|
 | S05 | 0 | 0 | 0 | 0 | no | no | no |
-| T03 | 2 (1/1/0) | 2 (source-not-found) | 0 | 1 ("other", Negotiate) | yes | no | no |
+| T03 | 4 (1/3/0) | 1 (source-not-found) | 1 | 1 ("other", Negotiate) | yes | no | no |
 
 Bug 1 is fixed for S05. Finding 2 is fixed for T03's reference, now Negotiate with no Red line 3 match. Clause test on saved text: T01 to T08, S01, S03, S04 and the converted DOCX pass, S05 fails.
