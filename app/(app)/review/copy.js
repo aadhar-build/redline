@@ -269,6 +269,7 @@ export const COPY = {
     "unsupported-type":
       "Redline reads PDF and Word .docx files. If it's an older .doc file, save it as .docx in Word first, or paste the text in.",
     "too-large": "That file is over 100 MB, too big to read here.",
+    "too-many-pages": "That PDF has more than 300 pages, and 300 is the limit. Paste in the part you need, or split the file.",
     password: "This file is locked with a password. Save a copy without the password and use that.",
     unreadable: "Redline couldn't open this file. It might be damaged. Try saving it again, or paste the text in.",
     "no-text": "This file has no text for Redline to read.",

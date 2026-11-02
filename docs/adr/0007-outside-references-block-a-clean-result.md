@@ -61,3 +61,9 @@ The general-law and undated-Act exemptions (QUESTIONS 44) now share one check, `
 - or right after a fixed clause opener (with, under, by, of, in, to, per, follow, comply, applicable, notwithstanding).
 
 A bare line break is not a start: wrapped lines are collapsed first. In every case the word before must not be "and", "or" or "&", a possessive, a list separator or a party term, and an Act's name run must not open with a join. Anything else keeps the Red line 3 match. Tests: tests/unit/outside-reference-13c.test.js, "security review 4".
+
+## Addendum, 2026-11-02: a place qualifier after general law (QUESTIONS 45)
+
+Decided by the product owner: "leave as flag, don't block on sign". A general-law phrase followed by a place qualifier ("other applicable laws in Tamil Nadu for the time being in force") stays an Outside reference of kind "other" at Negotiate. It has no Red line 3 match and still needs a mark before a Clean result.
+
+The qualifier is "in", "of" or "within", then an optional "the", "State of" or "Union Territory of", then up to 4 capitalised words of letters and hyphens, matched case-sensitively. It fails closed, keeping the Red line 3 match, when it holds a party term or one of the document's parties, a possessive, or a word naming an organisation or the contract (Limited, Private, Group, Party and the like). A place with a lowercase word inside ("Jammu and Kashmir") does not match and also keeps the Red line 3 match. The startsClause gate is unchanged. T05 replay: unchanged at 2 Red line 3 references and 2 "other" at Negotiate, because that sentence has two other blockers the rule does not cover (QUESTIONS 46). Tests: tests/unit/outside-reference-45.test.js.

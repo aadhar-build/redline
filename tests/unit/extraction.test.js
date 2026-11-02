@@ -5,7 +5,7 @@ import { looksEnglish } from "../../lib/extraction/language.js";
 import { pageNeedsOcr, summariseOperators } from "../../lib/extraction/pdf-pages.js";
 import { createNumberer, formatNumber } from "../../lib/extraction/docx-numbering.js";
 import { COPY } from "../../app/(app)/review/copy.js";
-import { MAX_FILE_BYTES } from "../../lib/extraction/result.js";
+import { MAX_FILE_BYTES, MAX_PDF_PAGES } from "../../lib/extraction/result.js";
 import { hiddenOcrPage, makePdf, scanPage, textPage, wrap } from "../support/make-pdf.mjs";
 
 const root = path.resolve(import.meta.dirname, "../..");
@@ -156,6 +156,10 @@ describe("upload copy", () => {
 
   it("states the same file size limit the code applies", () => {
     expect(COPY.errors["too-large"]).toContain(`${MAX_FILE_BYTES / 1024 / 1024} MB`);
+  });
+
+  it("states the same PDF page limit the code applies", () => {
+    expect(COPY.errors["too-many-pages"]).toContain(`${MAX_PDF_PAGES} pages`);
   });
 
   it("rejects a file over the limit before reading a byte of it", async () => {

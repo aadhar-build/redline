@@ -48,3 +48,7 @@ Run 2026-10-31 on the product owner's machine, from the scans in ~/redline-sampl
 - A box with no Latin letter, digit or ₹ is dropped. This also removes the stray CJK glyphs.
 - An OCR'd page with fewer than 20 Latin letters counts as having no readable text and contributes nothing. A scan that holds only such pages gets the "no text" result, not "not English".
 - There is no confidence floor. On the round-2 pages, 4 of 361 real boxes score under 0.6.
+
+## Amendment, 2026-11-02: a PDF page cap of 300 pages
+
+Decided by the product owner. A PDF with more than 300 pages (MAX_PDF_PAGES in lib/extraction/result.js) is refused as "too-many-pages" as soon as pdf.js knows the page count, before any page's text is read and before OCR starts. A long scan such as S02 (304 pages, 587 s of OCR before the character limit refused it) is now refused at once. The 200,000-character limit stays, so a PDF of 300 pages or fewer can still be refused for length. Upload and the added-document form both go through extractFile, so the cap covers both. "Every PDF is accepted" in the Decision now reads subject to this cap.
