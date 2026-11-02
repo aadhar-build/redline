@@ -100,3 +100,14 @@ Copy all was not re-run, and neither was the question box on a real contract.
 3. **Finding, medium: all flags on T04 withheld.** The Reviewer gets a review with 0 shown and 3 withheld. Reproduce: upload T04 and review. The behaviour is correct, but the document yields no usable flags; the cause was not split out.
 
 Harness notes, not product bugs: the CLI guard allows one model run at a time and returns 429 to parallel requests, so runs were made in series. What the Reviewer sees on a 429 was not checked.
+
+## Follow-up run, ticket 06c (same day)
+
+Counts only. Sonnet 5.5 through the CLI adapter, called directly at the Review seam (not through the browser), one run each, on the text saved from final run 2. Reopen was worked out in the same script.
+
+| Doc | Shown (DSAW / Neg / Know) | Withheld (reasons) | Ambiguous | Outside refs | Has clauses | Clean | Clean on reopen |
+|---|---|---|---|---|---|---|---|
+| S05 | 0 | 0 | 0 | 0 | no | no | no |
+| T03 | 2 (1/1/0) | 2 (source-not-found) | 0 | 1 ("other", Negotiate) | yes | no | no |
+
+Bug 1 is fixed for S05. Finding 2 is fixed for T03's reference, now Negotiate with no Red line 3 match. Clause test on saved text: T01 to T08, S01, S03, S04 and the converted DOCX pass, S05 fails.

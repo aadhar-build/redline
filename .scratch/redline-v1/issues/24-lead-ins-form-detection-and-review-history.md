@@ -4,7 +4,7 @@
 
 **Blocked by:** 22 (Trust fixes from the first real runs), 15 (Red lines in the Reviewer's own words and saved reviews)
 
-**Status:** ready-for-agent
+**Status:** merged into `development` (2026-10-31), parts 1 and 2
 
 ## Part 1
 

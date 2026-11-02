@@ -115,3 +115,9 @@ Each is built the way that claims least; numbers may need renumbering when 13b l
 ## Open (from ticket 45, 2026-11-02)
 
 46. **The T05 sentence behind QUESTIONS 45 needs more than a place qualifier.** The ruling expected T05 to have 1 Red line 3 reference and 3 Negotiate; the replay still gives 2 and 2, the same as before the change. The sentence has two other features. A one-word participle sits between the law word and "in", and the word before the general-law run is "including", which is not a clause opener in `startsClause`. Getting to 1 and 3 needs both: allow that participle before the place qualifier, and accept "including" as a clause opener. The second loosens the gate from security review 4, which the brief for 45 said stays, and it would also exempt a list such as "the Provider's policies including other applicable laws". Built as specified, which flags more. Should either change be made?
+
+## Owner decisions (2026-11-02)
+
+47. **PDF page cap.** Decided by the product owner, 2026-11-02: PDFs are capped at 300 pages.
+48. **OCR model.** Decided by the product owner, 2026-11-02: no second OCR model. PP-OCRv6 small stays the only engine.
+49. **Clean needs clauses.** Decided by the product owner, 2026-11-02: see the ADR 0006 addendum.

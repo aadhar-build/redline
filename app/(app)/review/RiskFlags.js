@@ -291,9 +291,12 @@ export default function RiskFlags({ review, above = null, documentId = null, onR
           {clean ? (
             <CleanResult review={review} flags={flags} closed={closed} toggle={toggle} outside={outside} />
           ) : flags.length === 0 && references.length === 0 && review.withheldCount === 0 ? (
-            <p className="flags-message" data-testid="no-flags">{COPY.flags.none}</p>
+            <p className="flags-message" data-testid={review.hasClauses === false ? "no-clauses" : "no-flags"}>
+              {review.hasClauses === false ? COPY.clean.noClauses : COPY.flags.none}
+            </p>
           ) : (
             <>
+              {review.hasClauses === false ? <p className="flags-message" data-testid="no-clauses">{COPY.clean.noClauses}</p> : null}
               {GROUPS.map(({ severity, kind }) => (
                 <Group key={severity} severity={severity} kind={kind} flags={flags} closed={closed} toggle={toggle} />
               ))}

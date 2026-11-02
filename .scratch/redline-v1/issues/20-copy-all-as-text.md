@@ -6,7 +6,7 @@
 
 **Needs approval for:** None
 
-**Status:** built on feature/20-copy-all (2026-10-31), awaiting merge
+**Status:** merged into `development` (2026-10-31); not re-run in final-real-run-2026-11-02
 
 - [x] One action copies every displayed Risk flag grouped by Severity, each with its Source sentence word for word, what the clause says, its Red line match or Redline's judgment label, and its Counter-offer.
 - [x] The copied text contains nothing that is not displayed on screen; withheld flags are not included, and where the withheld count appears is left to OQ11 (PRD.md section 3, open question 11).

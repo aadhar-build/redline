@@ -6,7 +6,7 @@
 
 **Needs approval for:** None
 
-**Status:** built on feature/06-default-red-lines, verified at the Review seam and in e2e with the fake adapter. Not yet run end to end on a real document (needs ticket 09's real adapter).
+**Status:** merged into `development` (2026-10-31); run on real documents in final-real-run-2026-11-02
 
 - [x] Fixtures of each contract type with a seeded clause for each Default Red line (one modelled on First American's three-year term and $495 fee): every seeded clause is flagged Don't sign as written with the seeded sentence as its Source sentence (PRD criterion 3).
   Evidence: fixtures/contracts/red-line-seeds.js lists the seeds in vendor-agreement-02 (First American, $495), vendor-agreement-03 (Indian-style, Rs. 42,000), commercial-lease-01 and client-agreement-01. tests/unit/red-lines.test.js checks every seed; tests/e2e/risk-flags.spec.mjs checks vendor-agreement-02 in the browser.

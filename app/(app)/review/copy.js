@@ -160,6 +160,7 @@ export const COPY = {
   // Never "safe", "fine" or "good to sign"; a unit test runs the verdict-word check over these strings.
   clean: {
     title: "Clean result",
+    noClauses: "This doesn't look like a contract with terms, so Redline can't call it Clean.",
     statement:
       "This contract has a Clean result. No clause came back as Don't sign as written or Negotiate, and none matches a Red line on your list.",
     checkedLede: "Redline checked the contract against each of these Red lines, and no clause matched any of them.",

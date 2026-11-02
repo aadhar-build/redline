@@ -8,7 +8,7 @@
 
 **Needs approval for:** None
 
-**Status:** built on feature/13-outside-references, awaiting merge. Clean-result gate lifted here with ticket 07 (CLEAN_RESULT_READY = true).
+**Status:** merged into `development` (2026-10-31), follow-ups 13c, 13d, 13e merged too. Clean-result gate lifted here with ticket 07 (CLEAN_RESULT_READY = true).
 
 - [x] Each seeded kind is raised with the referencing sentence as its Source sentence; no Clean result while any is unresolved; once all are marked reviewed a Clean result is given (PRD criterion 6, in part). Evidence: tests/unit/outside-references.test.js (cleanResultOf with the gate's logic: blocked until every reference is marked, an "as amended" Red line 3 match never resolves); tests/e2e/outside-references.spec.mjs. With the gate lifted, marking every reference reviewed gives a shown Clean result (outside-references-saved.spec.mjs).
 - [x] Marked as reviewed is saved and shown as the Reviewer's statement, not something Redline checked. Evidence: reviews.outside_references (migration 20261031003000), tests/isolation/outside-references.test.ts (another account can't read or write it), tests/e2e/outside-references-saved.spec.mjs (survives reload and reopen).

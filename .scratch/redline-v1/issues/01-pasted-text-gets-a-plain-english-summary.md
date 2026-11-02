@@ -6,7 +6,7 @@
 
 **Needs approval for:** Approved 2026-10-31 (Vitest, Supabase JS and CLI, Playwright test, Vercel project access).
 
-**Status:** built on `feature/01-pasted-text-summary` (2026-10-31), awaiting merge into `development`
+**Status:** merged into `development` (2026-10-31)
 
 - [x] Review seam test: document text, empty Red line list and fake model adapter in, summary out.
 - [x] A reusable whole-word hedge-word and verdict-word check runs on the summary, excluding text reproduced word for word from the document (PRD criterion 8).

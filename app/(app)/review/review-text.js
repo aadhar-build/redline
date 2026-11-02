@@ -177,8 +177,9 @@ export function reviewAsText(review, { ownerUnknownShown = false } = {}) {
     if (references.length > 0) blocks.push(COPY.clean.outsideNote(references));
     blocks.push(...outside);
   } else if (flags.length === 0 && references.length === 0 && review.withheldCount === 0) {
-    blocks.push(COPY.flags.none);
+    blocks.push(review.hasClauses === false ? COPY.clean.noClauses : COPY.flags.none);
   } else {
+    if (review.hasClauses === false) blocks.push(COPY.clean.noClauses);
     for (const { severity, kind } of GROUPS) blocks.push(...group(flags, severity, kind));
     blocks.push(...outside);
   }
