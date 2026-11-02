@@ -4,6 +4,7 @@
 // runs in the browser e2e test (tests/e2e/ocr.spec.mjs).
 import { describe, expect, it } from "vitest";
 import { readPdf } from "../../lib/extraction/pdf.js";
+import { MAX_PDF_PAGES } from "../../lib/extraction/result.js";
 import { MIN_OCR_LATIN_LETTERS, ocrPageLines, ocrPageReadable } from "../../lib/extraction/ocr-lines.js";
 import { rowVariance } from "../../lib/extraction/deskew.js";
 import { hiddenOcrPage, makePdf, scanPage, textPage } from "../support/make-pdf.mjs";
@@ -87,6 +88,41 @@ describe("readPdf with OCR", () => {
     const result = await readPdf(pdfjs, makePdf([scanPage(), scanPage(), scanPage(), scanPage()]), {}, { ocr, maxChars: 1000 });
     expect(result).toEqual({ kind: "rejected", reason: "document-too-long" });
     expect(ocr.read).toEqual([1, 2]);
+  });
+
+  describe("the 300-page cap", () => {
+    // Stands in for pdf.js: any read of a page fails the test.
+    const fakePdfjs = (numPages, read) => ({
+      getDocument: () => ({
+        promise: Promise.resolve({ numPages, getPage: async () => { read.push("page"); throw new Error("a page was read"); } }),
+        destroy() {},
+      }),
+      OPS: pdfjs.OPS,
+    });
+
+    it("refuses 301 pages from the count alone, before any text or OCR", async () => {
+      const read = [];
+      const ocr = fakeOcr({});
+      const seen = [];
+      const result = await readPdf(fakePdfjs(MAX_PDF_PAGES + 1, read), new Uint8Array(1), {}, { ocr, onProgress: (p) => seen.push(p) });
+      expect(MAX_PDF_PAGES).toBe(300);
+      expect(result).toEqual({ kind: "rejected", reason: "too-many-pages" });
+      expect(read).toEqual([]);
+      expect(ocr.read).toEqual([]);
+      expect(seen).toEqual([]);
+    });
+
+    it("refuses a real 301-page PDF and reads a real 300-page one", async () => {
+      const pages = (n) => Array.from({ length: n }, (_, i) => textPage([`Clause ${i + 1} says the rent is due on day ${i + 1}.`]));
+      expect(await readPdf(pdfjs, makePdf(pages(301)))).toEqual({ kind: "rejected", reason: "too-many-pages" });
+      expect((await readPdf(pdfjs, makePdf(pages(300)))).kind).toBe("text");
+    }, 60_000);
+
+    it("still refuses a PDF under the cap for length", async () => {
+      const long = Array.from({ length: 10 }, (_, i) => mid(`Line ${i} of a long scanned page with plenty of words in it.`));
+      const result = await readPdf(pdfjs, makePdf([scanPage(), scanPage()]), {}, { ocr: fakeOcr({ 1: long, 2: long }), maxChars: 100 });
+      expect(result).toEqual({ kind: "rejected", reason: "document-too-long" });
+    });
   });
 
   it("is cancelled by its signal with an AbortError", async () => {

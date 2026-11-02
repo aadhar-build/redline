@@ -268,6 +268,14 @@ test("a damaged PDF is reported as unreadable", async ({ page }) => {
   await expectRejected(page, requests, COPY.errors.unreadable);
 });
 
+test("a PDF over the page limit is refused and nothing is sent", async ({ page }) => {
+  const requests = recordRequests(page);
+  await page.goto("/review");
+  const pages = Array.from({ length: 301 }, (_, i) => textPage([`Clause ${i + 1} sets the rent.`]));
+  await choose(page, "long.pdf", PDF, makePdf(pages));
+  await expectRejected(page, requests, COPY.errors["too-many-pages"]);
+});
+
 test("removing the file clears its text so something else can be pasted", async ({ page }) => {
   await page.goto("/review");
   await choose(page, "vendor-agreement.docx", DOCX, await vendorDocx());

@@ -11,6 +11,7 @@ import { createClient } from "@supabase/supabase-js";
 import { COPY } from "../../app/(app)/review/copy.js";
 import { LIBRARY_COPY } from "../../app/(app)/library/library-copy.js";
 import { makeDocx, p } from "../support/make-docx.mjs";
+import { makePdf, textPage } from "../support/make-pdf.mjs";
 
 const root = path.resolve(import.meta.dirname, "../..");
 const contract = fs.readFileSync(path.join(root, "fixtures/contracts/outside-references-01.txt"), "utf8");
@@ -80,6 +81,14 @@ test("adding the referenced document reviews the two together and resolves the r
   const b = refs.nth(3);
   await expect(b.getByTestId("source-sentence")).toHaveText("1.4 The service levels in Schedule B apply to the services.");
   await b.getByTestId("outside-add-open").click();
+  // A PDF over the page limit is refused here too, and nothing is posted.
+  await b.getByTestId("outside-add-file").setInputFiles({
+    name: "long.pdf",
+    mimeType: "application/pdf",
+    buffer: makePdf(Array.from({ length: 301 }, (_, i) => textPage([`Clause ${i + 1} sets the rent.`]))),
+  });
+  await expect(b.getByText(COPY.errors["too-many-pages"])).toBeVisible();
+  expect(posted).toHaveLength(0);
   const docx = Buffer.from(await makeDocx({ body: scheduleB.split("\n").filter((l) => l.trim()).map((l) => p(l)).join("") }));
   await b.getByTestId("outside-add-file").setInputFiles({
     name: "schedule-b.docx",
