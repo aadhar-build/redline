@@ -22,7 +22,7 @@ The research shows trust is the category's weak point. DoNotPay failed on accura
 ## Consequences
 - **Missing protections cannot be risk flags.** A contract with no late-fee clause has no sentence to quote, and that absence was the biggest freelancer pain in the research. Showing such gaps needs a separate decision.
 - **Risks that come from several clauses together** need a rule for citing more than one sentence. Until that rule exists, they cannot be flagged.
-- **OCR stays out.** A citation into misread text is worthless, so scanned PDFs are rejected.
+- ~~**OCR stays out.**~~ Superseded by ADR 0008 (2026-10-31): pages without a real text layer are read by in-browser OCR.
 - **"Exact" needs a written matching rule.** PDF and DOCX extraction changes line breaks, hyphenation and whitespace, so the rule for what counts as the same sentence must be written down and tested.
 - **Model output is untrusted.** Code, not the model, checks every quote against the stored text. The reader may see fewer flags than the model produced, and flags that were withheld must be counted, not silently dropped.
 - **Tests** need fixture documents with known sentences. They must assert that every displayed quote appears verbatim in the stored text, and include cases where the model returns an altered or invented quote that must be withheld.

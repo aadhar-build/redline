@@ -1,11 +1,5 @@
 // Severity glyphs: each state has its own shape, so colour never carries meaning alone.
-const LABELS = {
-  dont: "Don't sign as written",
-  negotiate: "Negotiate",
-  know: "Know this",
-  outside: "Outside reference",
-  withheld: "Withheld",
-};
+import { SEVERITY_LABELS as LABELS } from "./severity-labels";
 
 export function Glyph({ kind, className = "", title }) {
   const common = {

@@ -1,0 +1,73 @@
+{
+  "_note": "Scripted Risk flags for own-red-lines-01. Each Red line is named by its wording (redLineWords), and the local fake adapter turns that into the id it finds next to the wording in the prompt. Two matches are scripted below Don't sign as written on purpose: Review must raise both. The late-delivery deduction matches no Red line and keeps its Severity. The last flag names an own Red line but quotes a sentence the document does not contain, so it must be withheld like any flag.",
+  "riskFlags": [
+    {
+      "severity": "dont-sign-as-written",
+      "title": "Ninety days to pay",
+      "says": "Kaveri Retail pays each invoice within ninety days of receiving it.",
+      "judgment": null,
+      "sourceSentences": [
+        "Buyer will pay each invoice within ninety days of receiving it."
+      ],
+      "redLineWords": "A customer taking more than 30 days to pay an invoice",
+      "counterOffer": "Buyer will pay each invoice within thirty days of receiving it."
+    },
+    {
+      "severity": "negotiate",
+      "title": "No printing for other grocery retailers",
+      "says": "Tara Print and Pack cannot print packaging for any other grocery retailer during the agreement or for two years after it ends.",
+      "judgment": null,
+      "sourceSentences": [
+        "Supplier will not print packaging for any other grocery retailer during the term of this Agreement.",
+        "This restriction continues for two years after this Agreement ends."
+      ],
+      "redLineWords": "Any ban on printing for other customers",
+      "counterOffer": "Supplier will not print packaging for any other grocery retailer during the term of this Agreement. This restriction ends when this Agreement ends."
+    },
+    {
+      "severity": "know-this",
+      "title": "Designs and plates belong to the buyer",
+      "says": "Every design, artwork file and printing plate Tara Print and Pack makes belongs to Kaveri Retail as soon as it is made.",
+      "judgment": null,
+      "sourceSentences": [
+        "Every design, artwork file and printing plate Supplier makes under this Agreement belongs to Buyer from the moment it is made."
+      ],
+      "redLineWords": "The customer owning our designs or printing plates",
+      "counterOffer": "Every design, artwork file and printing plate Supplier makes under this Agreement belongs to Supplier."
+    },
+    {
+      "severity": "negotiate",
+      "title": "Disputes only in Bengaluru",
+      "says": "Only the courts at Bengaluru can decide a dispute under the agreement.",
+      "judgment": null,
+      "sourceSentences": [
+        "Any dispute under this Agreement will be decided only by the courts at Bengaluru."
+      ],
+      "redLineWords": "Disputes heard anywhere but Pune",
+      "counterOffer": "Any dispute under this Agreement will be decided only by the courts at Pune."
+    },
+    {
+      "severity": "negotiate",
+      "title": "Deduction for late delivery",
+      "says": "Kaveri Retail can deduct 2% of the order value for each day an order is late.",
+      "judgment": "No limit on the total deduction appears in the document.",
+      "sourceSentences": [
+        "If Supplier delivers an order late, Buyer can deduct 2% of the order value for each day of delay."
+      ],
+      "redLine": null,
+      "counterOffer": "If Supplier delivers an order late, Buyer can deduct 2% of the order value for each day of delay, and the total deduction will not exceed 2% of the order value."
+    },
+    {
+      "severity": "know-this",
+      "title": "Payment whenever the buyer chooses",
+      "says": "Kaveri Retail pays when it chooses.",
+      "judgment": null,
+      "sourceSentences": [
+        "Buyer can pay any invoice whenever it chooses."
+      ],
+      "redLineWords": "A customer taking more than 30 days to pay an invoice",
+      "_misbehaves": "Invented Source sentence: the document never says this. Must be withheld, Red line or not.",
+      "counterOffer": "Buyer pays each invoice on receipt."
+    }
+  ]
+}

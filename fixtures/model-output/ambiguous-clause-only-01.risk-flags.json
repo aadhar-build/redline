@@ -1,0 +1,18 @@
+{
+  "_note": "Scripted Risk flags for ambiguous-clause-only-01, the fixture that proves an Ambiguous clause blocks a Clean result (ticket 07, spec-gaps 15, lib/review/clean-result-gate.js). The contract is otherwise the shape of a Clean result: its only Risk flag is one Ambiguous clause, it seeds no Default Red line and no Outside reference, and nothing is withheld.",
+  "riskFlags": [
+    {
+      "severity": "negotiate",
+      "title": "When notice to end early can be given",
+      "says": "Either party can end the Agreement with fifteen days' written notice after the first three months. The clause does not say whether the three months limit when notice is given or when the Agreement ends.",
+      "judgment": null,
+      "sourceSentences": ["4. Ending early. Either party can end this Agreement by giving the other party fifteen days' written notice after the first three months."],
+      "redLine": null,
+      "readings": [
+        "Neither party can give notice until the first three months have passed.",
+        "Either party can give notice at any time, and the Agreement ends no earlier than the end of the first three months."
+      ],
+      "counterOffer": "Either party can end this Agreement at any time by giving the other party fifteen days' written notice."
+    }
+  ]
+}

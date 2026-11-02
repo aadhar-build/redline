@@ -127,7 +127,7 @@ Only decisions already settled in CLAUDE.md, PRD.md and ADRs 0001–0007 are rec
 - The PDF and DOCX parser choices, and every other dependency, need the product owner's agreement before they are added.
 - Claude account credentials and session tokens are never collected, stored or handed on.
 - Nothing deployed calls Claude. No one but the product owner can use v1's analysis, and analysis cannot run on Vercel, until an API key is adopted, which needs the product owner's decision first.
-- No OCR: image-only PDFs are rejected, not read (ADR 0001).
+- ~~No OCR~~ Superseded by ADR 0008 (2026-10-31): pages without a real text layer are read by in-browser OCR, engine chosen after a bake-off.
 - Redline does not fetch referenced documents itself (ADR 0007).
 
 ## Testing Decisions
@@ -157,7 +157,7 @@ Only decisions already settled in CLAUDE.md, PRD.md and ADRs 0001–0007 are rec
 ## Out of Scope
 
 - Payments and billing: v1 exists to prove the analysis can be trusted, and billing does not make it more trustworthy.
-- OCR for scanned documents: a Source sentence pointing into misread text is worthless.
+- ~~OCR for scanned documents~~ Moved into scope by ADR 0008 (2026-10-31).
 - Sharing a document between accounts: it does not make the analysis more trustworthy.
 - Missing protection flags: a Missing protection has no Source sentence to show; showing them needs a separate decision (ADR 0001).
 - Risks that come from several clauses together: there is no rule yet for showing more than one Source sentence (ADR 0001).
@@ -175,36 +175,36 @@ Only decisions already settled in CLAUDE.md, PRD.md and ADRs 0001–0007 are rec
 
 ### Open questions
 
-Carried from PRD.md section 3. All are **undecided**, and each blocks the parts of the build it touches; an unattended build records the question and skips that part rather than guessing.
+Carried from PRD.md section 3. All 21 were **decided** on 2026-10-31 (.scratch/spec-gaps/map.md).
 
-1. What Severity does an Outside reference flag get?
-2. What does the Counter-offer for an Outside reference say?
-3. Does "as amended from time to time" count as a match for Default Red line 3? If it does, it is Don't sign as written, and marking it reviewed would not produce a Clean result.
-4. Does a Know this flag get a Counter-offer?
-5. Is an Ambiguous clause a Risk flag, at what Severity, and does it block a Clean result?
-6. What is Market standard based on for each contract type: vendor agreement, commercial lease, client agreement?
-7. How does Redline decide which of the three contract types a document is, and what happens when it is none of them?
-8. Does a fee escalator written into the contract match Default Red line 3, or only a change the Counterparty makes later?
-9. What is the written matching rule for "the same sentence", given that PDF and DOCX extraction changes line breaks, hyphenation and whitespace?
-10. What is the rule for a risk that comes from several sentences together? Default Red lines 2 and 4 depend on it.
-11. Where is the count of withheld flags shown: to the Reviewer, or only recorded?
-12. Can a review be a Clean result when flags were withheld?
-13. Do question-box answers show the Source sentences they rely on?
-14. Does the hedge-word ban apply to Counter-offer wording, where "may" is ordinary contract language?
-15. What happens to an uploaded referenced document: is it analysed on its own, together with the document that referenced it, and against the Red lines?
-16. How is a Red line the Reviewer writes in their own words matched against clauses?
-17. When the Reviewer edits their Red lines, are saved documents re-analysed, and does each saved review keep the list of Red lines it was checked against?
-18. How is a PDF with a text layer on some pages and only images on others handled?
-19. Which languages are documents and output in?
-20. Which model runs the analysis?
-21. Which PDF and DOCX parsers?
+1. What Severity does an Outside reference flag get? **Decided 2026-10-31:** Negotiate; an 'as amended' reference is Don't sign as written via Red line 3 ([ticket](../spec-gaps/issues/13-outside-reference-severity-and-counter-offer.md)).
+2. What does the Counter-offer for an Outside reference say? **Decided 2026-10-31:** attach the referenced document as a schedule and fix its terms as at signing ([ticket](../spec-gaps/issues/26-outside-reference-counter-offer.md)).
+3. Does "as amended from time to time" count as a match for Default Red line 3? If it does, it is Don't sign as written, and marking it reviewed would not produce a Clean result. **Decided 2026-10-31:** yes, it matches Red line 3: Don't sign as written ([ticket](../spec-gaps/issues/12-what-default-red-line-3-covers.md)).
+4. Does a Know this flag get a Counter-offer? **Decided 2026-10-31:** yes, every flag gets one ([ticket](../spec-gaps/issues/04-know-this-flags-and-counter-offers.md)).
+5. Is an Ambiguous clause a Risk flag, at what Severity, and does it block a Clean result? **Decided 2026-10-31:** a Risk flag at Negotiate that blocks a Clean result ([ticket](../spec-gaps/issues/15-ambiguous-clauses-and-the-clean-result.md)).
+6. What is Market standard based on for each contract type: vendor agreement, commercial lease, client agreement? **Decided 2026-10-31:** a curated, dated India table, one source per row (ADR 0009) ([ticket](../spec-gaps/issues/19-market-standard-basis-and-contract-type.md)).
+7. How does Redline decide which of the three contract types a document is, and what happens when it is none of them? **Decided 2026-10-31:** the model proposes, the Reviewer confirms; 'none of these' runs Red lines only (ADR 0009) ([ticket](../spec-gaps/issues/19-market-standard-basis-and-contract-type.md)).
+8. Does a fee escalator written into the contract match Default Red line 3, or only a change the Counterparty makes later? **Decided 2026-10-31:** a written-in escalator matches Red line 3 too ([ticket](../spec-gaps/issues/12-what-default-red-line-3-covers.md)).
+9. What is the written matching rule for "the same sentence", given that PDF and DOCX extraction changes line breaks, hyphenation and whitespace? **Decided 2026-10-31:** ADR 0010: boundary-aligned span, safe normalisations only, show stored text ([ticket](../spec-gaps/issues/10-the-same-sentence-matching-rule.md)).
+10. What is the rule for a risk that comes from several sentences together? Default Red lines 2 and 4 depend on it. **Decided 2026-10-31:** a flag may cite several sentences, each checked; withheld if any fails ([ticket](../spec-gaps/issues/11-risks-that-come-from-several-sentences.md)).
+11. Where is the count of withheld flags shown: to the Reviewer, or only recorded? **Decided 2026-10-31:** shown to the Reviewer ([ticket](../spec-gaps/issues/16-withheld-flags-and-the-clean-result.md)).
+12. Can a review be a Clean result when flags were withheld? **Decided 2026-10-31:** no: any withheld flag blocks a Clean result ([ticket](../spec-gaps/issues/16-withheld-flags-and-the-clean-result.md)).
+13. Do question-box answers show the Source sentences they rely on? **Decided 2026-10-31:** yes, checked like flags; an answer whose sources fail is not shown ([ticket](../spec-gaps/issues/17-question-box-answers-and-source-sentences.md)).
+14. Does the hedge-word ban apply to Counter-offer wording, where "may" is ordinary contract language? **Decided 2026-10-31:** yes, the ban covers Counter-offer wording ([ticket](../spec-gaps/issues/03-truth-rule-and-hedge-words-in-counter-offer-wording.md)).
+15. What happens to an uploaded referenced document: is it analysed on its own, together with the document that referenced it, and against the Red lines? **Decided 2026-10-31:** analysed together with the referencing document, as one review ([ticket](../spec-gaps/issues/14-what-happens-to-an-uploaded-referenced-document.md)).
+16. How is a Red line the Reviewer writes in their own words matched against clauses? **Decided 2026-10-31:** the model judges and names the Red line matched, with a checked Source sentence ([ticket](../spec-gaps/issues/20-red-lines-in-the-reviewers-own-words.md)).
+17. When the Reviewer edits their Red lines, are saved documents re-analysed, and does each saved review keep the list of Red lines it was checked against? **Decided 2026-10-31:** saved reviews keep their list; older ones are marked and offer a re-run ([ticket](../spec-gaps/issues/20-red-lines-in-the-reviewers-own-words.md)).
+18. How is a PDF with a text layer on some pages and only images on others handled? **Decided 2026-10-31:** accepted: pages without real text are read by in-browser OCR (ADR 0008) ([ticket](../spec-gaps/issues/08-pdfs-with-text-on-some-pages-only.md)).
+19. Which languages are documents and output in? **Decided 2026-10-31:** English only; Indian contracts (ADR 0009) ([ticket](../spec-gaps/issues/21-document-and-output-languages.md)).
+20. Which model runs the analysis? **Decided 2026-10-31:** Sonnet 5.5 ([ticket](../spec-gaps/issues/05-which-model-runs-the-analysis.md)).
+21. Which PDF and DOCX parsers? **Decided 2026-10-31:** pdfjs-dist and JSZip with our own XML reader; OCR engine waits on a bake-off ([ticket](../spec-gaps/issues/07-which-pdf-and-docx-parsers.md)).
 
 ### Contradictions in CLAUDE.md that need the product owner's decision before an unattended build
 
-1. CLAUDE.md's scope says flags are "ranked by severity"; ADR 0003 says flags within a Severity level are not ranked against each other.
-2. CLAUDE.md's scope lists six capabilities and says "stop there", but the list omits Clean results (ADR 0006) and the Outside reference flow (ADR 0007).
-3. CLAUDE.md says "user" and uses "owner" for the product owner; CONTEXT.md says Reviewer and uses Owner for the small business owner who signs the contract.
-4. CLAUDE.md applies "state only what the document says" to Counter-offers, which are new wording by definition.
+1. **Resolved 2026-10-20 (grouped, not ranked).** CLAUDE.md's scope says flags are "ranked by severity"; ADR 0003 says flags within a Severity level are not ranked against each other.
+2. **Resolved 2026-10-31: Clean result, Outside references and Copy all joined the scope** ([ticket](../spec-gaps/issues/02-scope-of-clean-result-outside-references-and-copy-all.md)). CLAUDE.md's scope lists six capabilities and says "stop there", but the list omits Clean results (ADR 0006) and the Outside reference flow (ADR 0007).
+3. **Resolved 2026-10-31: CLAUDE.md now uses CONTEXT.md's terms.** CLAUDE.md says "user" and uses "owner" for the product owner; CONTEXT.md says Reviewer and uses Owner for the small business owner who signs the contract.
+4. **Resolved 2026-10-31: the rule and the hedge-word ban both apply to the wording; it may only restate or tighten terms in the document** ([ticket](../spec-gaps/issues/03-truth-rule-and-hedge-words-in-counter-offer-wording.md)). CLAUDE.md applies "state only what the document says" to Counter-offers, which are new wording by definition.
 
 ### Pointers
 

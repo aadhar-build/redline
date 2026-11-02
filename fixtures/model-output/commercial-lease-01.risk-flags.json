@@ -1,0 +1,62 @@
+{
+  "_note": "Scripted Risk flags for commercial-lease-01. Every Default Red line is seeded; Red line 3 is seeded as a rent escalator written into the lease. Several Red line matches are scripted below Don't sign as written on purpose. Red lines 2 and 4 cite two sentences each. The security deposit matches no Red line and keeps its scripted Severity.",
+  "riskFlags": [
+    {
+      "severity": "negotiate",
+      "title": "Three-year renewing term, and six months' rent to leave",
+      "says": "The lease runs for three years and renews by itself for three more unless Chai Kona gives written notice at least six months before a term ends. Leaving before the end of a term costs six months' rent.",
+      "judgment": null,
+      "sourceSentences": [
+        "This Lease runs for three years from 1 December 2026 and then renews automatically for further terms of three years unless Tenant gives written notice at least six months before the end of a term.",
+        "If Tenant vacates the Premises before the end of a term, Tenant will pay Landlord an exit fee equal to six months' rent."
+      ],
+      "redLine": "default-auto-renewal-or-long-term",
+      "counterOffer": "This Lease runs for three years from 1 December 2026 and renews for a further term of three years only if Tenant gives written notice at least six months before the end of a term. If Tenant vacates the Premises at the end of a term, Tenant pays Landlord no exit fee."
+    },
+    {
+      "severity": "know-this",
+      "title": "Rent rises 15% every year",
+      "says": "The rent goes up by 15% on each anniversary of the start date.",
+      "judgment": null,
+      "sourceSentences": [
+        "The rent increases by 15% on each anniversary of the start date."
+      ],
+      "redLine": "default-one-sided-changes",
+      "counterOffer": "The rent increases by 15% only at the start of each renewed term."
+    },
+    {
+      "severity": "know-this",
+      "title": "Six months' rent as deposit",
+      "says": "Chai Kona pays an interest-free security deposit of six months' rent before taking possession.",
+      "judgment": null,
+      "sourceSentences": [
+        "Tenant will pay Landlord an interest-free security deposit equal to six months' rent before taking possession."
+      ],
+      "redLine": null,
+      "counterOffer": "Tenant will pay Landlord a security deposit equal to six months' rent before taking possession, and Landlord will pay interest on it."
+    },
+    {
+      "severity": "dont-sign-as-written",
+      "title": "Managing director's personal guarantee",
+      "says": "Anil Joshi personally guarantees the rent and every other obligation Chai Kona has under the lease.",
+      "judgment": null,
+      "sourceSentences": [
+        "Anil Joshi, the managing director of Tenant, personally guarantees the payment of rent and every other obligation of Tenant under this Lease."
+      ],
+      "redLine": "default-personal-guarantee",
+      "counterOffer": "Anil Joshi does not guarantee the payment of rent or any other obligation of Tenant under this Lease."
+    },
+    {
+      "severity": "negotiate",
+      "title": "Indemnity for all use of the shop",
+      "says": "Chai Kona covers the landlord against all claims, losses and costs from its use of the shop, whether or not the loss was foreseeable, and this continues after the lease ends.",
+      "judgment": "No cap appears in the document.",
+      "sourceSentences": [
+        "Tenant will indemnify Landlord against all claims, losses and costs arising from Tenant's use of the Premises.",
+        "This indemnity applies whether or not the loss was foreseeable and continues after this Lease ends."
+      ],
+      "redLine": "default-uncapped-liability",
+      "counterOffer": "Tenant will indemnify Landlord against claims, losses and costs arising from Tenant's use of the Premises. This indemnity applies only to a loss that was foreseeable and ends when this Lease ends."
+    }
+  ]
+}
