@@ -6,7 +6,7 @@
 
 **Needs approval for:** Supabase auth helpers, if any. Approved 2026-10-31: @supabase/ssr for magic-link sessions (supabase-js moved to dependencies).
 
-**Status:** built on `feature/10-saved-library` (2026-10-31), awaiting merge into `development`. Verified on fixtures with the fake adapter and the local Supabase stack only; not yet run end to end on a real document (needs ticket 09's real adapter).
+**Status:** merged into `development` (2026-10-31); save and reopen run on real documents in final-real-run-2026-11-02
 
 - [x] The Source sentence check runs against the stored text, and the withheld count is stored with the review (PRD criterion 1, 2). Signed in, /api/review saves the text, reads it back by id and reviews that; /api/ask with a documentId reads the stored text and ignores any posted text, with no fallback (404 when not found). Reopening re-checks every stored Source sentence against the stored text. Evidence: tests/isolation/library.test.ts (prompt carries the DB text; a question uses text changed only in the DB; a sentence removed from the stored text is withheld on reopen; withheld_count 5 stored), tests/unit/saved.test.js, tests/e2e/library.spec.mjs (posting `text: "Tampered text."` with the id still answers from the stored fixture).
 - [x] A second signed-in account sees none of the first account's documents (PRD criterion 15, through the interface). Evidence: tests/e2e/library.spec.mjs: account B, signed in by magic link, sees an empty library, gets 404 on /library/<A's id> and 404 from /api/ask with A's id; tests/isolation/library.test.ts covers the same through the library module.

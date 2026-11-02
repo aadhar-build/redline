@@ -8,7 +8,7 @@
 
 **Needs approval for:** None
 
-**Status:** done (2026-10-31, fixture runs); Clean-result gate lifted 2026-10-31 with ticket 13
+**Status:** merged into `development` (2026-10-31); Clean-result gate lifted 2026-10-31 with ticket 13; withheld flags blocked Clean on real documents in final-real-run-2026-11-02 (T04, T08)
 
 - [x] The withheld count appears where OQ11 decides (PRD criterion 2).
 - [x] Clean result fixtures including withheld flags and Ambiguous clauses give the outcome OQ12 and OQ5 decide (PRD criterion 7, 11).

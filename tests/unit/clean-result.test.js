@@ -131,7 +131,7 @@ describe("the gate on the Clean result", () => {
 });
 
 describe("the rule, ready for Ambiguous clauses and Outside references", () => {
-  const base = { riskFlagsStatus: "checked", riskFlags: [], withheld: [], withheldCount: 0, ambiguousClauses: [], outsideReferences: [] };
+  const base = { riskFlagsStatus: "checked", hasClauses: true, riskFlags: [], withheld: [], withheldCount: 0, ambiguousClauses: [], outsideReferences: [] };
 
   it("is true only when nothing stands in the way", () => {
     expect(cleanResultOf(base)).toBe(true);

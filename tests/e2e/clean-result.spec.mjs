@@ -54,3 +54,9 @@ test("a review with Negotiate or Don't sign as written flags is not a Clean resu
   await expect(page.getByTestId("clean-result")).toHaveCount(0);
   await expect(page.getByTestId("clean-result-held")).toHaveCount(0);
 });
+
+test("a stamp page with no clauses is not Clean and says why", async ({ page }) => {
+  await reviewText(page, read("fixtures/contracts/stamp-page-01.txt"));
+  await expect(page.getByTestId("clean-result")).toHaveCount(0);
+  await expect(page.getByTestId("no-clauses")).toHaveText(COPY.clean.noClauses);
+});

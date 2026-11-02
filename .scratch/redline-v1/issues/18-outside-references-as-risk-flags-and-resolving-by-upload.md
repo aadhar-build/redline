@@ -8,7 +8,7 @@
 
 **Needs approval for:** None
 
-**Status:** built on feature/18-referenced-upload, awaiting merge.
+**Status:** merged into `development` (2026-10-31), follow-up 18b merged too; follow-ups run on fixtures only (final-real-run-2026-11-02)
 
 - [x] Every kind of Outside reference, including "as amended from time to time", is a Risk flag with its Source sentence (PRD criterion 6, in full). Built in ticket 13 (lib/review/outside-references.js): Negotiate, or Don't sign as written for "as amended" through Red line 3.
 - [x] Each has a Counter-offer (PRD criterion 12). Built in ticket 13: attach as a schedule, terms fixed as at signing (spec-gaps 26).

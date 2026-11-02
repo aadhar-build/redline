@@ -4,7 +4,7 @@
 
 **Blocked by:** 05 (Upload a text-layer PDF or DOCX file)
 
-**Status:** ready-for-agent
+**Status:** merged into `development` (2026-10-31)
 
 1. **DOCX footnotes and endnotes are read** (high). Append after the body under one plain line each, "Footnotes" then "Endnotes", one note per paragraph with a blank line between, in document order. DOCX headers and footers stay skipped (medium): they sit outside the body, so skipping never splits a sentence.
 2. **Hidden Word text** (run-level w:vanish) stays out of the stored text, but is counted (medium). When at least one hidden run contains a word, the upload shows a one-line notice that the file has text Word hides and Redline didn't read it. Copy through the humanizer. Style-inherited hiding is out of scope.

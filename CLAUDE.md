@@ -24,7 +24,7 @@ Build these capabilities and stop there:
 ## Settled decisions (not open for reinterpretation)
 - Next.js, Supabase for auth and database, deployed on Vercel.
 - The uploaded file is parsed in the browser. Only the extracted text is sent and stored; the original file never leaves the browser.
-- Accept PDF, DOCX and pasted text. PDF pages with a real text layer use their embedded text; image-only pages and scans with a hidden OCR layer are read by in-browser OCR, and that text is treated like any other (ADR 0008). OCR engine: ppu-paddle-ocr with self-hosted PP-OCRv5 English models (.scratch/spec-gaps/issues/24).
+- Accept PDF, DOCX and pasted text. PDF pages with a real text layer use their embedded text; image-only pages and scans with a hidden OCR layer are read by in-browser OCR, and that text is treated like any other (ADR 0008). OCR engine: ppu-paddle-ocr with self-hosted PP-OCRv6 small models (ADR 0008).
 - Parsers: pdfjs-dist for PDF, JSZip with our own document.xml reader for DOCX.
 - English-language Indian small-business contracts. Other languages are rejected with a clear message. Market standard comes from a curated, dated table (ADR 0009).
 - For now, analysis runs only on the product owner's machine: server-side code calls the unmodified Claude Code CLI, signed in to the product owner's own Claude subscription, for the product owner's own testing. Never from the browser.
